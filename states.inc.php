@@ -96,8 +96,8 @@ $playerActionsGameStates = [
 
     ST_PLAYER_CONSTRUCT_BUILDING => [
         "name" => "constructBuilding",
-        "description" => clienttranslate('${actplayer} must construct a building'),
-        "descriptionmyturn" => clienttranslate('${you} must construct a building'),
+        "description" => clienttranslate('${actplayer} must choose an area to construct a building'),
+        "descriptionmyturn" => clienttranslate('${you} must choose an area to construct a building'),
         "type" => "activeplayer",
         //"args" => "argConstructBuilding",
         "possibleactions" => [ 
@@ -112,8 +112,8 @@ $playerActionsGameStates = [
 
     ST_PLAYER_ABANDON_BUILDING => [
         "name" => "abandonBuilding",
-        "description" => clienttranslate('${actplayer} must abandon a building'),
-        "descriptionmyturn" => clienttranslate('${you} must abandon a building'),
+        "description" => clienttranslate('${actplayer} must choose a building to abandon'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a building to abandon'),
         "type" => "activeplayer",
         //"args" => "argAbandonBuilding",
         "possibleactions" => [ 
@@ -137,8 +137,74 @@ $playerActionsGameStates = [
             "cancelUsePloyToken",
         ],
         "transitions" => [
-            // TODO
+            "strategicMovement" => ST_PLAYER_STRATEGIC_MOVEMENT,
+            "roofTransfer" => ST_PLAYER_CHOOSE_ROOF_TO_TRANSFER,
+            "buildingInvasion" => ST_PLAYER_BUILDING_INVASION,
             "cancel" => ST_PLAYER_CHOOSE_ACTION,
+        ]
+    ],
+
+    ST_PLAYER_STRATEGIC_MOVEMENT => [
+        "name" => "strategicMovement",
+        "description" => clienttranslate('${actplayer} must choose a territory for the Torticrane'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a territory for the Torticrane'),
+        "type" => "activeplayer",
+        //"args" => "argStrategicMovement",
+        "possibleactions" => [ 
+            "strategicMovement",
+            "cancelStrategicMovement",
+        ],
+        "transitions" => [
+            "endPloy" => ST_PLAYER_CHOOSE_ACTION,
+            "cancel" => ST_PLAYER_USE_PLOY_TOKEN,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_ROOF_TO_TRANSFER => [
+        "name" => "chooseRoofToTransfer",
+        "description" => clienttranslate('${actplayer} must choose a roof to transfer'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a roof to transfer'),
+        "type" => "activeplayer",
+        //"args" => "argChooseRoofToTransfer",
+        "possibleactions" => [ 
+            "chooseRoofToTransfer",
+            "cancelStrategicMovement",
+        ],
+        "transitions" => [
+            "chooseRoofDestination" => ST_PLAYER_CHOOSE_ACTION,
+            "cancel" => ST_PLAYER_USE_PLOY_TOKEN,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_ROOF_DESTINATION => [
+        "name" => "chooseRoofDestination",
+        "description" => clienttranslate('${actplayer} must choose a new building for the roof'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a new building for the roof'),
+        "type" => "activeplayer",
+        //"args" => "argChooseRoofDestination",
+        "possibleactions" => [ 
+            "chooseRoofDestination",
+            "cancelStrategicMovement",
+        ],
+        "transitions" => [
+            "endPloy" => ST_PLAYER_CHOOSE_ACTION,
+            "cancel" => ST_PLAYER_USE_PLOY_TOKEN,
+        ]
+    ],
+
+    ST_PLAYER_BUILDING_INVASION => [
+        "name" => "buildingInvasion",
+        "description" => clienttranslate('${actplayer} must choose a building to invade'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a building to invade'),
+        "type" => "activeplayer",
+        //"args" => "argBuildingInvasion",
+        "possibleactions" => [ 
+            "buildingInvasion",
+            "cancelStrategicMovement",
+        ],
+        "transitions" => [
+            "endPloy" => ST_PLAYER_CHOOSE_ACTION,
+            "cancel" => ST_PLAYER_USE_PLOY_TOKEN,
         ]
     ],
 
