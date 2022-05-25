@@ -17,13 +17,20 @@
   */
 
 
-require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
+require_once(APP_GAMEMODULE_PATH.'module/table/table.game.php');
+
+require_once('modules/php/constants.inc.php');
+/*
+require_once('modules/php/utils.php');
+require_once('modules/php/actions.php');
+require_once('modules/php/states.php');
+require_once('modules/php/args.php');
+require_once('modules/php/debug-util.php');
+*/
 
 
-class GardenNation extends Table
-{
-	function __construct( )
-	{
+class GardenNation extends Table {
+	function __construct() {
         // Your global variables labels:
         //  Here, you can assign labels to global variables you are using for this game.
         //  You can use any number of global variables with IDs between 10 and 99.
@@ -32,18 +39,24 @@ class GardenNation extends Table
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
         
-        self::initGameStateLabels( array( 
-            //    "my_first_global_variable" => 10,
-            //    "my_second_global_variable" => 11,
-            //      ...
+        self::initGameStateLabels([            
+            LAST_ROUND => 10,
+            PLAYED_ACTIONS => 11,
+            PLOY_USED => 12,
+
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
-            //      ...
-        ) );        
+        ]);   
+		
+        $this->commonProjects = $this->getNew("module.common.deck");
+        $this->commonProjects->init("common_project");
+        $this->commonProjects->autoreshuffle = true;
+		
+        $this->secretMissions = $this->getNew("module.common.deck");
+        $this->secretMissions->init("secret_mission");
 	}
 	
-    protected function getGameName( )
-    {
+    protected function getGameName() {
 		// Used for translations and stuff. Please do not modify.
         return "gardennation";
     }	
@@ -55,8 +68,7 @@ class GardenNation extends Table
         In this method, you must setup the game according to the game rules, so that
         the game is ready to be played.
     */
-    protected function setupNewGame( $players, $options = array() )
-    {    
+    protected function setupNewGame($players, $options = []) {    
         // Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
@@ -65,16 +77,20 @@ class GardenNation extends Table
  
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
-        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar) VALUES ";
-        $values = array();
-        foreach( $players as $player_id => $player )
-        {
+        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar, player_inhabitants, player_turn_track) VALUES ";
+        $values = [];
+        $firstPlayer = true;
+        foreach ($players as $player_id => $player) {
             $color = array_shift( $default_colors );
-            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
+            $inhabitants = $firstPlayer ? 38 : 35;
+            $playerTurnTrack = $firstPlayer ? 1 : 0;
+            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."', $inhabitants, $playerTurnTrack)";
+
+            $firstPlayer = false;
         }
-        $sql .= implode( $values, ',' );
-        self::DbQuery( $sql );
-        self::reattributeColorsBasedOnPreferences( $players, $gameinfos['player_colors'] );
+        $sql .= implode(',', $values);
+        self::DbQuery($sql);
+        self::reattributeColorsBasedOnPreferences($players, $gameinfos['player_colors']);
         self::reloadPlayersBasicInfos();
         
         /************ Start the game initialization *****/

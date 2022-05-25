@@ -49,63 +49,163 @@
 
 //    !! It is not a good idea to modify this file when a game is running !!
 
- 
-$machinestates = array(
+require_once('modules/php/constants.inc.php');
+
+$basicGameStates = [
 
     // The initial state. Please do not modify.
-    1 => array(
+    ST_BGA_GAME_SETUP => [
         "name" => "gameSetup",
-        "description" => "",
+        "description" => clienttranslate("Game setup"),
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => array( "" => 2 )
-    ),
-    
-    // Note: ID=2 => your first state
-
-    2 => array(
-    		"name" => "playerTurn",
-    		"description" => clienttranslate('${actplayer} must play a card or pass'),
-    		"descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-    		"type" => "activeplayer",
-    		"possibleactions" => array( "playCard", "pass" ),
-    		"transitions" => array( "playCard" => 2, "pass" => 2 )
-    ),
-    
-/*
-    Examples:
-    
-    2 => array(
-        "name" => "nextPlayer",
-        "description" => '',
-        "type" => "game",
-        "action" => "stNextPlayer",
-        "updateGameProgression" => true,   
-        "transitions" => array( "endGame" => 99, "nextPlayer" => 10 )
-    ),
-    
-    10 => array(
-        "name" => "playerTurn",
-        "description" => clienttranslate('${actplayer} must play a card or pass'),
-        "descriptionmyturn" => clienttranslate('${you} must play a card or pass'),
-        "type" => "activeplayer",
-        "possibleactions" => array( "playCard", "pass" ),
-        "transitions" => array( "playCard" => 2, "pass" => 2 )
-    ), 
-
-*/    
+        "transitions" => [ "" => ST_PLAYER_CHOOSE_ACTION ]
+    ],
    
     // Final state.
-    // Please do not modify (and do not overload action/args methods).
-    99 => array(
+    // Please do not modify.
+    ST_END_GAME => [
         "name" => "gameEnd",
         "description" => clienttranslate("End of game"),
         "type" => "manager",
         "action" => "stGameEnd",
-        "args" => "argGameEnd"
-    )
+        "args" => "argGameEnd",
+    ],
+];
 
-);
+
+$playerActionsGameStates = [
+
+    ST_PLAYER_CHOOSE_ACTION => [
+        "name" => "chooseAction",
+        "description" => clienttranslate('${actplayer} must choose an action'),
+        "descriptionmyturn" => clienttranslate('${you} must choose an action'),
+        "type" => "activeplayer",
+        //"args" => "argChooseAction",
+        "possibleactions" => [ 
+            "chooseConstructBuilding",
+            "chooseAbandonBuilding",
+            "chooseUsePloyToken",
+        ],
+        "transitions" => [
+            "constructBuilding" => ST_PLAYER_CONSTRUCT_BUILDING,
+            "abandonBuilding" => ST_PLAYER_ABANDON_BUILDING,
+            "usePloyToken" => ST_PLAYER_USE_PLOY_TOKEN,
+        ]
+    ],
+
+    ST_PLAYER_CONSTRUCT_BUILDING => [
+        "name" => "constructBuilding",
+        "description" => clienttranslate('${actplayer} must construct a building'),
+        "descriptionmyturn" => clienttranslate('${you} must construct a building'),
+        "type" => "activeplayer",
+        //"args" => "argConstructBuilding",
+        "possibleactions" => [ 
+            "constructBuilding",
+            "cancelConstructBuilding",
+        ],
+        "transitions" => [
+            "endAction" => ST_END_ACTION,
+            "cancel" => ST_PLAYER_CHOOSE_ACTION,
+        ]
+    ],
+
+    ST_PLAYER_ABANDON_BUILDING => [
+        "name" => "abandonBuilding",
+        "description" => clienttranslate('${actplayer} must abandon a building'),
+        "descriptionmyturn" => clienttranslate('${you} must abandon a building'),
+        "type" => "activeplayer",
+        //"args" => "argAbandonBuilding",
+        "possibleactions" => [ 
+            "abandonBuilding",
+            "cancelAbandonBuilding",
+        ],
+        "transitions" => [
+            "endAction" => ST_END_ACTION,
+            "cancel" => ST_PLAYER_CHOOSE_ACTION,
+        ]
+    ],
+
+    ST_PLAYER_USE_PLOY_TOKEN => [
+        "name" => "usePloyToken",
+        "description" => clienttranslate('${actplayer} must choose a ploy'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a ploy'),
+        "type" => "activeplayer",
+        //"args" => "argUsePloyToken",
+        "possibleactions" => [ 
+            "usePloyToken",
+            "cancelUsePloyToken",
+        ],
+        "transitions" => [
+            // TODO
+            "cancel" => ST_PLAYER_CHOOSE_ACTION,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_NEXT_PLAYER => [
+        "name" => "chooseNextPlayer",
+        "description" => clienttranslate('${actplayer} must choose the next player'),
+        "descriptionmyturn" => clienttranslate('${you} must choose the next player'),
+        "type" => "activeplayer",
+        //"args" => "argChooseNextPlayer",
+        "possibleactions" => [ 
+            "chooseNextPlayer",
+        ],
+        "transitions" => [
+            "nextPlayer" => ST_NEXT_PLAYER,
+        ]
+    ],
+];
 
 
+$gameGameStates = [
+
+    ST_END_ACTION => [
+        "name" => "endAction",
+        "description" => "",
+        "type" => "game",
+        "action" => "stEndAction",
+        "transitions" => [
+            "newAction" => ST_PLAYER_CHOOSE_ACTION,
+            "chooseNextPlayer" => ST_PLAYER_CHOOSE_NEXT_PLAYER,
+            "endTurn" => ST_NEXT_PLAYER,
+        ],
+    ],
+
+    ST_NEXT_PLAYER => [
+        "name" => "nextPlayer",
+        "description" => "",
+        "type" => "game",
+        "action" => "stNextPlayer",
+        "updateGameProgression" => true,
+        "transitions" => [
+            "nextPlayer" => ST_PLAYER_CHOOSE_ACTION, 
+            "endRound" => ST_END_ROUND,
+        ],
+    ],
+
+    ST_END_ROUND => [
+        "name" => "endRound",
+        "description" => "",
+        "type" => "game",
+        "action" => "stEndRound",
+        "transitions" => [
+            "newRound" => ST_PLAYER_CHOOSE_ACTION,
+            "endScore" => ST_END_SCORE,
+        ],
+    ],
+
+    ST_END_SCORE => [
+        "name" => "endScore",
+        "description" => "",
+        "type" => "game",
+        "action" => "stEndScore",
+        "updateGameProgression" => true,
+        "transitions" => [
+            "endGame" => ST_END_GAME,
+        ],
+    ],
+];
+ 
+$machinestates = $basicGameStates + $playerActionsGameStates + $gameGameStates;
 
