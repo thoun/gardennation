@@ -81,7 +81,7 @@ $playerActionsGameStates = [
         "description" => clienttranslate('${actplayer} must choose an action'),
         "descriptionmyturn" => clienttranslate('${you} must choose an action'),
         "type" => "activeplayer",
-        //"args" => "argChooseAction",
+        "args" => "argChooseAction",
         "possibleactions" => [ 
             "chooseConstructBuilding",
             "chooseAbandonBuilding",
