@@ -10,9 +10,24 @@ trait ActionTrait {
         Each time a player is doing some game action, one of the methods below is called.
         (note: each method below must match an input method in nicodemus.action.php)
     */
+    
+    public function chooseConstructBuilding() {
+        self::checkAction('chooseConstructBuilding');
+
+        $this->gamestate->nextState('constructBuilding');
+    }
   	
-    public function placeRoute(int $routeFrom, int $routeTo) {
-        self::checkAction('placeRoute'); 
+    public function chooseAbandonBuilding() {
+        self::checkAction('chooseAbandonBuilding');
+
+        $this->gamestate->nextState('abandonBuilding');
+    }
+  	
+    public function chooseUsePloyToken() {
+        self::checkAction('chooseUsePloyToken');
+
+        $this->gamestate->nextState('usePloyToken');
+    }
         
         /*$playerId = intval(self::getActivePlayerId());
 
@@ -64,6 +79,6 @@ trait ActionTrait {
         //self::incStat(1, 'placedRoutes');
         //self::incStat(1, 'placedRoutes', $playerId);
 
-        $this->gamestate->nextState('placeNext');*/
-    }
+        $this->gamestate->nextState('placeNext');
+    }*/
 }
