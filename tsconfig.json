@@ -1,0 +1,23 @@
+{
+    "rootDir": ".", 
+    "compilerOptions": {
+      "target": "es5",
+      "module": "none",
+      "lib": ["dom", "esnext"],  
+      "sourceMap": false,
+      "outFile": "gardennation.js",
+    },
+    "files": [
+        "src/framework.d.ts",
+        "src/counter.d.ts",
+        "src/stock.d.ts",
+        "src/gardennation.d.ts",
+        "src/slide-utils.ts",
+        "src/stock-utils.ts",
+        "src/text-icons-formatter.ts",
+        "src/board/board.ts",
+        "src/players-tables/player-table.ts",
+        "src/gardennation.ts",
+        "src/define.ts"
+    ]
+}

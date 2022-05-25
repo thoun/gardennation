@@ -1,0 +1,16 @@
+{
+  "name": "gardennation",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gardennation.js",
+  "scripts": {
+    "build:ts": "tsc",
+    "build:scss": "sass --no-source-map src/gardennation.scss gardennation.css"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "sass": "^1.32.6",
+    "typescript": "^4.1.3"
+  }
+}

@@ -1,0 +1,44 @@
+.player-board {
+  background-color: white;
+
+  .counters {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+
+    .reroll-counter, .footprint-counter, .firefly-counter {
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .icon {
+      margin-right: 5px;
+
+      &[data-activated="false"] {
+        filter: grayscale(1);
+      }
+    }
+  }
+
+  .token {
+    margin: 5px;
+  }
+
+  #firstPlayerToken {
+    background: url('img/first-player.png');
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+  }
+
+  // spectator mode box
+  .roundedbox_topleft, .roundedbox_topmain, .roundedbox_topright, .roundedbox_main, .roundedbox_bottomleft, .roundedbox_bottommain, .roundedbox_bottomright {
+    background-color: white;
+  }
+}
+
+#avatar_active_0 {
+  background: url('img/gear.png');
+}
+

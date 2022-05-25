@@ -1,72 +1,56 @@
-/**
- *------
- * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * GardenNation implementation : © <Your name here> <Your email address here>
- *
- * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
- * See http://en.boardgamearena.com/#!doc/Studio for more information.
- * -----
- *
- * gardennation.css
- *
- * GardenNation stylesheet
- *
- */
+#currentplayertable .whiteblock, #playerstables .whiteblock {
+  padding: 0;
+}
+.player-board {
+  background-color: white;
+}
+.player-board .counters {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+}
+.player-board .counters .reroll-counter, .player-board .counters .footprint-counter, .player-board .counters .firefly-counter {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.player-board .counters .icon {
+  margin-right: 5px;
+}
+.player-board .counters .icon[data-activated=false] {
+  filter: grayscale(1);
+}
+.player-board .token {
+  margin: 5px;
+}
+.player-board #firstPlayerToken {
+  background: url("img/first-player.png");
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+}
+.player-board .roundedbox_topleft, .player-board .roundedbox_topmain, .player-board .roundedbox_topright, .player-board .roundedbox_main, .player-board .roundedbox_bottomleft, .player-board .roundedbox_bottommain, .player-board .roundedbox_bottomright {
+  background-color: white;
+}
 
-/*
-    This is the CSS stylesheet of your game User Interface.
-    
-    Styles defined on this file will be applied to the HTML elements you define in your
-    HTML template (gardennation_gardennation.tpl), and to HTML elements you create dynamically
-    (in gardennation.js).
-    
-    Usually, you are using CSS to:
-    
-    1°) define the overall layout of your game
-        (ex: place the board on the top left, place player's hand beside, place the deck on the right, ...).
+#avatar_active_0 {
+  background: url("img/gear.png");
+}
 
-    2°) create your CSS-sprites:
-        All images of your games should be gathered into a small number of image files. Then, using
-        background-image and background-position CSS properties, you create HTML blocks that can 
-        display these images correctly (see example below).
-    
-    3°) ... anything else:
-        It is really easy to add and remove CSS classes dynamically from your Javascript with
-        dojo.addClass and dojo.removeClass. It is also easy to check if an element has a class
-        (dojo.hasClass) or to get all elements with a specific class (dojo.query). This is why,
-        very often, using CSS classes for the logic of your user interface allow you to do complex
-        thing easily.
-        
-        
-     Note: on the production platform, this file will be compressed and comments will be removed.
-           Consequently, don't hesitate to put as many comments as necessary.
-*/
+html {
+  background: url("img/background.jpg");
+  background-repeat: repeat;
+}
 
+.mode_3d #game_play_area_background {
+  background: url("img/background.jpg");
+  background-repeat: repeat;
+}
 
-/* Note: you must not use any @import directive */
-
-
-/********* You can start writing your CSS below this line: **********/
-
-
-/*
-    Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
-
-    .white_token {
-        background-image: url('img/tokens.png');
-        background-position: 0px 0px;
-    }
-    .black_token {
-        background-image: url('img/tokens.png');
-        background-position: -20px 0px;
-    }
-    .token {
-        width: 20px;
-        height: 20px;
-        background-repeat: none;
-    }
-*/
-
-
-
-
+/* make space between buttons on touch devices */
+@media (hover: none) {
+  #page-title .action-button.bgabutton, #page-title .bgabutton {
+    margin-bottom: 8px;
+    margin-top: 8px;
+  }
+}
