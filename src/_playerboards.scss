@@ -1,5 +1,5 @@
 .player-board {
-  background-color: white;
+  background-color: #fed698;
 
   .counters {
     display: flex;
@@ -34,7 +34,7 @@
 
   // spectator mode box
   .roundedbox_topleft, .roundedbox_topmain, .roundedbox_topright, .roundedbox_main, .roundedbox_bottomleft, .roundedbox_bottommain, .roundedbox_bottomright {
-    background-color: white;
+    background-color: #fed698;
   }
 }
 

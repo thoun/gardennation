@@ -6,13 +6,21 @@
 @import 'playerboards';
 
 html {
-    background: url('img/background.jpg');
+    background: #828a25;
     background-repeat: repeat;
 }
 
 .mode_3d #game_play_area_background {
-    background: url('img/background.jpg');
+    background: #828a25;
     background-repeat: repeat;
+}
+
+@font-face {
+  font-family: 'garden-nation-title';
+  src: url('img/skrawk-serif-webfont.woff2') format('woff2'),
+       url('img/skrawk-serif-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
 }
 
 /* make space between buttons on touch devices */

@@ -3,7 +3,7 @@ declare const ebg;
 declare const $;
 declare const dojo: Dojo;
 declare const _;
-declare const g_gamethemeurl;
+//declare const g_gamethemeurl;
 
 declare const board: HTMLDivElement;
 
@@ -46,8 +46,6 @@ class GardenNation implements GardenNationGame {
     */
 
     public setup(gamedatas: GardenNationGamedatas) {
-        (this as any).dontPreloadImage('publisher.png');
-
         log( "Starting game setup" );
         
         this.gamedatas = gamedatas;
@@ -56,7 +54,7 @@ class GardenNation implements GardenNationGame {
 
         this.createPlayerPanels(gamedatas);
         const players = Object.values(gamedatas.players);
-        this.board = new Board(this, players, gamedatas.tableDice);
+        this.board = new Board(this, players, gamedatas.territories);
         this.createPlayerTables(gamedatas);
 
         if (gamedatas.endTurn) {
@@ -113,7 +111,7 @@ class GardenNation implements GardenNationGame {
     private onEnteringChooseAction(args/*: EnteringChooseAdventurerArgs*/) {
         /*const adventurers = args.adventurers;
         if (!document.getElementById('adventurers-stock')) {
-            dojo.place(`<div id="adventurers-stock"></div>`, 'currentplayertable', 'before');
+            dojo.place(`<div id="adventurers-stock"></div>`, 'full-table', 'before');
             
             this.adventurersStock = new ebg.stock() as Stock;
             this.adventurersStock.create(this, $('adventurers-stock'), CARD_WIDTH, CARD_HEIGHT);

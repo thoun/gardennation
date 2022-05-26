@@ -107,7 +107,23 @@ class GardenNation extends Table {
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
         // TODO: setup the initial game situation here
-       
+
+        // init territories
+        $territories = [1,2,3,4,5,6,7];        
+        $sql = "INSERT INTO `territory` (`position`, `number`, `rotation`) VALUES ";
+        $values = [];
+        $affectedTerritories = [];
+        foreach ([0,1,2,3,4,5,6] as $position) {
+            $number = $territories[bga_rand(1, count($territories)) - 1];
+            while (in_array($number, $affectedTerritories)) {
+                $number = $territories[bga_rand(1, count($territories)) - 1];
+            }
+            $rotation = bga_rand(0, 5);
+            $affectedTerritories[$position] = $number;
+            $values[] = "($position, $number, $rotation)";
+        }
+        $sql .= implode(',', $values);
+        $this->DbQuery($sql);
 
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
@@ -124,18 +140,25 @@ class GardenNation extends Table {
         _ when the game starts
         _ when a player refreshes the game page (F5)
     */
-    protected function getAllDatas()
-    {
-        $result = array();
+    protected function getAllDatas() {
+        $result = [];
     
-        $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
+        $currentPlayerId = $this->getCurrentPlayerId();    // !! We must only return informations visible by this player !!
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score FROM player ";
-        $result['players'] = self::getCollectionFromDb( $sql );
+        $sql = "SELECT player_id id, player_score score, player_no playerNo, player_inhabitants as inhabitants FROM player ";
+        $result['players'] = $this->getCollectionFromDb($sql);
   
-        // TODO: Gather all information about current game situation (visible by player $current_player_id).
+        // TODO: Gather all information about current game situation (visible by player $currentPlayerId).
+        
+        foreach($result['players'] as $playerId => &$player) {
+            $player['playerNo'] = intval($player['playerNo']);
+            $player['inhabitants'] = intval($player['inhabitants']);
+        }
+
+        $territoriesDb = $this->getCollectionFromDb("SELECT * FROM `territory` ORDER BY `position` ASC");
+        $result['territories'] = array_map(fn($territoryDb) => [intval($territoryDb['number']), intval($territoryDb['rotation'])], $territoriesDb);
   
         return $result;
     }

@@ -1,8 +1,141 @@
-#currentplayertable .whiteblock, #playerstables .whiteblock {
+#board {
+  position: relative;
+  width: 1181px;
+  height: 1181px;
+  background: url("img/mainboard.jpg");
+}
+#board #order-track {
+  position: absolute;
+  bottom: 63px;
+  left: 58px;
+  width: 147px;
+  height: 338px;
+}
+#board #order-track[data-player-number="2"], #board #order-track[data-player-number="4"] {
+  background: url("img/order-board-2-4.jpg");
+}
+#board #order-track[data-player-number="3"] {
+  background: url("img/order-board-3.jpg");
+}
+#board .territory {
+  position: absolute;
+  background: url("img/mainboard.jpg");
+  width: 341.204px;
+  height: 394px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+#board .territory[data-position="0"] {
+  left: 421.204px;
+  top: 391.5px;
+}
+#board .territory[data-position="1"] {
+  left: 250.602px;
+  top: 96px;
+}
+#board .territory[data-position="2"] {
+  left: 591.806px;
+  top: 96px;
+}
+#board .territory[data-position="3"] {
+  left: 762.408px;
+  top: 391.5px;
+}
+#board .territory[data-position="4"] {
+  left: 591.806px;
+  top: 687px;
+}
+#board .territory[data-position="5"] {
+  left: 250.602px;
+  top: 687px;
+}
+#board .territory[data-position="6"] {
+  left: 80px;
+  top: 391.5px;
+}
+#board .territory[data-number="1"] {
+  background-position-x: -250.602px;
+  background-position-y: -96px;
+}
+#board .territory[data-number="2"] {
+  background-position-x: -591.806px;
+  background-position-y: -96px;
+}
+#board .territory[data-number="3"] {
+  background-position-x: -80px;
+  background-position-y: -391.5px;
+}
+#board .territory[data-number="4"] {
+  background-position-x: -421.204px;
+  background-position-y: -391.5px;
+}
+#board .territory[data-number="5"] {
+  background-position-x: -762.408px;
+  background-position-y: -391.5px;
+}
+#board .territory[data-number="6"] {
+  background-position-x: -250.602px;
+  background-position-y: -687px;
+}
+#board .territory[data-number="7"] {
+  background-position-x: -591.806px;
+  background-position-y: -687px;
+}
+#board .territory[data-rotation="0"] {
+  transform: rotate(0deg);
+}
+#board .territory[data-rotation="1"] {
+  transform: rotate(60deg);
+}
+#board .territory[data-rotation="2"] {
+  transform: rotate(120deg);
+}
+#board .territory[data-rotation="3"] {
+  transform: rotate(180deg);
+}
+#board .territory[data-rotation="4"] {
+  transform: rotate(240deg);
+}
+#board .territory[data-rotation="5"] {
+  transform: rotate(300deg);
+}
+
+#common-projects {
+  position: relative;
+  width: 1181px;
+  height: 283px;
+  background: url("img/secondboard.jpg");
+}
+
+#playerstables .whiteblock {
   padding: 0;
 }
+#playerstables .player-table {
+  position: relative;
+}
+#playerstables .player-table .player-name {
+  position: absolute;
+  font-family: "garden-nation-title";
+  font-size: 130%;
+}
+#playerstables .player-table .player-score-board {
+  width: 626px;
+  height: 302px;
+}
+#playerstables .player-table .player-score-board[data-color=fcaf26] {
+  background: url("img/player-board-fcaf26.png");
+}
+#playerstables .player-table .player-score-board[data-color=ab3b2a] {
+  background: url("img/player-board-ab3b2a.png");
+}
+#playerstables .player-table .player-score-board[data-color="5f8637"] {
+  background: url("img/player-board-5f8637.png");
+}
+#playerstables .player-table .player-score-board[data-color="456e96"] {
+  background: url("img/player-board-456e96.png");
+}
+
 .player-board {
-  background-color: white;
+  background-color: #fed698;
 }
 .player-board .counters {
   display: flex;
@@ -30,7 +163,7 @@
   height: 48px;
 }
 .player-board .roundedbox_topleft, .player-board .roundedbox_topmain, .player-board .roundedbox_topright, .player-board .roundedbox_main, .player-board .roundedbox_bottomleft, .player-board .roundedbox_bottommain, .player-board .roundedbox_bottomright {
-  background-color: white;
+  background-color: #fed698;
 }
 
 #avatar_active_0 {
@@ -38,15 +171,21 @@
 }
 
 html {
-  background: url("img/background.jpg");
+  background: #828a25;
   background-repeat: repeat;
 }
 
 .mode_3d #game_play_area_background {
-  background: url("img/background.jpg");
+  background: #828a25;
   background-repeat: repeat;
 }
 
+@font-face {
+  font-family: "garden-nation-title";
+  src: url("img/skrawk-serif-webfont.woff2") format("woff2"), url("img/skrawk-serif-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
 /* make space between buttons on touch devices */
 @media (hover: none) {
   #page-title .action-button.bgabutton, #page-title .bgabutton {

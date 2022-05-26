@@ -25,11 +25,10 @@ interface GardenNationGamedatas {
     tablespeed: string;
 
     // Add here variables you set up in getAllDatas
+    territories: number[][]; // index 0 is the number of the territory, index 1 is the rotation
 }
 
-interface GardenNationGame extends Game {
-    adventurersStock: Stock;
-    
+interface GardenNationGame extends Game {    
     getPlayerId(): number;
 }
 

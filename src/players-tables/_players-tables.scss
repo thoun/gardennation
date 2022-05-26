@@ -1,11 +1,29 @@
+$playerColors: 'fcaf26', 'ab3b2a', '5f8637', '456e96';
 
-#currentplayertable, #playerstables {
+#playerstables {
 
     .whiteblock {
         padding: 0;
     }
 
     .player-table {
-        
+        position: relative;
+
+        .player-name {
+            position: absolute;
+            font-family: 'garden-nation-title';
+            font-size: 130%;
+        }
+
+        .player-score-board {
+            width: 626px;
+            height: 302px;
+
+            @each $playerColor in $playerColors {
+                &[data-color="#{$playerColor}"] { 
+                    background: url('img/player-board-#{$playerColor}.png');
+                }
+            } 
+        }  
     }
 }

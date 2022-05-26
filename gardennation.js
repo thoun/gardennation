@@ -130,9 +130,12 @@ function formatTextIcons(rawText) {
         .replace(/\[die:(\d):(\d)\]/ig, '<span class="die-icon" data-color="$1" data-face="$2"></span>');
 }
 var Board = /** @class */ (function () {
-    function Board(game, players, tableDice) {
+    function Board(game, players, territories) {
         this.game = game;
         this.players = players;
+        this.territories = territories;
+        document.getElementById("order-track").dataset.playerNumber = '' + players.length;
+        [0, 1, 2, 3, 4, 5, 6].forEach(function (position) { return dojo.place("\n            <div class=\"territory\" data-position=\"".concat(position, "\" data-number=\"").concat(territories[position][0], "\" data-rotation=\"").concat(territories[position][1], "\"></div>\n        "), "board"); });
     }
     return Board;
 }());
@@ -140,6 +143,8 @@ var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player) {
         this.game = game;
         this.playerId = Number(player.id);
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\"></div>\n        </div>");
+        dojo.place(html, 'playerstables');
     }
     return PlayerTable;
 }());
@@ -181,13 +186,12 @@ var GardenNation = /** @class */ (function () {
         "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
     */
     GardenNation.prototype.setup = function (gamedatas) {
-        this.dontPreloadImage('publisher.png');
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
         this.createPlayerPanels(gamedatas);
         var players = Object.values(gamedatas.players);
-        this.board = new Board(this, players, gamedatas.tableDice);
+        this.board = new Board(this, players, gamedatas.territories);
         this.createPlayerTables(gamedatas);
         if (gamedatas.endTurn) {
             this.notif_lastTurn();
@@ -233,7 +237,7 @@ var GardenNation = /** @class */ (function () {
     GardenNation.prototype.onEnteringChooseAction = function (args /*: EnteringChooseAdventurerArgs*/) {
         /*const adventurers = args.adventurers;
         if (!document.getElementById('adventurers-stock')) {
-            dojo.place(`<div id="adventurers-stock"></div>`, 'currentplayertable', 'before');
+            dojo.place(`<div id="adventurers-stock"></div>`, 'full-table', 'before');
             
             this.adventurersStock = new ebg.stock() as Stock;
             this.adventurersStock.create(this, $('adventurers-stock'), CARD_WIDTH, CARD_HEIGHT);

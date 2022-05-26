@@ -18,7 +18,15 @@
 -- Note: The database schema is created from this file when the game starts. If you modify this file,
 --       you have to restart a game to see your changes in database.
 
--- Example 1: create a standard "card" table to be used with the "Deck" tools (see example game "hearts"):
+ALTER TABLE `player` ADD `player_inhabitants` INT UNSIGNED NOT NULL;
+ALTER TABLE `player` ADD `player_turn_track` INT UNSIGNED NOT NULL;
+
+CREATE TABLE IF NOT EXISTS `territory` (
+  `position` int(1) unsigned NOT NULL,
+  `number` int(1) unsigned NOT NULL,
+  `rotation` int(1) unsigned NOT NULL,
+  PRIMARY KEY (`position`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 CREATE TABLE IF NOT EXISTS `common_project` (
   `card_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -37,8 +45,4 @@ CREATE TABLE IF NOT EXISTS `secret_mission` (
   `card_location_arg` int(11) NOT NULL,
   PRIMARY KEY (`card_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
-
--- Example 2: add a custom field to the standard "player" table
-ALTER TABLE `player` ADD `player_inhabitants` INT UNSIGNED NOT NULL;
-ALTER TABLE `player` ADD `player_turn_track` INT UNSIGNED NOT NULL;
 

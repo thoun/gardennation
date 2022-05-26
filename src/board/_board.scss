@@ -1,0 +1,114 @@
+$sqrt3: 1.732;
+$big-hex-size: 197px;
+$big-hex-width: $big-hex-size * $sqrt3;
+$big-hex-height: $big-hex-size * 2;
+$big-hex-x-offset: 80px;
+$big-hex-y-offset: 96px;
+
+#board {
+    position: relative;
+    width: 1181px;
+    height: 1181px;
+    background: url('img/mainboard.jpg');
+
+    #order-track {
+        position: absolute;
+        bottom: 63px;
+        left: 58px;
+        width: 147px;
+        height: 338px;
+
+        &[data-player-number="2"], &[data-player-number="4"] {
+            background: url('img/order-board-2-4.jpg');
+        }
+
+        &[data-player-number="3"] {
+            background: url('img/order-board-3.jpg');
+        }        
+    }
+
+    .territory {
+        // TEMP
+        //filter: grayscale(1);
+        //opacity: 0.7;
+        // TEMP
+
+        position: absolute;
+        background: url('img/mainboard.jpg');
+        width: $big-hex-width;
+        height: $big-hex-height;
+        //clip-path: polygon(40% 0%, 100% 25%, 100% 75%, 60% 100%, 0% 75%, 0% 25%);
+        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+
+        &[data-position="0"] {
+            left: $big-hex-x-offset + $big-hex-width;
+            top: $big-hex-y-offset + $big-hex-height * 3 / 4;
+        }
+        &[data-position="1"] {
+            left: $big-hex-x-offset + $big-hex-width / 2;
+            top: $big-hex-y-offset;
+        }
+        &[data-position="2"] {
+            left: $big-hex-x-offset + $big-hex-width * 3 / 2;
+            top: $big-hex-y-offset;
+        }
+        &[data-position="3"] {
+            left: $big-hex-x-offset + $big-hex-width * 2;
+            top: $big-hex-y-offset + $big-hex-height * 3 / 4;
+        }
+        &[data-position="4"] {
+            left: $big-hex-x-offset + $big-hex-width * 3 / 2;
+            top: $big-hex-y-offset + $big-hex-height * 3 / 2;
+        }
+        &[data-position="5"] {
+            left: $big-hex-x-offset + $big-hex-width / 2;
+            top: $big-hex-y-offset + $big-hex-height * 3 / 2;
+        }
+        &[data-position="6"] {
+            left: $big-hex-x-offset;
+            top: $big-hex-y-offset + $big-hex-height * 3 / 4;
+        }
+
+        &[data-number="1"] {
+            background-position-x: -($big-hex-x-offset + $big-hex-width / 2);
+            background-position-y: -($big-hex-y-offset);
+        }
+        &[data-number="2"] {
+            background-position-x: -($big-hex-x-offset + $big-hex-width * 3 / 2);
+            background-position-y: -($big-hex-y-offset);
+        }
+        &[data-number="3"] {
+            background-position-x: -($big-hex-x-offset);
+            background-position-y: -($big-hex-y-offset + $big-hex-height * 3 / 4);
+        }
+        &[data-number="4"] {
+            background-position-x: -($big-hex-x-offset + $big-hex-width);
+            background-position-y: -($big-hex-y-offset + $big-hex-height * 3 / 4);
+        }
+        &[data-number="5"] {
+            background-position-x: -($big-hex-x-offset + $big-hex-width * 2);
+            background-position-y: -($big-hex-y-offset + $big-hex-height * 3 / 4);
+        }
+        &[data-number="6"] {
+            background-position-x: -($big-hex-x-offset + $big-hex-width / 2);
+            background-position-y: -($big-hex-y-offset + $big-hex-height * 3 / 2);
+        }
+        &[data-number="7"] {
+            background-position-x: -($big-hex-x-offset + $big-hex-width * 3 / 2);
+            background-position-y: -($big-hex-y-offset + $big-hex-height * 3 / 2);
+        }
+
+        @for $i from 0 through 5 {
+            &[data-rotation="#{$i}"] { 
+                transform: rotate(#{$i * 60}deg);
+            }
+        }
+    }
+}
+
+#common-projects {
+    position: relative;
+    width: 1181px;
+    height: 283px;
+    background: url('img/secondboard.jpg');
+}
