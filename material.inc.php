@@ -20,18 +20,8 @@
  */
 
 
-/*
-
-Example:
-
-$this->card_types = array(
-    1 => array( "card_name" => ...,
-                ...
-              )
-);
-
-*/
-
-
-
-
+$this->BUILDING_FLOORS = [
+  2 => 20,
+  3 => 17,
+  4 => 14,
+];

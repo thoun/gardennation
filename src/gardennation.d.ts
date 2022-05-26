@@ -1,11 +1,24 @@
 /*interface Card {
     id: number;
     type: number;
+    type_arg: number;
     location: string;
     location_arg: number;
 }*/
 
+interface BuildingFloor {
+    id: number;
+    type: number;
+    playerId: number;
+    location: string;
+    locationArg: number;
+}
+
 interface GardenNationPlayer extends Player {
+    playerNo: number;
+    inhabitants: number;
+    turnTrack: number;
+    buildingFloors: BuildingFloor[];
 }
 
 /**

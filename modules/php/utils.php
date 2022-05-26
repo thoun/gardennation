@@ -1,9 +1,5 @@
 <?php
-
-/*require_once(__DIR__.'/objects/ticket.php');
-require_once(__DIR__.'/objects/placed-route.php');
-require_once(__DIR__.'/objects/possible-route.php');
-require_once(__DIR__.'/objects/common-objective.php');*/
+require_once(__DIR__.'/objects/building-floor.php');
 
 trait UtilTrait {
 
@@ -67,32 +63,24 @@ trait UtilTrait {
         return self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = $playerId");
     }
 
-    /*function getCardFromDb(array $dbCard) {
+    function getBuildingFloorFromDb(array $dbCard) {
         if (!$dbCard || !array_key_exists('id', $dbCard)) {
             throw new \Error('card doesn\'t exists '.json_encode($dbCard));
         }
-        if (!$dbCard || !array_key_exists('location', $dbCard)) {
-            throw new \Error('location doesn\'t exists '.json_encode($dbCard));
-        }
-        return new Card($dbCard);
+        return new BuildingFloor($dbCard);
     }
 
-    function getCardsFromDb(array $dbCards) {
-        return array_map(fn($dbCard) => $this->getCardFromDb($dbCard), array_values($dbCards));
+    function getBuildingFloorsFromDb(array $dbCards) {
+        return array_map(fn($dbCard) => $this->getBuildingFloorFromDb($dbCard), array_values($dbCards));
     }
 
-    function setupTickets(int $playerNumber) {
-        // 12 bus ticket cards
-        $tickets = [];
-        for ($i = 1; $i <= 6; $i++) {
-            $tickets[] = [ 'type' => $i, 'type_arg' => null, 'nbr' => 1 ];
+    function setupBuildingFloors(array $playersIds) {
+        $count = $this->BUILDING_FLOORS[count($playersIds)];
+        
+        foreach ($playersIds as $playerId) {
+            $this->buildingFloors->createCards([[ 'type' => 0, 'type_arg' => $playerId, 'nbr' => $count ]], 'table', $playerId);
         }
-        $this->tickets->createCards($tickets, 'deck');
-        $tickets = [];
-        for ($i = 7; $i <= 12; $i++) {
-            $tickets[] = [ 'type' => $i, 'type_arg' => null, 'nbr' => 1 ];
-        }
-        $this->tickets->createCards($tickets, $playerNumber > 3 ? 'deck' : 'discard');
-        $this->tickets->shuffle('deck');
-    }*/
+
+        $this->buildingFloors->createCards([[ 'type' => 1, 'type_arg' => 0, 'nbr' => 19 ]], 'table');
+    }
 }

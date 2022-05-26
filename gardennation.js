@@ -167,6 +167,9 @@ var log = isDebug ? console.log.bind(window.console) : function () { };
 var GardenNation = /** @class */ (function () {
     function GardenNation() {
         this.playersTables = [];
+        this.inhabitantCounters = [];
+        this.buildingFloorCounters = [];
+        this.ployTokenCounters = [];
         this.zoom = 1;
         var zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
@@ -430,61 +433,23 @@ var GardenNation = /** @class */ (function () {
         return this.playersTables.find(function (playerTable) { return playerTable.playerId === playerId; });
     };
     GardenNation.prototype.createPlayerPanels = function (gamedatas) {
+        var _this = this;
         Object.values(gamedatas.players).forEach(function (player) {
             var playerId = Number(player.id);
             // counters
-            dojo.place("\n            <div class=\"counters\">\n                <div id=\"reroll-counter-wrapper-".concat(player.id, "\" class=\"reroll-counter\">\n                    <div class=\"icon reroll\"></div> \n                    <span id=\"reroll-counter-").concat(player.id, "\"></span>\n                </div>\n                <div id=\"footprint-counter-wrapper-").concat(player.id, "\" class=\"footprint-counter\">\n                    <div class=\"icon footprint\"></div> \n                    <span id=\"footprint-counter-").concat(player.id, "\"></span>\n                </div>\n                <div id=\"firefly-counter-wrapper-").concat(player.id, "\" class=\"firefly-counter\">\n                </div>\n            </div>\n            "), "player_board_".concat(player.id));
-            /*const rerollCounter = new ebg.counter();
-            rerollCounter.create(`reroll-counter-${playerId}`);
-            rerollCounter.setValue(player.rerolls);
-            this.rerollCounters[playerId] = rerollCounter;
-
-            const footprintCounter = new ebg.counter();
-            footprintCounter.create(`footprint-counter-${playerId}`);
-            footprintCounter.setValue(player.footprints);
-            this.footprintCounters[playerId] = footprintCounter;
-
-            if (playerId != 0) {
-                dojo.place(`
-                    <div id="firefly-counter-icon-${player.id}" class="icon firefly"></div>
-                    <span id="firefly-counter-${player.id}"></span>&nbsp;/&nbsp;<span id="companion-counter-${player.id}"></span>
-                `, `firefly-counter-wrapper-${player.id}`);
-
-                const fireflyCounter = new ebg.counter();
-                fireflyCounter.create(`firefly-counter-${playerId}`);
-                const allFireflies = player.fireflies + player.companions.map(companion => companion.fireflies).reduce((a, b) => a + b, 0);
-                fireflyCounter.setValue(allFireflies);
-                this.fireflyCounters[playerId] = fireflyCounter;
-                this.fireflyTokenCounters[playerId] = player.fireflies;
-
-                const companionCounter = new ebg.counter();
-                companionCounter.create(`companion-counter-${playerId}`);
-                companionCounter.setValue(player.companions.length);
-                this.companionCounters[playerId] = companionCounter;
-
-                this.updateFireflyCounterIcon(playerId);
-            }
-            
-            if (!solo) {
-                // first player token
-                dojo.place(`<div id="player_board_${player.id}_firstPlayerWrapper"></div>`, `player_board_${player.id}`);
-
-                if (gamedatas.firstPlayer === playerId) {
-                    this.placeFirstPlayerToken(gamedatas.firstPlayer);
-                }
-
-            } else if (playerId == 0) {
-                dojo.place(`<div id="tomDiceWrapper"></div>`, `player_board_${player.id}`);
-                if (gamedatas.tom.dice) {
-                    this.setTomDice(gamedatas.tom.dice);
-                }
-            }
-            
-            if (this.isColorBlindMode() && playerId != 0) {
-            dojo.place(`
-            <div class="token meeple${this.gamedatas.side == 2 ? 0 : 1} color-blind meeple-player-${player.id}" data-player-no="${player.playerNo}" style="background-color: #${player.color};"></div>
-            `, `player_board_${player.id}`);
-            }*/
+            dojo.place("\n            <div class=\"counters\">\n                <div id=\"inhabitant-counter-wrapper-".concat(player.id, "\" class=\"counter\">\n                    <div class=\"icon inhabitant\" data-color=\"").concat(player.color, "\"></div> \n                    <span id=\"inhabitant-counter-").concat(player.id, "\"></span>\n                </div>\n                <div id=\"building-floor-counter-wrapper-").concat(player.id, "\" class=\"counter\">\n                    <div class=\"icon building-floor\" data-color=\"").concat(player.color, "\"></div> \n                    <span id=\"building-floor-counter-").concat(player.id, "\"></span>\n                </div>\n                <div id=\"ploy-token-counter-wrapper-").concat(player.id, "\" class=\"counter\">\n                    <div class=\"icon ploy-token\" data-color=\"").concat(player.color, "\"></div> \n                    <span id=\"ploy-token-counter-").concat(player.id, "\"></span>\n                </div>\n            </div>\n            "), "player_board_".concat(player.id));
+            var inhabitantCounter = new ebg.counter();
+            inhabitantCounter.create("inhabitant-counter-".concat(playerId));
+            inhabitantCounter.setValue(player.inhabitants);
+            _this.inhabitantCounters[playerId] = inhabitantCounter;
+            var buildingFloorCounter = new ebg.counter();
+            buildingFloorCounter.create("building-floor-counter-".concat(playerId));
+            buildingFloorCounter.setValue(player.buildingFloors.length);
+            _this.buildingFloorCounters[playerId] = buildingFloorCounter;
+            var ployTokenCounter = new ebg.counter();
+            ployTokenCounter.create("ploy-token-counter-".concat(playerId));
+            ployTokenCounter.setValue(player.inhabitants); // TODO
+            _this.ployTokenCounters[playerId] = ployTokenCounter;
         });
         /*(this as any).addTooltipHtmlToClass('reroll-counter', _("Rerolls tokens"));
         (this as any).addTooltipHtmlToClass('footprint-counter', _("Footprints tokens"));

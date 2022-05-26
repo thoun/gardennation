@@ -49,7 +49,10 @@ class GardenNation extends Table {
 
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
-        ]);   
+        ]);
+		
+        $this->buildingFloors = $this->getNew("module.common.deck");
+        $this->buildingFloors->init("building_floor");
 		
         $this->commonProjects = $this->getNew("module.common.deck");
         $this->commonProjects->init("common_project");
@@ -125,6 +128,9 @@ class GardenNation extends Table {
         $sql .= implode(',', $values);
         $this->DbQuery($sql);
 
+        // building floors
+        $this->setupBuildingFloors(array_keys($players));
+
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
 
@@ -147,7 +153,7 @@ class GardenNation extends Table {
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score, player_no playerNo, player_inhabitants as inhabitants FROM player ";
+        $sql = "SELECT player_id id, player_score score, player_no playerNo, player_inhabitants as inhabitants, player_turn_track as turnTrack FROM player ";
         $result['players'] = $this->getCollectionFromDb($sql);
   
         // TODO: Gather all information about current game situation (visible by player $currentPlayerId).
@@ -155,6 +161,9 @@ class GardenNation extends Table {
         foreach($result['players'] as $playerId => &$player) {
             $player['playerNo'] = intval($player['playerNo']);
             $player['inhabitants'] = intval($player['inhabitants']);
+            $player['turnTrack'] = intval($player['turnTrack']);
+
+            $player['buildingFloors'] = $this->getBuildingFloorsFromDb($this->buildingFloors->getCardsInLocation('table', $playerId));
         }
 
         $territoriesDb = $this->getCollectionFromDb("SELECT * FROM `territory` ORDER BY `position` ASC");

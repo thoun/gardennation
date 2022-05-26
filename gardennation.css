@@ -142,32 +142,40 @@
   align-items: center;
   margin: 5px 0;
 }
-.player-board .counters .reroll-counter, .player-board .counters .footprint-counter, .player-board .counters .firefly-counter {
+.player-board .counters .counter {
   flex: 1;
   display: flex;
   align-items: center;
 }
 .player-board .counters .icon {
   margin-right: 5px;
+  background-image: url("img/panelboard-icons.png");
+  background-size: auto 300%;
 }
-.player-board .counters .icon[data-activated=false] {
-  filter: grayscale(1);
+.player-board .counters .icon[data-color=fcaf26] {
+  background-position-x: 0%;
 }
-.player-board .token {
-  margin: 5px;
+.player-board .counters .icon[data-color=ab3b2a] {
+  background-position-x: 33.3333333333%;
 }
-.player-board #firstPlayerToken {
-  background: url("img/first-player.png");
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
+.player-board .counters .icon[data-color="5f8637"] {
+  background-position-x: 66.6666666667%;
 }
-.player-board .roundedbox_topleft, .player-board .roundedbox_topmain, .player-board .roundedbox_topright, .player-board .roundedbox_main, .player-board .roundedbox_bottomleft, .player-board .roundedbox_bottommain, .player-board .roundedbox_bottomright {
-  background-color: #fed698;
+.player-board .counters .icon[data-color="456e96"] {
+  background-position-x: 100%;
+}
+.player-board .counters .icon.inhabitant {
+  background-position-y: 0%;
+}
+.player-board .counters .icon.building-floor {
+  background-position-y: 50%;
+}
+.player-board .counters .icon.ploy-token {
+  background-position-y: 100%;
 }
 
-#avatar_active_0 {
-  background: url("img/gear.png");
+.roundedbox_topleft, .roundedbox_topmain, .roundedbox_topright, .roundedbox_main, .roundedbox_bottomleft, .roundedbox_bottommain, .roundedbox_bottomright {
+  background-color: #fed698;
 }
 
 html {
@@ -192,4 +200,16 @@ html {
     margin-bottom: 8px;
     margin-top: 8px;
   }
+}
+.whiteblock {
+  background: rgba(255, 255, 255, 0.6666666667);
+}
+
+.icon {
+  display: inline-block;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  background-image: url("img/icons.png");
+  background-size: auto 100%;
 }

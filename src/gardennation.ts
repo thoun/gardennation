@@ -22,6 +22,9 @@ class GardenNation implements GardenNationGame {
     
     private board: Board;
     private playersTables: PlayerTable[] = [];
+    private inhabitantCounters: Counter[] = [];
+    private buildingFloorCounters: Counter[] = [];
+    private ployTokenCounters: Counter[] = [];
 
     public zoom: number = 1;
 
@@ -336,70 +339,35 @@ class GardenNation implements GardenNationGame {
             // counters
             dojo.place(`
             <div class="counters">
-                <div id="reroll-counter-wrapper-${player.id}" class="reroll-counter">
-                    <div class="icon reroll"></div> 
-                    <span id="reroll-counter-${player.id}"></span>
+                <div id="inhabitant-counter-wrapper-${player.id}" class="counter">
+                    <div class="icon inhabitant" data-color="${player.color}"></div> 
+                    <span id="inhabitant-counter-${player.id}"></span>
                 </div>
-                <div id="footprint-counter-wrapper-${player.id}" class="footprint-counter">
-                    <div class="icon footprint"></div> 
-                    <span id="footprint-counter-${player.id}"></span>
+                <div id="building-floor-counter-wrapper-${player.id}" class="counter">
+                    <div class="icon building-floor" data-color="${player.color}"></div> 
+                    <span id="building-floor-counter-${player.id}"></span>
                 </div>
-                <div id="firefly-counter-wrapper-${player.id}" class="firefly-counter">
+                <div id="ploy-token-counter-wrapper-${player.id}" class="counter">
+                    <div class="icon ploy-token" data-color="${player.color}"></div> 
+                    <span id="ploy-token-counter-${player.id}"></span>
                 </div>
             </div>
             `, `player_board_${player.id}`);
 
-            /*const rerollCounter = new ebg.counter();
-            rerollCounter.create(`reroll-counter-${playerId}`);
-            rerollCounter.setValue(player.rerolls);
-            this.rerollCounters[playerId] = rerollCounter;
+            const inhabitantCounter = new ebg.counter();
+            inhabitantCounter.create(`inhabitant-counter-${playerId}`);
+            inhabitantCounter.setValue(player.inhabitants);
+            this.inhabitantCounters[playerId] = inhabitantCounter;
 
-            const footprintCounter = new ebg.counter();
-            footprintCounter.create(`footprint-counter-${playerId}`);
-            footprintCounter.setValue(player.footprints);
-            this.footprintCounters[playerId] = footprintCounter;
+            const buildingFloorCounter = new ebg.counter();
+            buildingFloorCounter.create(`building-floor-counter-${playerId}`);
+            buildingFloorCounter.setValue(player.buildingFloors.length);
+            this.buildingFloorCounters[playerId] = buildingFloorCounter;
 
-            if (playerId != 0) {
-                dojo.place(`
-                    <div id="firefly-counter-icon-${player.id}" class="icon firefly"></div> 
-                    <span id="firefly-counter-${player.id}"></span>&nbsp;/&nbsp;<span id="companion-counter-${player.id}"></span>
-                `, `firefly-counter-wrapper-${player.id}`);
-
-                const fireflyCounter = new ebg.counter();
-                fireflyCounter.create(`firefly-counter-${playerId}`);
-                const allFireflies = player.fireflies + player.companions.map(companion => companion.fireflies).reduce((a, b) => a + b, 0);
-                fireflyCounter.setValue(allFireflies);
-                this.fireflyCounters[playerId] = fireflyCounter;
-                this.fireflyTokenCounters[playerId] = player.fireflies;
-
-                const companionCounter = new ebg.counter();
-                companionCounter.create(`companion-counter-${playerId}`);
-                companionCounter.setValue(player.companions.length);
-                this.companionCounters[playerId] = companionCounter;
-
-                this.updateFireflyCounterIcon(playerId);
-            }
-            
-            if (!solo) {
-                // first player token
-                dojo.place(`<div id="player_board_${player.id}_firstPlayerWrapper"></div>`, `player_board_${player.id}`);
-
-                if (gamedatas.firstPlayer === playerId) {
-                    this.placeFirstPlayerToken(gamedatas.firstPlayer);
-                }
-
-            } else if (playerId == 0) {
-                dojo.place(`<div id="tomDiceWrapper"></div>`, `player_board_${player.id}`);
-                if (gamedatas.tom.dice) {
-                    this.setTomDice(gamedatas.tom.dice);
-                }
-            }
-            
-            if (this.isColorBlindMode() && playerId != 0) {
-            dojo.place(`
-            <div class="token meeple${this.gamedatas.side == 2 ? 0 : 1} color-blind meeple-player-${player.id}" data-player-no="${player.playerNo}" style="background-color: #${player.color};"></div>
-            `, `player_board_${player.id}`);
-            }*/
+            const ployTokenCounter = new ebg.counter();
+            ployTokenCounter.create(`ploy-token-counter-${playerId}`);
+            ployTokenCounter.setValue(player.inhabitants); // TODO
+            this.ployTokenCounters[playerId] = ployTokenCounter;
         });
 
         /*(this as any).addTooltipHtmlToClass('reroll-counter', _("Rerolls tokens"));
