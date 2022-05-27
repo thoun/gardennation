@@ -17,12 +17,77 @@
 #board #order-track[data-player-number="3"] {
   background: url("img/order-board-3.jpg");
 }
+#board #order-track[data-player-number="3"] .order-track-number#order-track-0 {
+  top: 220px;
+  width: 200px;
+  left: 0;
+}
+#board #order-track[data-player-number="3"] .order-track-number#order-track-1 {
+  top: 143px;
+}
+#board #order-track[data-player-number="3"] .order-track-number#order-track-2 {
+  top: 78px;
+}
+#board #order-track[data-player-number="3"] .order-track-number#order-track-3 {
+  top: 11px;
+}
+#board #order-track .order-track-number {
+  position: absolute;
+  width: 99px;
+  height: 50px;
+}
+#board #order-track .order-track-number#order-track-0 {
+  top: 300px;
+  width: 300px;
+  left: 151px;
+}
+#board #order-track .order-track-number#order-track-1 {
+  top: 221px;
+}
+#board #order-track .order-track-number#order-track-2 {
+  top: 143px;
+}
+#board #order-track .order-track-number#order-track-3 {
+  top: 78px;
+}
+#board #order-track .order-track-number#order-track-4 {
+  top: 11px;
+}
+#board #order-track .token {
+  position: relative;
+  display: inline-block;
+  width: 99px;
+  height: 50px;
+  background: url("img/order-track-tokens.png");
+  background-size: 100% auto;
+  margin-right: -40px;
+}
+#board #order-track .token[data-color=fcaf26] {
+  background-position-y: 0%;
+}
+#board #order-track .token[data-color=ab3b2a] {
+  background-position-y: 33.3333333333%;
+}
+#board #order-track .token[data-color="5f8637"] {
+  background-position-y: 66.6666666667%;
+}
+#board #order-track .token[data-color="456e96"] {
+  background-position-y: 100%;
+}
 #board .territory {
   position: absolute;
-  background: url("img/mainboard.jpg");
   width: 341.204px;
   height: 394px;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+#board .territory::before {
+  content: "";
+  position: absolute;
+  background: url("img/mainboard.jpg");
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 }
 #board .territory[data-position="0"] {
   left: 421.204px;
@@ -52,51 +117,119 @@
   left: 80px;
   top: 391.5px;
 }
-#board .territory[data-number="1"] {
+#board .territory[data-number="1"]::before {
   background-position-x: -250.602px;
   background-position-y: -96px;
 }
-#board .territory[data-number="2"] {
+#board .territory[data-number="2"]::before {
   background-position-x: -591.806px;
   background-position-y: -96px;
 }
-#board .territory[data-number="3"] {
+#board .territory[data-number="3"]::before {
   background-position-x: -80px;
   background-position-y: -391.5px;
 }
-#board .territory[data-number="4"] {
+#board .territory[data-number="4"]::before {
   background-position-x: -421.204px;
   background-position-y: -391.5px;
 }
-#board .territory[data-number="5"] {
+#board .territory[data-number="5"]::before {
   background-position-x: -762.408px;
   background-position-y: -391.5px;
 }
-#board .territory[data-number="6"] {
+#board .territory[data-number="6"]::before {
   background-position-x: -250.602px;
   background-position-y: -687px;
 }
-#board .territory[data-number="7"] {
+#board .territory[data-number="7"]::before {
   background-position-x: -591.806px;
   background-position-y: -687px;
 }
-#board .territory[data-rotation="0"] {
+#board .territory[data-rotation="0"]::before {
   transform: rotate(0deg);
 }
-#board .territory[data-rotation="1"] {
+#board .territory[data-rotation="1"]::before {
   transform: rotate(60deg);
 }
-#board .territory[data-rotation="2"] {
+#board .territory[data-rotation="2"]::before {
   transform: rotate(120deg);
 }
-#board .territory[data-rotation="3"] {
+#board .territory[data-rotation="3"]::before {
   transform: rotate(180deg);
 }
-#board .territory[data-rotation="4"] {
+#board .territory[data-rotation="4"]::before {
   transform: rotate(240deg);
 }
-#board .territory[data-rotation="5"] {
+#board .territory[data-rotation="5"]::before {
   transform: rotate(300deg);
+}
+#board .territory .area {
+  text-align: center;
+  text-shadow: 0 0 1px white, 0 0 2px white;
+  font-weight: bold;
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  left: 120.602px;
+  top: 147px;
+  border-radius: 50%;
+  border: 3px dashed transparent;
+}
+#board .territory .area[data-rotation="1"] {
+  transform: rotate(-120deg) translateX(106px) rotate(120deg);
+}
+#board .territory .area[data-rotation="2"] {
+  transform: rotate(-60deg) translateX(106px) rotate(60deg);
+}
+#board .territory .area[data-rotation="3"] {
+  transform: rotate(0deg) translateX(106px) rotate(0deg);
+}
+#board .territory .area[data-rotation="4"] {
+  transform: rotate(60deg) translateX(106px) rotate(-60deg);
+}
+#board .territory .area[data-rotation="5"] {
+  transform: rotate(120deg) translateX(106px) rotate(-120deg);
+}
+#board .territory .area[data-rotation="6"] {
+  transform: rotate(180deg) translateX(106px) rotate(-180deg);
+}
+#board .territory .area[data-bramble=true]::before {
+  content: "";
+  position: absolute;
+  background: url("img/land-tokens.jpg");
+  background-size: auto 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+#board .territory .area[data-bramble=true]::before[data-type="1"] {
+  background-position: 0%;
+}
+#board .territory .area[data-bramble=true]::before[data-type="2"] {
+  background-position: 50%;
+}
+#board .territory .area[data-bramble=true]::before[data-type="3"] {
+  background-position: 100%;
+}
+#board .territory .area.selectable {
+  cursor: pointer;
+  border-color: red;
+}
+#board .territory .torticrane-spot {
+  position: absolute;
+  bottom: 87px;
+  right: 8px;
+}
+#board #torticrane-spot--1 {
+  position: absolute;
+  bottom: 68px;
+  right: 233px;
+}
+#board #torticrane {
+  width: 71px;
+  height: 76px;
+  background: url("img/torticrane.png");
 }
 
 #common-projects {
@@ -116,6 +249,8 @@
   position: absolute;
   font-family: "garden-nation-title";
   font-size: 130%;
+  padding: 5px;
+  width: 265px;
 }
 #playerstables .player-table .player-score-board {
   width: 626px;

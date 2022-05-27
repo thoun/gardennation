@@ -39,8 +39,6 @@
     public function chooseConstructBuilding() {
       self::setAjaxMode();
 
-      //$arg1 = self::getArg( "myArgument1", AT_posint, true );
-
       $this->game->chooseConstructBuilding();
 
       self::ajaxResponse();
@@ -58,6 +56,34 @@
       self::setAjaxMode();
 
       $this->game->chooseUsePloyToken();
+
+      self::ajaxResponse();
+    }
+
+    public function constructBuilding() {
+      self::setAjaxMode();
+
+      $areaPosition = self::getArg("areaPosition", AT_posint, true);
+
+      $this->game->constructBuilding($areaPosition);
+
+      self::ajaxResponse();
+    }
+
+    public function cancelConstructBuilding() {
+      self::setAjaxMode();
+
+      $this->game->cancelConstructBuilding();
+
+      self::ajaxResponse();
+    }
+
+    public function chooseNextPlayer() {
+      self::setAjaxMode();
+
+      $playerId = self::getArg("playerId", AT_posint, true);
+
+      $this->game->chooseNextPlayer($playerId);
 
       self::ajaxResponse();
     }

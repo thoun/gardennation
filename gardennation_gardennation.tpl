@@ -17,7 +17,13 @@
         <div id="full-board-wrapper">
             <div id="full-board">
                 <div id="board">
-                    <div id="order-track"></div>
+                    <div id="order-track">
+                        <div id="order-track-0" class="order-track-number"></div>
+                        <div id="order-track-1" class="order-track-number"></div>
+                        <div id="order-track-2" class="order-track-number"></div>
+                        <div id="order-track-3" class="order-track-number"></div>
+                        <div id="order-track-4" class="order-track-number"></div>
+                    </div>
                 </div>
                 <div id="common-projects">
                 TODO common projects

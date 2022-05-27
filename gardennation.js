@@ -130,13 +130,40 @@ function formatTextIcons(rawText) {
         .replace(/\[die:(\d):(\d)\]/ig, '<span class="die-icon" data-color="$1" data-face="$2"></span>');
 }
 var Board = /** @class */ (function () {
-    function Board(game, players, territories) {
+    function Board(game, players, territories, map, torticranePosition) {
+        var _this = this;
         this.game = game;
         this.players = players;
         this.territories = territories;
+        this.map = map;
         document.getElementById("order-track").dataset.playerNumber = '' + players.length;
-        [0, 1, 2, 3, 4, 5, 6].forEach(function (position) { return dojo.place("\n            <div class=\"territory\" data-position=\"".concat(position, "\" data-number=\"").concat(territories[position][0], "\" data-rotation=\"").concat(territories[position][1], "\"></div>\n        "), "board"); });
+        players.forEach(function (player) { return dojo.place("\n            <div id=\"order-token-".concat(player.id, "\" class=\"token\" data-color=\"").concat(player.color, "\"></div>\n        "), "order-track-".concat(player.turnTrack)); });
+        dojo.place("<div id=\"torticrane-spot--1\" class=\"torticrane-spot\"></div>", "board");
+        [0, 1, 2, 3, 4, 5, 6].forEach(function (territoryPosition) {
+            var territoryNumber = territories[territoryPosition][0];
+            var territoryRotation = territories[territoryPosition][1];
+            dojo.place("\n                <div id=\"territory".concat(territoryPosition, "\" class=\"territory\" data-position=\"").concat(territoryPosition, "\" data-number=\"").concat(territoryNumber, "\" data-rotation=\"").concat(territoryRotation, "\">\n                    <div id=\"torticrane-spot-").concat(territoryPosition, "\" class=\"torticrane-spot\"></div>\n                </div>\n            "), "board");
+            [0, 1, 2, 3, 4, 5, 6].forEach(function (areaPosition) {
+                var position = territoryNumber * 10 + areaPosition;
+                var mapPosition = map[position];
+                var type = mapPosition[0] % 10;
+                var bramble = type > 10;
+                var rotation = areaPosition;
+                if (areaPosition > 0) {
+                    rotation = (areaPosition + territoryRotation - 1) % 6 + 1;
+                }
+                dojo.place("\n                    <div id=\"area".concat(position, "\" class=\"area\" data-position=\"").concat(position, "\" data-type=\"").concat(type, "\" data-bramble=\"").concat(bramble.toString(), "\" data-cost=\"").concat(mapPosition[1], "\" data-position=\"").concat(areaPosition, "\" data-rotation=\"").concat(rotation, "\">").concat(position, "<br>type ").concat(mapPosition[0], "<br>cost ").concat(mapPosition[1], "</div>\n                "), "territory".concat(territoryPosition));
+                document.getElementById("area".concat(position)).addEventListener('click', function () { return _this.game.onAreaClick(position); });
+            });
+        });
+        dojo.place("<div id=\"torticrane\"></div>", "torticrane-spot-".concat(torticranePosition));
     }
+    Board.prototype.setPoints = function (playerId, points) {
+        // TODO
+    };
+    Board.prototype.activatePossibleAreas = function (possibleAreas) {
+        Array.from(document.getElementsByClassName('area')).forEach(function (area) { return area.classList.toggle('selectable', possibleAreas.includes(Number(area.dataset.position))); });
+    };
     return Board;
 }());
 var PlayerTable = /** @class */ (function () {
@@ -194,7 +221,7 @@ var GardenNation = /** @class */ (function () {
         log('gamedatas', gamedatas);
         this.createPlayerPanels(gamedatas);
         var players = Object.values(gamedatas.players);
-        this.board = new Board(this, players, gamedatas.territories);
+        this.board = new Board(this, players, gamedatas.territories, gamedatas.map, gamedatas.torticranePosition);
         this.createPlayerTables(gamedatas);
         if (gamedatas.endTurn) {
             this.notif_lastTurn();
@@ -223,8 +250,8 @@ var GardenNation = /** @class */ (function () {
     GardenNation.prototype.onEnteringState = function (stateName, args) {
         log('Entering state: ' + stateName, args.args);
         switch (stateName) {
-            case 'chooseAction':
-                this.onEnteringChooseAction(args.args);
+            case 'constructBuilding':
+                this.onEnteringConstructBuilding(args.args);
                 break;
             case 'endScore':
                 this.onEnteringShowScore();
@@ -237,31 +264,10 @@ var GardenNation = /** @class */ (function () {
                 break;
         }
     };
-    GardenNation.prototype.onEnteringChooseAction = function (args /*: EnteringChooseAdventurerArgs*/) {
-        /*const adventurers = args.adventurers;
-        if (!document.getElementById('adventurers-stock')) {
-            dojo.place(`<div id="adventurers-stock"></div>`, 'full-table', 'before');
-            
-            this.adventurersStock = new ebg.stock() as Stock;
-            this.adventurersStock.create(this, $('adventurers-stock'), CARD_WIDTH, CARD_HEIGHT);
-            this.adventurersStock.setSelectionMode(0);
-            this.adventurersStock.setSelectionAppearance('class');
-            this.adventurersStock.selectionClass = 'nothing';
-            this.adventurersStock.centerItems = true;
-            this.adventurersStock.onItemCreate = (cardDiv: HTMLDivElement, type: number) => setupAdventurerCard(this, cardDiv, type);
-            dojo.connect(this.adventurersStock, 'onChangeSelection', this, () => this.onAdventurerSelection(this.adventurersStock.getSelectedItems()));
-
-            setupAdventurersCards(this.adventurersStock);
-
-            adventurers.forEach(adventurer => this.adventurersStock.addToStockWithId(adventurer.color, ''+adventurer.id));
-        } else {
-            this.adventurersStock.items.filter(item => !adventurers.some(adventurer => adventurer.color == item.type)).forEach(item => this.adventurersStock.removeFromStockById(item.id));
+    GardenNation.prototype.onEnteringConstructBuilding = function (args) {
+        if (this.isCurrentPlayerActive()) {
+            this.board.activatePossibleAreas(args.possiblePositions);
         }
-
-        
-        if((this as any).isCurrentPlayerActive()) {
-            this.adventurersStock.setSelectionMode(1);
-        }*/
     };
     GardenNation.prototype.onEnteringShowScore = function (fromReload) {
         if (fromReload === void 0) { fromReload = false; }
@@ -322,13 +328,13 @@ var GardenNation = /** @class */ (function () {
     GardenNation.prototype.onLeavingState = function (stateName) {
         log('Leaving state: ' + stateName);
         switch (stateName) {
-            case 'chooseAction':
-                this.onLeavingChooseAction();
+            case 'constructBuilding':
+                this.onLeavingConstructBuilding();
                 break;
         }
     };
-    GardenNation.prototype.onLeavingChooseAction = function () {
-        //this.adventurersStock.setSelectionMode(0);
+    GardenNation.prototype.onLeavingConstructBuilding = function () {
+        this.board.activatePossibleAreas([]);
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -341,6 +347,17 @@ var GardenNation = /** @class */ (function () {
                     this.addActionButton("chooseConstructBuilding-button", _("Construct building"), function () { return _this.chooseConstructBuilding(); });
                     this.addActionButton("chooseAbandonBuilding-button", _("Abandon building"), function () { return _this.chooseAbandonBuilding(); });
                     this.addActionButton("chooseUsePloyToken-button", _("Use ploy token"), function () { return _this.chooseUsePloyToken(); }, null, null, 'red');
+                    break;
+                case 'constructBuilding':
+                    this.addActionButton("cancelConstructBuilding-button", _("Cancel"), function () { return _this.cancelConstructBuilding(); }, null, null, 'gray');
+                    break;
+                case 'chooseNextPlayer':
+                    var chooseNextPlayerArgs = args;
+                    chooseNextPlayerArgs.possibleNextPlayers.forEach(function (playerId, index) {
+                        var player = _this.getPlayer(playerId);
+                        _this.addActionButton("choosePlayer".concat(playerId, "-button"), player.name, function () { return _this.chooseNextPlayer(playerId); });
+                        document.getElementById("choosePlayer".concat(playerId, "-button")).style.border = "3px solid #".concat(player.color);
+                    });
                     break;
             }
         }
@@ -429,6 +446,9 @@ var GardenNation = /** @class */ (function () {
         var _a, _b;
         return (_b = (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.getValue()) !== null && _b !== void 0 ? _b : Number(this.gamedatas.players[playerId].score);
     };
+    GardenNation.prototype.getPlayer = function (playerId) {
+        return Object.values(this.gamedatas.players).find(function (player) { return Number(player.id) == playerId; });
+    };
     GardenNation.prototype.getPlayerTable = function (playerId) {
         return this.playersTables.find(function (playerTable) { return playerTable.playerId === playerId; });
     };
@@ -448,7 +468,7 @@ var GardenNation = /** @class */ (function () {
             _this.buildingFloorCounters[playerId] = buildingFloorCounter;
             var ployTokenCounter = new ebg.counter();
             ployTokenCounter.create("ploy-token-counter-".concat(playerId));
-            ployTokenCounter.setValue(player.inhabitants); // TODO
+            ployTokenCounter.setValue(4 - player.usedPloy.reduce(function (a, b) { return a + b; }, 0));
             _this.ployTokenCounters[playerId] = ployTokenCounter;
         });
         /*(this as any).addTooltipHtmlToClass('reroll-counter', _("Rerolls tokens"));
@@ -465,6 +485,13 @@ var GardenNation = /** @class */ (function () {
     GardenNation.prototype.createPlayerTable = function (gamedatas, playerId) {
         var playerTable = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(playerTable);
+    };
+    GardenNation.prototype.onAreaClick = function (areaPosition) {
+        switch (this.gamedatas.gamestate.name) {
+            case 'constructBuilding':
+                this.constructBuilding(areaPosition);
+                break;
+        }
     };
     GardenNation.prototype.chooseConstructBuilding = function () {
         if (!this.checkAction('chooseConstructBuilding')) {
@@ -484,15 +511,28 @@ var GardenNation = /** @class */ (function () {
         }
         this.takeAction('chooseUsePloyToken');
     };
-    /*public chooseConstructBuilding(id: number) {
-        if(!(this as any).checkAction('chooseConstructBuilding')) {
+    GardenNation.prototype.constructBuilding = function (areaPosition) {
+        if (!this.checkAction('constructBuilding')) {
             return;
         }
-
-        this.takeAction('chooseConstructBuilding', {
-            id
+        this.takeAction('constructBuilding', {
+            areaPosition: areaPosition
         });
-    }*/
+    };
+    GardenNation.prototype.cancelConstructBuilding = function () {
+        if (!this.checkAction('cancelConstructBuilding')) {
+            return;
+        }
+        this.takeAction('cancelConstructBuilding');
+    };
+    GardenNation.prototype.chooseNextPlayer = function (playerId) {
+        if (!this.checkAction('chooseNextPlayer')) {
+            return;
+        }
+        this.takeAction('chooseNextPlayer', {
+            playerId: playerId
+        });
+    };
     GardenNation.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;
@@ -509,15 +549,13 @@ var GardenNation = /** @class */ (function () {
         dojo.connect($('gardennation-help-button'), 'onclick', this, function () { return _this.showHelp(); });
     };
     GardenNation.prototype.showHelp = function () {
-        if (!this.helpDialog) {
-            this.helpDialog = new ebg.popindialog();
-            this.helpDialog.create('gardennationHelpDialog');
-            this.helpDialog.setTitle(_("Cards help"));
-            var html = "<div id=\"help-popin\">\n                <h1>".concat(_("Specific companions"), "</h1>\n                <div id=\"help-companions\" class=\"help-section\">\n                    <h2>").concat(_('The Sketals'), "</h2>\n                    <table><tr>\n                    <td><div id=\"companion44\" class=\"companion\"></div></td>\n                        <td>").concat(getCompanionTooltip(44), "</td>\n                    </tr></table>\n                    <h2>Xar\u2019gok</h2>\n                    <table><tr>\n                        <td><div id=\"companion10\" class=\"companion\"></div></td>\n                        <td>").concat(getCompanionTooltip(10), "</td>\n                    </tr></table>\n                    <h2>").concat(_('Kaar and the curse of the black die'), "</h2>\n                    <table><tr>\n                        <td><div id=\"companion20\" class=\"companion\"></div></td>\n                        <td>").concat(getCompanionTooltip(20), "</td>\n                    </tr></table>\n                    <h2>Cromaug</h2>\n                    <table><tr>\n                        <td><div id=\"companion41\" class=\"companion\"></div></td>\n                        <td>").concat(getCompanionTooltip(41), "</td>\n                    </tr></table>\n                </div>\n            </div>");
-            // Show the dialog
-            this.helpDialog.setContent(html);
-        }
-        this.helpDialog.show();
+        var helpDialog = new ebg.popindialog();
+        helpDialog.create('gardennationHelpDialog');
+        helpDialog.setTitle(_("Cards help"));
+        var html = "<div id=\"help-popin\">\n            <h1>".concat(_("Specific companions"), "</h1>\n            <div id=\"help-companions\" class=\"help-section\">\n                <h2>").concat(_('The Sketals'), "</h2>\n                <table><tr>\n                <td><div id=\"companion44\" class=\"companion\"></div></td>\n                    <td>").concat(getCompanionTooltip(44), "</td>\n                </tr></table>\n                <h2>Xar\u2019gok</h2>\n                <table><tr>\n                    <td><div id=\"companion10\" class=\"companion\"></div></td>\n                    <td>").concat(getCompanionTooltip(10), "</td>\n                </tr></table>\n                <h2>").concat(_('Kaar and the curse of the black die'), "</h2>\n                <table><tr>\n                    <td><div id=\"companion20\" class=\"companion\"></div></td>\n                    <td>").concat(getCompanionTooltip(20), "</td>\n                </tr></table>\n                <h2>Cromaug</h2>\n                <table><tr>\n                    <td><div id=\"companion41\" class=\"companion\"></div></td>\n                    <td>").concat(getCompanionTooltip(41), "</td>\n                </tr></table>\n            </div>\n        </div>");
+        // Show the dialog
+        helpDialog.setContent(html);
+        helpDialog.show();
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications

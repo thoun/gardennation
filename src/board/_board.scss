@@ -1,9 +1,13 @@
 $sqrt3: 1.732;
+
 $big-hex-size: 197px;
 $big-hex-width: $big-hex-size * $sqrt3;
 $big-hex-height: $big-hex-size * 2;
 $big-hex-x-offset: 80px;
 $big-hex-y-offset: 96px;
+
+$area-size: 100px;
+$area-spacing: 106px;
 
 #board {
     position: relative;
@@ -24,21 +28,84 @@ $big-hex-y-offset: 96px;
 
         &[data-player-number="3"] {
             background: url('img/order-board-3.jpg');
-        }        
+        
+            .order-track-number {
+                &#order-track-0 {
+                    top: 220px;
+                    width: 200px;
+                    left: 0;
+                }
+                &#order-track-1 {
+                    top: 143px;
+                }
+                &#order-track-2 {
+                    top: 78px;
+                }
+                &#order-track-3 {
+                    top: 11px;
+                }
+            }
+        } 
+        
+        .order-track-number {
+            position: absolute;
+            width: 99px;
+            height: 50px;
+
+            &#order-track-0 {
+                top: 300px;
+                width: 300px;
+                left: 151px;
+            }
+            &#order-track-1 {
+                top: 221px;
+            }
+            &#order-track-2 {
+                top: 143px;
+            }
+            &#order-track-3 {
+                top: 78px;
+            }
+            &#order-track-4 {
+                top: 11px;
+            }
+        }
+        
+        .token {
+            position: relative;
+            display: inline-block;
+            width: 99px;
+            height: 50px;
+            background: url('img/order-track-tokens.png');
+            background-size: 100% auto;
+            margin-right: -40px;
+
+            @each $playerColor in $playerColors {
+              $i: index($playerColors, $playerColor) - 1;
+              &[data-color="#{$playerColor}"] { 
+                  background-position-y: #{$i * 100% / 3};
+              }
+            }
+        }
     }
 
     .territory {
-        // TEMP
-        //filter: grayscale(1);
-        //opacity: 0.7;
-        // TEMP
-
         position: absolute;
-        background: url('img/mainboard.jpg');
+        //background: url('img/mainboard.jpg');
         width: $big-hex-width;
         height: $big-hex-height;
         //clip-path: polygon(40% 0%, 100% 25%, 100% 75%, 60% 100%, 0% 75%, 0% 25%);
         clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+
+        &::before {
+            content: '';
+            position: absolute;
+            background: url('img/mainboard.jpg');
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+        }
 
         &[data-position="0"] {
             left: $big-hex-x-offset + $big-hex-width;
@@ -69,40 +136,104 @@ $big-hex-y-offset: 96px;
             top: $big-hex-y-offset + $big-hex-height * 3 / 4;
         }
 
-        &[data-number="1"] {
+        &[data-number="1"]::before {
             background-position-x: -($big-hex-x-offset + $big-hex-width / 2);
             background-position-y: -($big-hex-y-offset);
         }
-        &[data-number="2"] {
+        &[data-number="2"]::before {
             background-position-x: -($big-hex-x-offset + $big-hex-width * 3 / 2);
             background-position-y: -($big-hex-y-offset);
         }
-        &[data-number="3"] {
+        &[data-number="3"]::before {
             background-position-x: -($big-hex-x-offset);
             background-position-y: -($big-hex-y-offset + $big-hex-height * 3 / 4);
         }
-        &[data-number="4"] {
+        &[data-number="4"]::before {
             background-position-x: -($big-hex-x-offset + $big-hex-width);
             background-position-y: -($big-hex-y-offset + $big-hex-height * 3 / 4);
         }
-        &[data-number="5"] {
+        &[data-number="5"]::before {
             background-position-x: -($big-hex-x-offset + $big-hex-width * 2);
             background-position-y: -($big-hex-y-offset + $big-hex-height * 3 / 4);
         }
-        &[data-number="6"] {
+        &[data-number="6"]::before {
             background-position-x: -($big-hex-x-offset + $big-hex-width / 2);
             background-position-y: -($big-hex-y-offset + $big-hex-height * 3 / 2);
         }
-        &[data-number="7"] {
+        &[data-number="7"]::before {
             background-position-x: -($big-hex-x-offset + $big-hex-width * 3 / 2);
             background-position-y: -($big-hex-y-offset + $big-hex-height * 3 / 2);
         }
 
         @for $i from 0 through 5 {
-            &[data-rotation="#{$i}"] { 
+            &[data-rotation="#{$i}"]::before { 
                 transform: rotate(#{$i * 60}deg);
             }
         }
+
+        .area {
+            // TEMP
+            //filter: grayscale(1);
+            //opacity: 0.7;
+            text-align: center;
+            text-shadow: 0 0 1px white, 0 0 2px white;
+            font-weight: bold;
+            // TEMP
+
+            position: absolute;
+            width: $area-size;
+            height: $area-size;
+            left: $big-hex-width / 2 - $area-size / 2;
+            top: $big-hex-height / 2 - $area-size / 2;
+            border-radius: 50%;
+            border: 3px dashed transparent;
+
+            @for $i from 1 through 6 {
+                &[data-rotation="#{$i}"] { 
+                    transform: rotate(#{($i - 3) * 60}deg) translateX($area-spacing) rotate(#{-($i - 3) * 60}deg);
+                }
+            }
+
+            &[data-bramble="true"]::before {
+                content: '';
+                position: absolute;
+                background: url('img/land-tokens.jpg');
+                background-size: auto 100%;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+
+                @for $i from 1 through 3 {
+                    &[data-type="#{$i}"] { 
+                        background-position: #{($i - 1) * 50%};
+                    }
+                }
+            }
+
+            &.selectable {
+                cursor: pointer;
+                border-color: red;
+            }
+        }
+
+        .torticrane-spot {
+            position: absolute;
+            bottom: 87px;
+            right: 8px;
+        }
+    }
+        
+    #torticrane-spot--1 {
+        position: absolute;
+        bottom: 68px;
+        right: 233px;
+    }
+
+    #torticrane {
+        width: 71px;
+        height: 76px;
+        background: url('img/torticrane.png');
     }
 }
 

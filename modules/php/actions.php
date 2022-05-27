@@ -28,10 +28,13 @@ trait ActionTrait {
 
         $this->gamestate->nextState('usePloyToken');
     }
-        
-        /*$playerId = intval(self::getActivePlayerId());
 
-        $allPlacedRoutes = $this->getPlacedRoutes();
+   public function constructBuilding($areaPosition) {
+    self::checkAction('constructBuilding');
+        
+        $playerId = intval(self::getActivePlayerId());
+
+        /*$allPlacedRoutes = $this->getPlacedRoutes();
         $playerPlacedRoutes = array_filter($allPlacedRoutes, fn($placedRoute) => $placedRoute->playerId === $playerId);
         $currentPosition = $this->getCurrentPosition($playerId, $playerPlacedRoutes);
         $from = $currentPosition == $routeFrom ? $routeFrom : $routeTo;
@@ -77,8 +80,46 @@ trait ActionTrait {
         $this->notifUpdateScoreSheet($playerId);
 
         //self::incStat(1, 'placedRoutes');
-        //self::incStat(1, 'placedRoutes', $playerId);
+        //self::incStat(1, 'placedRoutes', $playerId);*/
 
-        $this->gamestate->nextState('placeNext');
-    }*/
+        $this->setGameStateValue(TORTICRANE_POSITION, $areaPosition % 10);
+        
+        self::notifyAllPlayers('moveTorticrane', '', [
+            'torticranePosition' => $areaPosition % 10,
+        ]);
+
+        $this->gamestate->nextState('endAction');
+    }
+    
+    public function cancelConstructBuilding() {
+        self::checkAction('cancelConstructBuilding');
+
+        $this->gamestate->nextState('cancel');
+    }
+
+    private function applyChooseNextPlayer(int $playerId) {
+        $players = $this->getPlayers();
+        $maxOrder = max(array_map(fn($player) => $player->turnTrack, $players));
+        $order = $maxOrder + 1;
+
+        $this->DbQuery("UPDATE player SET `player_turn_track` = $order WHERE `player_id` = $playerId");
+
+        self::notifyAllPlayers('setPlayerOrder', clienttranslate('${player_name} is the next player'), [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'order' => $order,
+        ]);
+        
+        $this->gamestate->nextState('nextPlayer');
+    }
+
+    public function chooseNextPlayer(int $playerId) {
+        self::checkAction('chooseNextPlayer');
+
+        if (!in_array($playerId, $this->argChooseNextPlayer()['possibleNextPlayers'])) {
+            throw new BgaUserException("Invalid player choice");
+        }
+
+        $this->applyChooseNextPlayer($playerId);
+    }
 }

@@ -1,5 +1,3 @@
-$playerColors: 'fcaf26', 'ab3b2a', '5f8637', '456e96';
-
 #playerstables {
 
     .whiteblock {
@@ -13,6 +11,8 @@ $playerColors: 'fcaf26', 'ab3b2a', '5f8637', '456e96';
             position: absolute;
             font-family: 'garden-nation-title';
             font-size: 130%;
+            padding: 5px;
+            width: 265px;
         }
 
         .player-score-board {

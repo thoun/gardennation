@@ -57,7 +57,7 @@ class GardenNation implements GardenNationGame {
 
         this.createPlayerPanels(gamedatas);
         const players = Object.values(gamedatas.players);
-        this.board = new Board(this, players, gamedatas.territories);
+        this.board = new Board(this, players, gamedatas.territories, gamedatas.map, gamedatas.torticranePosition);
         this.createPlayerTables(gamedatas);
 
         if (gamedatas.endTurn) {
@@ -95,8 +95,8 @@ class GardenNation implements GardenNationGame {
         log( 'Entering state: '+stateName , args.args );
 
         switch (stateName) {
-            case 'chooseAction':
-                this.onEnteringChooseAction(args.args);
+            case 'constructBuilding':
+                this.onEnteringConstructBuilding(args.args);
                 break;
 
             case 'endScore':
@@ -111,31 +111,10 @@ class GardenNation implements GardenNationGame {
         }
     }
 
-    private onEnteringChooseAction(args/*: EnteringChooseAdventurerArgs*/) {
-        /*const adventurers = args.adventurers;
-        if (!document.getElementById('adventurers-stock')) {
-            dojo.place(`<div id="adventurers-stock"></div>`, 'full-table', 'before');
-            
-            this.adventurersStock = new ebg.stock() as Stock;
-            this.adventurersStock.create(this, $('adventurers-stock'), CARD_WIDTH, CARD_HEIGHT);
-            this.adventurersStock.setSelectionMode(0);
-            this.adventurersStock.setSelectionAppearance('class');
-            this.adventurersStock.selectionClass = 'nothing';
-            this.adventurersStock.centerItems = true;
-            this.adventurersStock.onItemCreate = (cardDiv: HTMLDivElement, type: number) => setupAdventurerCard(this, cardDiv, type);
-            dojo.connect(this.adventurersStock, 'onChangeSelection', this, () => this.onAdventurerSelection(this.adventurersStock.getSelectedItems()));
-
-            setupAdventurersCards(this.adventurersStock);
-
-            adventurers.forEach(adventurer => this.adventurersStock.addToStockWithId(adventurer.color, ''+adventurer.id));
-        } else {
-            this.adventurersStock.items.filter(item => !adventurers.some(adventurer => adventurer.color == item.type)).forEach(item => this.adventurersStock.removeFromStockById(item.id));
+    private onEnteringConstructBuilding(args: EnteringConstructBuildingArgs) {
+        if ((this as any).isCurrentPlayerActive()) {
+            this.board.activatePossibleAreas(args.possiblePositions);
         }
-
-        
-        if((this as any).isCurrentPlayerActive()) {
-            this.adventurersStock.setSelectionMode(1);
-        }*/
     }
 
     onEnteringShowScore(fromReload: boolean = false) {
@@ -199,14 +178,14 @@ class GardenNation implements GardenNationGame {
         log( 'Leaving state: '+stateName );
 
         switch (stateName) {
-            case 'chooseAction':
-                this.onLeavingChooseAction();
+            case 'constructBuilding':
+                this.onLeavingConstructBuilding();
                 break;
         }
     }
 
-    private onLeavingChooseAction() {
-        //this.adventurersStock.setSelectionMode(0);
+    private onLeavingConstructBuilding() {
+        this.board.activatePossibleAreas([]);
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -219,6 +198,17 @@ class GardenNation implements GardenNationGame {
                     (this as any).addActionButton(`chooseConstructBuilding-button`, _("Construct building"), () => this.chooseConstructBuilding());
                     (this as any).addActionButton(`chooseAbandonBuilding-button`, _("Abandon building"), () => this.chooseAbandonBuilding());
                     (this as any).addActionButton(`chooseUsePloyToken-button`, _("Use ploy token"), () => this.chooseUsePloyToken(), null, null, 'red');
+                    break;
+                case 'constructBuilding':
+                    (this as any).addActionButton(`cancelConstructBuilding-button`, _("Cancel"), () => this.cancelConstructBuilding(), null, null, 'gray');
+                    break;
+                case 'chooseNextPlayer':
+                    const chooseNextPlayerArgs = args as EnteringChooseNextPlayerArgs;                
+                    chooseNextPlayerArgs.possibleNextPlayers.forEach((playerId, index) => {
+                        const player = this.getPlayer(playerId);
+                        (this as any).addActionButton(`choosePlayer${playerId}-button`, player.name, () => this.chooseNextPlayer(playerId));
+                        document.getElementById(`choosePlayer${playerId}-button`).style.border = `3px solid #${player.color}`;
+                    });
                     break;
             }
         }
@@ -327,6 +317,10 @@ class GardenNation implements GardenNationGame {
         return (this as any).scoreCtrl[playerId]?.getValue() ?? Number(this.gamedatas.players[playerId].score);
     }
 
+    private getPlayer(playerId: number): GardenNationPlayer {
+        return Object.values(this.gamedatas.players).find(player => Number(player.id) == playerId);
+    }
+
     private getPlayerTable(playerId: number): PlayerTable {
         return this.playersTables.find(playerTable => playerTable.playerId === playerId);
     }
@@ -366,7 +360,7 @@ class GardenNation implements GardenNationGame {
 
             const ployTokenCounter = new ebg.counter();
             ployTokenCounter.create(`ploy-token-counter-${playerId}`);
-            ployTokenCounter.setValue(player.inhabitants); // TODO
+            ployTokenCounter.setValue(4 - player.usedPloy.reduce((a, b) => a + b, 0));
             this.ployTokenCounters[playerId] = ployTokenCounter;
         });
 
@@ -386,6 +380,14 @@ class GardenNation implements GardenNationGame {
     private createPlayerTable(gamedatas: GardenNationGamedatas, playerId: number) {
         const playerTable = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(playerTable);
+    }
+
+    public onAreaClick(areaPosition: number): void {
+        switch (this.gamedatas.gamestate.name) {
+            case 'constructBuilding':
+                this.constructBuilding(areaPosition);
+                break;
+        }
     }
 
     public chooseConstructBuilding() {
@@ -412,15 +414,33 @@ class GardenNation implements GardenNationGame {
         this.takeAction('chooseUsePloyToken');
     }
 
-    /*public chooseConstructBuilding(id: number) {
-        if(!(this as any).checkAction('chooseConstructBuilding')) {
+    public constructBuilding(areaPosition: number) {
+        if(!(this as any).checkAction('constructBuilding')) {
             return;
         }
 
-        this.takeAction('chooseConstructBuilding', {
-            id
+        this.takeAction('constructBuilding', {
+            areaPosition
         });
-    }*/
+    }
+
+    public cancelConstructBuilding() {
+        if (!(this as any).checkAction('cancelConstructBuilding')) {
+            return;
+        }
+
+        this.takeAction('cancelConstructBuilding');
+    }
+
+    public chooseNextPlayer(playerId: number) {
+        if(!(this as any).checkAction('chooseNextPlayer')) {
+            return;
+        }
+
+        this.takeAction('chooseNextPlayer', {
+            playerId
+        });
+    }
 
     public takeAction(action: string, data?: any) {
         data = data || {};
@@ -439,42 +459,40 @@ class GardenNation implements GardenNationGame {
     }
 
     private showHelp() {
-        if (!this.helpDialog) {
-            this.helpDialog = new ebg.popindialog();
-            this.helpDialog.create( 'gardennationHelpDialog' );
-            this.helpDialog.setTitle( _("Cards help") );
-            
-            var html = `<div id="help-popin">
-                <h1>${_("Specific companions")}</h1>
-                <div id="help-companions" class="help-section">
-                    <h2>${_('The Sketals')}</h2>
-                    <table><tr>
-                    <td><div id="companion44" class="companion"></div></td>
-                        <td>${getCompanionTooltip(44)}</td>
-                    </tr></table>
-                    <h2>Xar’gok</h2>
-                    <table><tr>
-                        <td><div id="companion10" class="companion"></div></td>
-                        <td>${getCompanionTooltip(10)}</td>
-                    </tr></table>
-                    <h2>${_('Kaar and the curse of the black die')}</h2>
-                    <table><tr>
-                        <td><div id="companion20" class="companion"></div></td>
-                        <td>${getCompanionTooltip(20)}</td>
-                    </tr></table>
-                    <h2>Cromaug</h2>
-                    <table><tr>
-                        <td><div id="companion41" class="companion"></div></td>
-                        <td>${getCompanionTooltip(41)}</td>
-                    </tr></table>
-                </div>
-            </div>`;
-            
-            // Show the dialog
-            this.helpDialog.setContent(html);
-        }
+        const helpDialog = new ebg.popindialog();
+        helpDialog.create( 'gardennationHelpDialog' );
+        helpDialog.setTitle( _("Cards help") );
+        
+        var html = `<div id="help-popin">
+            <h1>${_("Specific companions")}</h1>
+            <div id="help-companions" class="help-section">
+                <h2>${_('The Sketals')}</h2>
+                <table><tr>
+                <td><div id="companion44" class="companion"></div></td>
+                    <td>${getCompanionTooltip(44)}</td>
+                </tr></table>
+                <h2>Xar’gok</h2>
+                <table><tr>
+                    <td><div id="companion10" class="companion"></div></td>
+                    <td>${getCompanionTooltip(10)}</td>
+                </tr></table>
+                <h2>${_('Kaar and the curse of the black die')}</h2>
+                <table><tr>
+                    <td><div id="companion20" class="companion"></div></td>
+                    <td>${getCompanionTooltip(20)}</td>
+                </tr></table>
+                <h2>Cromaug</h2>
+                <table><tr>
+                    <td><div id="companion41" class="companion"></div></td>
+                    <td>${getCompanionTooltip(41)}</td>
+                </tr></table>
+            </div>
+        </div>`;
+        
+        // Show the dialog
+        helpDialog.setContent(html);
 
-        this.helpDialog.show();
+        helpDialog.show();
     }
 
     ///////////////////////////////////////////////////

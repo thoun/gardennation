@@ -11,6 +11,39 @@ trait StateTrait {
         The action method of state X is called everytime the current game state is set to X.
     */
 
+    function stEndAction() {
+        $playerId = intval($this->getActivePlayerId());
+
+        $this->incGameStateValue(PLAYED_ACTIONS, 1);
+        $remainingActions = $this->getRemainingActions($playerId);
+
+        if ($remainingActions == 0) {
+            $this->gamestate->nextState("chooseNextPlayer");
+        } else {
+            $this->gamestate->nextState("newAction");
+        }
+    }
+
+    function stChooseNextPlayer() {
+        $possibleNextPlayers = $this->argChooseNextPlayer()['possibleNextPlayers'];
+        
+        if (count($possibleNextPlayers) == 1) {
+            $this->applyChooseNextPlayer($possibleNextPlayers[0]);
+        }
+    }
+
+    function stNextPlayer() {
+        $players = $this->getPlayers();
+        $maxOrder = max(array_map(fn($player) => $player->turnTrack, $players));
+
+        $this->gamestate->changeActivePlayer($this->array_find($players, fn($player) => $player->turnTrack == $maxOrder)->id);
+
+        $this->setGameStateValue(PLAYED_ACTIONS, 0);
+        $this->setGameStateValue(PLOY_USED, 0);
+
+        $this->gamestate->nextState("nextPlayer");
+    }
+
     function stEndRound() {
         $lastRound = boolval($this->setGameStateValue(LAST_ROUND));
 

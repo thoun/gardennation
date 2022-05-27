@@ -1,5 +1,7 @@
 <?php
+
 require_once(__DIR__.'/objects/building-floor.php');
+require_once(__DIR__.'/objects/player.php');
 
 trait UtilTrait {
 
@@ -63,6 +65,18 @@ trait UtilTrait {
         return self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = $playerId");
     }
 
+    function getPlayer(int $id) {
+        $sql = "SELECT * FROM player WHERE player_id = $id";
+        $dbResults = $this->getCollectionFromDb($sql);
+        return array_map(fn($dbResult) => new GardenNationPlayer($dbResult), array_values($dbResults))[0];
+    }
+
+    function getPlayers() {
+        $sql = "SELECT * FROM player ORDER BY player_no";
+        $dbResults = $this->getCollectionFromDb($sql);
+        return array_map(fn($dbResult) => new GardenNationPlayer($dbResult), array_values($dbResults));
+    }
+
     function getBuildingFloorFromDb(array $dbCard) {
         if (!$dbCard || !array_key_exists('id', $dbCard)) {
             throw new \Error('card doesn\'t exists '.json_encode($dbCard));
@@ -82,5 +96,27 @@ trait UtilTrait {
         }
 
         $this->buildingFloors->createCards([[ 'type' => 1, 'type_arg' => 0, 'nbr' => 19 ]], 'table');
+    }
+
+    function getTerritories() {        
+        $territoriesDb = $this->getCollectionFromDb("SELECT * FROM `territory` ORDER BY `position` ASC");
+        return array_map(fn($territoryDb) => [intval($territoryDb['number']), intval($territoryDb['rotation'])], $territoriesDb);
+    }
+
+    function getMap() {
+        $map = $this->MAP;
+
+        $brambleAreasDb = $this->getCollectionFromDb("SELECT * FROM `bramble_area` ORDER BY `position` ASC");
+        foreach ($brambleAreasDb as $brambleAreaDb) {
+            $map[intval($brambleAreaDb['position'])][0] = intval($brambleAreaDb['type']) + 10;
+        }
+        
+        return $map;
+    }
+
+    function getRemainingActions(int $playerId) {
+        $player = $this->getPlayer($playerId);
+
+        return ($player->turnTrack == 1 ? 1 : 2) - intval($this->getGameStateValue(PLAYED_ACTIONS));
     }
 }

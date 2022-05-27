@@ -34,6 +34,7 @@ define('END_SCORE', 100);
 /*
  * Variables
  */
+define('TORTICRANE_POSITION', 'TORTICRANE_POSITION');
 define('LAST_ROUND', 'LAST_ROUND');
 define('PLOY_USED', 'PLOY_USED');
 define('PLAYED_ACTIONS', 'PLAYED_ACTIONS');

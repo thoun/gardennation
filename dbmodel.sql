@@ -18,13 +18,20 @@
 -- Note: The database schema is created from this file when the game starts. If you modify this file,
 --       you have to restart a game to see your changes in database.
 
-ALTER TABLE `player` ADD `player_inhabitants` INT UNSIGNED NOT NULL;
-ALTER TABLE `player` ADD `player_turn_track` INT UNSIGNED NOT NULL;
+ALTER TABLE `player` ADD `player_inhabitants` smallint UNSIGNED NOT NULL;
+ALTER TABLE `player` ADD `player_turn_track` tinyint(1) UNSIGNED NOT NULL;
+ALTER TABLE `player` ADD `player_used_ploy` json;
 
 CREATE TABLE IF NOT EXISTS `territory` (
-  `position` int(1) unsigned NOT NULL,
-  `number` int(1) unsigned NOT NULL,
-  `rotation` int(1) unsigned NOT NULL,
+  `position` tinyint(1) unsigned NOT NULL,
+  `number` tinyint(1) unsigned NOT NULL,
+  `rotation` tinyint(1) unsigned NOT NULL,
+  PRIMARY KEY (`position`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+CREATE TABLE IF NOT EXISTS `bramble_area` (
+  `position` tinyint(2) unsigned NOT NULL,
+  `type` tinyint(1) unsigned NOT NULL,
   PRIMARY KEY (`position`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 

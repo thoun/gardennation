@@ -19,6 +19,7 @@ interface GardenNationPlayer extends Player {
     inhabitants: number;
     turnTrack: number;
     buildingFloors: BuildingFloor[];
+    usedPloy: number[];
 }
 
 /**
@@ -39,16 +40,28 @@ interface GardenNationGamedatas {
 
     // Add here variables you set up in getAllDatas
     territories: number[][]; // index 0 is the number of the territory, index 1 is the rotation
+    map: { [position: number]: number[] };
+    torticranePosition: number;
 }
 
-interface GardenNationGame extends Game {    
+interface GardenNationGame extends Game {
+    onAreaClick(position: number): void;    
     getPlayerId(): number;
 }
 
-/*interface EnteringChooseAdventurerArgs {
-    adventurers: Adventurer[];
+interface EnteringConstructBuildingArgs {
+    possiblePositions: number[];
 }
 
-interface NotifFirstPlayerArgs {
+interface EnteringChooseNextPlayerArgs {
+    possibleNextPlayers: number[];
+}
+
+interface NotifMoveTorticraneArgs {
+    torticranePosition: number;
+}
+
+interface NotifSetPlayerOrderArgs {
     playerId: number;
-}*/
+    order: number;
+}

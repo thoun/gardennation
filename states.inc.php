@@ -78,8 +78,8 @@ $playerActionsGameStates = [
 
     ST_PLAYER_CHOOSE_ACTION => [
         "name" => "chooseAction",
-        "description" => clienttranslate('${actplayer} must choose an action'),
-        "descriptionmyturn" => clienttranslate('${you} must choose an action'),
+        "description" => clienttranslate('${actplayer} must choose an action (${remainingActions} remaining action(s))'),
+        "descriptionmyturn" => clienttranslate('${you} must choose an action (${remainingActions} remaining action(s))'),
         "type" => "activeplayer",
         "args" => "argChooseAction",
         "possibleactions" => [ 
@@ -99,7 +99,7 @@ $playerActionsGameStates = [
         "description" => clienttranslate('${actplayer} must choose an area to construct a building'),
         "descriptionmyturn" => clienttranslate('${you} must choose an area to construct a building'),
         "type" => "activeplayer",
-        //"args" => "argConstructBuilding",
+        "args" => "argConstructBuilding",
         "possibleactions" => [ 
             "constructBuilding",
             "cancelConstructBuilding",
@@ -213,7 +213,8 @@ $playerActionsGameStates = [
         "description" => clienttranslate('${actplayer} must choose the next player'),
         "descriptionmyturn" => clienttranslate('${you} must choose the next player'),
         "type" => "activeplayer",
-        //"args" => "argChooseNextPlayer",
+        "action" => "stChooseNextPlayer",
+        "args" => "argChooseNextPlayer",
         "possibleactions" => [ 
             "chooseNextPlayer",
         ],
@@ -234,7 +235,6 @@ $gameGameStates = [
         "transitions" => [
             "newAction" => ST_PLAYER_CHOOSE_ACTION,
             "chooseNextPlayer" => ST_PLAYER_CHOOSE_NEXT_PLAYER,
-            "endTurn" => ST_NEXT_PLAYER,
         ],
     ],
 

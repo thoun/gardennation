@@ -42,10 +42,11 @@ class GardenNation extends Table {
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
         
-        self::initGameStateLabels([            
+        self::initGameStateLabels([
             LAST_ROUND => 10,
             PLAYED_ACTIONS => 11,
             PLOY_USED => 12,
+            TORTICRANE_POSITION => 13,
 
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,
@@ -83,14 +84,14 @@ class GardenNation extends Table {
  
         // Create players
         // Note: if you added some extra field on "player" table in the database (dbmodel.sql), you can initialize it there.
-        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar, player_inhabitants, player_turn_track) VALUES ";
+        $sql = "INSERT INTO player (player_id, player_color, player_canal, player_name, player_avatar, player_inhabitants, player_turn_track, `player_used_ploy`) VALUES ";
         $values = [];
         $firstPlayer = true;
         foreach ($players as $player_id => $player) {
             $color = array_shift( $default_colors );
             $inhabitants = $firstPlayer ? 38 : 35;
             $playerTurnTrack = $firstPlayer ? 1 : 0;
-            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."', $inhabitants, $playerTurnTrack)";
+            $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."', $inhabitants, $playerTurnTrack, '[0,0,0]')";
 
             $firstPlayer = false;
         }
@@ -102,7 +103,10 @@ class GardenNation extends Table {
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
-        //self::setGameStateInitialValue( 'my_first_global_variable', 0 );
+        self::setGameStateInitialValue(TORTICRANE_POSITION, -1);
+        self::setGameStateInitialValue(LAST_ROUND, 0);
+        self::setGameStateInitialValue(PLAYED_ACTIONS, 0);
+        self::setGameStateInitialValue(PLOY_USED, 0);
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
@@ -153,7 +157,7 @@ class GardenNation extends Table {
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score, player_no playerNo, player_inhabitants as inhabitants, player_turn_track as turnTrack FROM player ";
+        $sql = "SELECT player_id id, player_score score, player_no playerNo, player_inhabitants as inhabitants, player_turn_track as turnTrack, `player_used_ploy` as usedPloy FROM player ";
         $result['players'] = $this->getCollectionFromDb($sql);
   
         // TODO: Gather all information about current game situation (visible by player $currentPlayerId).
@@ -162,12 +166,14 @@ class GardenNation extends Table {
             $player['playerNo'] = intval($player['playerNo']);
             $player['inhabitants'] = intval($player['inhabitants']);
             $player['turnTrack'] = intval($player['turnTrack']);
+            $player['usedPloy'] = json_decode($player['usedPloy']);
 
             $player['buildingFloors'] = $this->getBuildingFloorsFromDb($this->buildingFloors->getCardsInLocation('table', $playerId));
         }
 
-        $territoriesDb = $this->getCollectionFromDb("SELECT * FROM `territory` ORDER BY `position` ASC");
-        $result['territories'] = array_map(fn($territoryDb) => [intval($territoryDb['number']), intval($territoryDb['rotation'])], $territoriesDb);
+        $result['territories'] = $this->getTerritories();
+        $result['map'] = $this->getMap();
+        $result['torticranePosition'] = $this->getGameStateValue(TORTICRANE_POSITION);
   
         return $result;
     }
@@ -182,108 +188,11 @@ class GardenNation extends Table {
         This method is called each time we are in a game state with the "updateGameProgression" property set to true 
         (see states.inc.php)
     */
-    function getGameProgression()
-    {
+    function getGameProgression() {
         // TODO: compute and return the game progression
 
         return 0;
     }
-
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Utility functions
-////////////    
-
-    /*
-        In this space, you can put any utility methods useful for your game logic
-    */
-
-
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Player actions
-//////////// 
-
-    /*
-        Each time a player is doing some game action, one of the methods below is called.
-        (note: each method below must match an input method in gardennation.action.php)
-    */
-
-    /*
-    
-    Example:
-
-    function playCard( $card_id )
-    {
-        // Check that this is the player's turn and that it is a "possible action" at this game state (see states.inc.php)
-        self::checkAction( 'playCard' ); 
-        
-        $player_id = self::getActivePlayerId();
-        
-        // Add your game logic to play a card there 
-        ...
-        
-        // Notify all players about the card played
-        self::notifyAllPlayers( "cardPlayed", clienttranslate( '${player_name} plays ${card_name}' ), array(
-            'player_id' => $player_id,
-            'player_name' => self::getActivePlayerName(),
-            'card_name' => $card_name,
-            'card_id' => $card_id
-        ) );
-          
-    }
-    
-    */
-
-    
-//////////////////////////////////////////////////////////////////////////////
-//////////// Game state arguments
-////////////
-
-    /*
-        Here, you can create methods defined as "game state arguments" (see "args" property in states.inc.php).
-        These methods function is to return some additional information that is specific to the current
-        game state.
-    */
-
-    /*
-    
-    Example for game state "MyGameState":
-    
-    function argMyGameState()
-    {
-        // Get some values from the current game situation in database...
-    
-        // return values:
-        return array(
-            'variable1' => $value1,
-            'variable2' => $value2,
-            ...
-        );
-    }    
-    */
-
-//////////////////////////////////////////////////////////////////////////////
-//////////// Game state actions
-////////////
-
-    /*
-        Here, you can create methods defined as "game state actions" (see "action" property in states.inc.php).
-        The action method of state X is called everytime the current game state is set to X.
-    */
-    
-    /*
-    
-    Example for game state "MyGameState":
-
-    function stMyGameState()
-    {
-        // Do some stuff ...
-        
-        // (very often) go to another gamestate
-        $this->gamestate->nextState( 'some_gamestate_transition' );
-    }    
-    */
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Zombie
@@ -302,8 +211,7 @@ class GardenNation extends Table {
         you must _never_ use getCurrentPlayerId() or getCurrentPlayerName(), otherwise it will fail with a "Not logged" error message. 
     */
 
-    function zombieTurn( $state, $active_player )
-    {
+    function zombieTurn($state, $active_player) {
     	$statename = $state['name'];
     	
         if ($state['type'] === "activeplayer") {
@@ -341,8 +249,7 @@ class GardenNation extends Table {
     
     */
     
-    function upgradeTableDb( $from_version )
-    {
+    function upgradeTableDb($from_version) {
         // $from_version is the current version of this game database, in numerical form.
         // For example, if the game was running with a release of your game named "140430-1345",
         // $from_version is equal to 1404301345
