@@ -16,7 +16,7 @@ trait ArgsTrait {
         $playerId = intval($this->getActivePlayerId());
 
         $canAbandonBuilding = count($this->argAbandonBuilding()['possiblePositions']) > 0;
-        $canUsePloy = true; // TODO
+        $canUsePloy = $this->canUsePloy($playerId);
     
         return [
             'remainingActions' => $this->getRemainingActions($playerId),
@@ -44,10 +44,11 @@ trait ArgsTrait {
         $player = $this->getPlayer($this->getActivePlayerId());
 
         $territoryPositions = $this->getTerritoryPositions();
+        $possiblePositions = [];
         foreach ($territoryPositions as $position => $area) {
             $cost = $area[1];
             if ($cost < $player->inhabitants) {
-                $territoryPositions[] = $position;
+                $possiblePositions[] = $position;
             }
         }
         /* TODO
@@ -63,7 +64,7 @@ territory 1.
 */
     
         return [
-            'possiblePositions' => array_keys($territoryPositions),
+            'possiblePositions' => $possiblePositions,
         ];
     }
    

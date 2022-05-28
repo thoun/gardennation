@@ -29,6 +29,8 @@ trait StateTrait {
         
         if (count($possibleNextPlayers) == 1) {
             $this->applyChooseNextPlayer($possibleNextPlayers[0]);
+        } else if (count($possibleNextPlayers) == 0) {
+            $this->gamestate->nextState("endRound");
         }
     }
 
@@ -45,28 +47,11 @@ trait StateTrait {
     }
 
     function stEndRound() {
-        $lastRound = boolval($this->setGameStateValue(LAST_ROUND));
+        $lastRound = boolval($this->getGameStateValue(LAST_ROUND));
 
+        $this->scoreTerritoryControl();
         if (!$lastRound) {
-            // TODO
-            /*$this->activeNextPlayer();
-    
-            $playerId = intval($this->getActivePlayerId());
-            if ($this->isEliminated($playerId)) {
-                return $this->stEndRound();
-            }
-
-            $this->setGameStateValue(FIRST_PLAYER, $playerId);
-
-            $this->tickets->pickCardForLocation('deck', 'turn');
-            $this->notifCurrentRound();
-    
-            self::notifyAllPlayers('newFirstPlayer', clienttranslate('${player_name} is the new first player'), [
-                'playerId' => $playerId,
-                'player_name' => self::getActivePlayerName(),
-            ]);*/
-        } else {
-            /*$this->notifCurrentRound();*/
+            $this->resetPlayerOrder();
         }
             
         $this->gamestate->nextState($lastRound ? 'endScore' : 'newRound');

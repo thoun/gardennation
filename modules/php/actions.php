@@ -111,22 +111,6 @@ trait ActionTrait {
         $this->gamestate->nextState('cancel');
     }
 
-    private function applyChooseNextPlayer(int $playerId) {
-        $players = $this->getPlayers();
-        $maxOrder = max(array_map(fn($player) => $player->turnTrack, $players));
-        $order = $maxOrder + 1;
-
-        $this->DbQuery("UPDATE player SET `player_turn_track` = $order WHERE `player_id` = $playerId");
-
-        self::notifyAllPlayers('setPlayerOrder', clienttranslate('${player_name} is the next player'), [
-            'playerId' => $playerId,
-            'player_name' => $this->getPlayerName($playerId),
-            'order' => $order,
-        ]);
-        
-        $this->gamestate->nextState('nextPlayer');
-    }
-
     public function chooseNextPlayer(int $playerId) {
         self::checkAction('chooseNextPlayer');
 

@@ -211,12 +211,14 @@ class GardenNation implements GardenNationGame {
                     (this as any).addActionButton(`cancelAbandonBuilding-button`, _("Cancel"), () => this.cancelAbandonBuilding(), null, null, 'gray');
                     break;
                 case 'chooseNextPlayer':
-                    const chooseNextPlayerArgs = args as EnteringChooseNextPlayerArgs;                
-                    chooseNextPlayerArgs.possibleNextPlayers.forEach((playerId, index) => {
-                        const player = this.getPlayer(playerId);
-                        (this as any).addActionButton(`choosePlayer${playerId}-button`, player.name, () => this.chooseNextPlayer(playerId));
-                        document.getElementById(`choosePlayer${playerId}-button`).style.border = `3px solid #${player.color}`;
-                    });
+                    const chooseNextPlayerArgs = args as EnteringChooseNextPlayerArgs;
+                    if (chooseNextPlayerArgs.possibleNextPlayers.length > 1) {          
+                        chooseNextPlayerArgs.possibleNextPlayers.forEach(playerId => {
+                            const player = this.getPlayer(playerId);
+                            (this as any).addActionButton(`choosePlayer${playerId}-button`, player.name, () => this.chooseNextPlayer(playerId));
+                            document.getElementById(`choosePlayer${playerId}-button`).style.border = `3px solid #${player.color}`;
+                        });
+                    }
                     break;
             }
         }
@@ -558,11 +560,10 @@ class GardenNation implements GardenNationGame {
 
     notif_moveTorticrane(notif: Notif<NotifMoveTorticraneArgs>) {
         slideToObjectAndAttach(this, document.getElementById('torticrane'), `torticrane-spot-${notif.args.torticranePosition}`);
-        // TODO fix slideToObjectAndAttach
     }
 
     notif_setPlayerOrder(notif: Notif<NotifSetPlayerOrderArgs>) {
-        // TODO
+        slideToObjectAndAttach(this, document.getElementById(`order-token-${notif.args.playerId}`), `order-track-${notif.args.order}`);
     }
 
     /* This enable to inject translatable styled things to logs or action bar */

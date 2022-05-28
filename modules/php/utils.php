@@ -138,10 +138,65 @@ trait UtilTrait {
             $areaPositionUnrotated = ($areaPositionUnrotated + $currentTerritoryRotation - 1) % 6 + 1;
         }
 
-        $this->setGameStateValue(TORTICRANE_POSITION, $areaPositionUnrotated);
+        if ($areaPositionUnrotated != intval($this->getGameStateValue(TORTICRANE_POSITION))) {
+            $this->setGameStateValue(TORTICRANE_POSITION, $areaPositionUnrotated);
+            
+            self::notifyAllPlayers('moveTorticrane', '', [
+                'torticranePosition' => $areaPositionUnrotated,
+            ]);
+        }
+    }
+
+    function canUsePloy(int $playerId) {
+        $player = $this->getPlayer($playerId);
+        return 4 - array_reduce($player->usedPloy, fn($a, $b) => $a + $b, 0) > 0;
+    }
+
+    function applyChooseNextPlayer(int $playerId) {
+        $players = $this->getPlayers();
+        $maxOrder = max(array_map(fn($player) => $player->turnTrack, $players));
+        $order = $maxOrder + 1;
+
+        $this->DbQuery("UPDATE player SET `player_turn_track` = $order WHERE `player_id` = $playerId");
+
+        self::notifyAllPlayers('setPlayerOrder', clienttranslate('${player_name} is the next player'), [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'order' => $order,
+        ]);
         
-        self::notifyAllPlayers('moveTorticrane', '', [
-            'torticranePosition' => $areaPositionUnrotated,
+        $this->gamestate->nextState('nextPlayer');
+    }
+
+    function scoreTerritoryControl() {
+        // TODO
+        self::notifyAllPlayers('log', 'TODO scoreTerritoryControl', []);
+    }
+
+    function resetPlayerOrder() {        
+        $players = $this->getPlayers();
+        $maxOrder = max(array_map(fn($player) => $player->turnTrack, $players));
+        $playerId = $this->array_find($players, fn($player) => $player->turnTrack == $maxOrder)->id;
+
+        $this->setGameStateValue(PLAYED_ACTIONS, 0);
+        $this->setGameStateValue(PLOY_USED, 0);
+
+        $this->DbQuery("UPDATE player SET `player_turn_track` = 0 WHERE `player_id` <> $playerId");
+        $this->DbQuery("UPDATE player SET `player_turn_track` = 1 WHERE `player_id` = $playerId");
+
+        foreach ($players as $player) {
+            if ($player->id != $playerId) {
+                self::notifyAllPlayers('setPlayerOrder', '', [
+                    'playerId' => $player->id,
+                    'player_name' => $this->getPlayerName($player->id),
+                    'order' => 0,
+                ]);
+            }
+        }
+        self::notifyAllPlayers('setPlayerOrder', '', [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'order' => 1,
         ]);
     }
 }

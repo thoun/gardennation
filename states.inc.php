@@ -220,6 +220,7 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "nextPlayer" => ST_NEXT_PLAYER,
+            "endRound" => ST_END_ROUND,
         ]
     ],
 ];
@@ -246,7 +247,6 @@ $gameGameStates = [
         "updateGameProgression" => true,
         "transitions" => [
             "nextPlayer" => ST_PLAYER_CHOOSE_ACTION, 
-            "endRound" => ST_END_ROUND,
         ],
     ],
 

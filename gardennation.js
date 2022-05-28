@@ -1,66 +1,44 @@
-function slideToObjectAndAttach(game, object, destinationId, posX, posY) {
+function slideToObjectAndAttach(game, object, destinationId) {
     var destination = document.getElementById(destinationId);
     if (destination.contains(object)) {
-        return Promise.resolve(true);
+        return;
     }
-    return new Promise(function (resolve) {
-        var originalZIndex = Number(object.style.zIndex);
+    var originBR = object.getBoundingClientRect();
+    destination.appendChild(object);
+    if (document.visibilityState !== 'hidden' && !game.instantaneousMode) {
+        var destinationBR = object.getBoundingClientRect();
+        var deltaX = destinationBR.left - originBR.left;
+        var deltaY = destinationBR.top - originBR.top;
         object.style.zIndex = '10';
-        var objectCR = object.getBoundingClientRect();
-        var destinationCR = destination.getBoundingClientRect();
-        var deltaX = destinationCR.left - objectCR.left + (posX !== null && posX !== void 0 ? posX : 0);
-        var deltaY = destinationCR.top - objectCR.top + (posY !== null && posY !== void 0 ? posY : 0);
-        var attachToNewParent = function () {
-            if (posX !== undefined) {
-                object.style.left = "".concat(posX, "px");
-            }
-            else {
-                object.style.removeProperty('left');
-            }
-            if (posY !== undefined) {
-                object.style.top = "".concat(posY, "px");
-            }
-            else {
-                object.style.removeProperty('top');
-            }
-            object.style.position = (posX !== undefined || posY !== undefined) ? 'absolute' : 'relative';
-            if (originalZIndex) {
-                object.style.zIndex = '' + originalZIndex;
-            }
-            else {
-                object.style.removeProperty('zIndex');
-            }
-            object.style.removeProperty('transform');
-            object.style.removeProperty('transition');
-            destination.appendChild(object);
-        };
-        if (document.visibilityState === 'hidden' || game.instantaneousMode) {
-            // if tab is not visible, we skip animation (else they could be delayed or cancelled by browser)
-            attachToNewParent();
-        }
-        else {
-            object.style.transition = "transform 0.5s ease-in";
-            object.style.transform = "translate(".concat(deltaX, "px, ").concat(deltaY, "px)");
-            var securityTimeoutId_1 = null;
-            var transitionend_1 = function () {
-                attachToNewParent();
-                object.removeEventListener('transitionend', transitionend_1);
-                resolve(true);
-                if (securityTimeoutId_1) {
-                    clearTimeout(securityTimeoutId_1);
-                }
-            };
-            object.addEventListener('transitionend', transitionend_1);
-            // security check : if transition fails, we force tile to destination
-            securityTimeoutId_1 = setTimeout(function () {
-                if (!destination.contains(object)) {
-                    attachToNewParent();
-                    object.removeEventListener('transitionend', transitionend_1);
-                    resolve(true);
-                }
-            }, 700);
-        }
-    });
+        object.style.transform = "translate(".concat(-deltaX, "px, ").concat(-deltaY, "px)");
+        setTimeout(function () {
+            object.style.transition = "transform 0.5s linear";
+            object.style.transform = null;
+        });
+        setTimeout(function () {
+            object.style.zIndex = null;
+            object.style.transition = null;
+        }, 600);
+    }
+}
+function slideFromObject(game, object, fromId) {
+    var from = document.getElementById(fromId);
+    var originBR = from.getBoundingClientRect();
+    if (document.visibilityState !== 'hidden' && !game.instantaneousMode) {
+        var destinationBR = object.getBoundingClientRect();
+        var deltaX = destinationBR.left - originBR.left;
+        var deltaY = destinationBR.top - originBR.top;
+        object.style.zIndex = '10';
+        object.style.transform = "translate(".concat(-deltaX, "px, ").concat(-deltaY, "px)");
+        setTimeout(function () {
+            object.style.transition = "transform 0.5s linear";
+            object.style.transform = null;
+        });
+        setTimeout(function () {
+            object.style.zIndex = null;
+            object.style.transition = null;
+        }, 600);
+    }
 }
 /*declare const board: HTMLDivElement;*/
 var CARD_WIDTH = 129;
@@ -361,11 +339,13 @@ var GardenNation = /** @class */ (function () {
                     break;
                 case 'chooseNextPlayer':
                     var chooseNextPlayerArgs = args;
-                    chooseNextPlayerArgs.possibleNextPlayers.forEach(function (playerId, index) {
-                        var player = _this.getPlayer(playerId);
-                        _this.addActionButton("choosePlayer".concat(playerId, "-button"), player.name, function () { return _this.chooseNextPlayer(playerId); });
-                        document.getElementById("choosePlayer".concat(playerId, "-button")).style.border = "3px solid #".concat(player.color);
-                    });
+                    if (chooseNextPlayerArgs.possibleNextPlayers.length > 1) {
+                        chooseNextPlayerArgs.possibleNextPlayers.forEach(function (playerId) {
+                            var player = _this.getPlayer(playerId);
+                            _this.addActionButton("choosePlayer".concat(playerId, "-button"), player.name, function () { return _this.chooseNextPlayer(playerId); });
+                            document.getElementById("choosePlayer".concat(playerId, "-button")).style.border = "3px solid #".concat(player.color);
+                        });
+                    }
                     break;
             }
         }
@@ -613,10 +593,9 @@ var GardenNation = /** @class */ (function () {
     };
     GardenNation.prototype.notif_moveTorticrane = function (notif) {
         slideToObjectAndAttach(this, document.getElementById('torticrane'), "torticrane-spot-".concat(notif.args.torticranePosition));
-        // TODO fix slideToObjectAndAttach
     };
     GardenNation.prototype.notif_setPlayerOrder = function (notif) {
-        // TODO
+        slideToObjectAndAttach(this, document.getElementById("order-token-".concat(notif.args.playerId)), "order-track-".concat(notif.args.order));
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
