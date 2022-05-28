@@ -85,11 +85,13 @@ $playerActionsGameStates = [
         "possibleactions" => [ 
             "chooseConstructBuilding",
             "chooseAbandonBuilding",
+            "changeTerritory",
             "chooseUsePloyToken",
         ],
         "transitions" => [
             "constructBuilding" => ST_PLAYER_CONSTRUCT_BUILDING,
             "abandonBuilding" => ST_PLAYER_ABANDON_BUILDING,
+            "changeTerritory" => ST_PLAYER_CHOOSE_ACTION,
             "usePloyToken" => ST_PLAYER_USE_PLOY_TOKEN,
         ]
     ],

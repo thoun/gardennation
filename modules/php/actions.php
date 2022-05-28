@@ -156,6 +156,17 @@ trait ActionTrait {
         $this->gamestate->nextState('cancel');
     }
 
+    public function changeTerritory(int $territoryNumber) {
+        self::checkAction('changeTerritory');
+
+        $territories = $this->getTerritories();
+        $newTerritoryPosition = $this->array_find_index($territories, fn($territory) => $territory[0] == $territoryNumber);
+
+        $this->moveTorticraneToPosition($newTerritoryPosition);
+
+        $this->gamestate->nextState('changeTerritory');
+    }
+
     public function chooseNextPlayer(int $playerId) {
         self::checkAction('chooseNextPlayer');
 

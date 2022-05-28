@@ -50,8 +50,10 @@ interface GardenNationGame extends Game {
 }
 
 interface EnteringChooseActionArgs {
+    canConstructBuilding: boolean;
     canAbandonBuilding: boolean;
     canUsePloy: boolean;
+    canChangeTerritory: number | null;
 }
 
 interface EnteringConstructBuildingArgs {

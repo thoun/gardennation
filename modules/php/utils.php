@@ -138,11 +138,15 @@ trait UtilTrait {
             $areaPositionUnrotated = ($areaPositionUnrotated + $currentTerritoryRotation - 1) % 6 + 1;
         }
 
-        if ($areaPositionUnrotated != intval($this->getGameStateValue(TORTICRANE_POSITION))) {
-            $this->setGameStateValue(TORTICRANE_POSITION, $areaPositionUnrotated);
+        $this->moveTorticraneToPosition($areaPositionUnrotated);
+    }
+    
+    function moveTorticraneToPosition(int $territoryPosition) {
+        if ($territoryPosition != intval($this->getGameStateValue(TORTICRANE_POSITION))) {
+            $this->setGameStateValue(TORTICRANE_POSITION, $territoryPosition);
             
             self::notifyAllPlayers('moveTorticrane', '', [
-                'torticranePosition' => $areaPositionUnrotated,
+                'torticranePosition' => $territoryPosition,
             ]);
         }
     }
@@ -198,5 +202,44 @@ trait UtilTrait {
             'player_name' => $this->getPlayerName($playerId),
             'order' => 1,
         ]);
+    }
+
+    function getTerritoryPositions() {
+        $territories = $this->getTerritories();
+        $map = $this->getMap();
+        
+        $torticranePosition = intval($this->getGameStateValue(TORTICRANE_POSITION));
+        $territoryPositions = [];
+        foreach ($map as $mapPosition => $area) {
+            if ($torticranePosition == -1 || floor($mapPosition / 10) == $territories[$torticranePosition][0]) {
+                $territoryPositions[$mapPosition] = $area;
+            }
+        }
+
+        return $territoryPositions;
+    }
+
+    function getTerritoryBuildingByAreaPosition(int $areaPosition) {
+        return $this->getTerritoryBuildingsForTerritoryNumber(floor($areaPosition / 10), $areaPosition % 10);
+    }
+
+    function getTerritoryBuildingsForTerritoryNumber(int $territoryNumber, $positionInTerritory = null) {
+        // TODO Building
+        return [];
+    }
+
+    function getTerritoryBuildings() {
+        $territories = $this->getTerritories();
+        
+        $torticranePosition = intval($this->getGameStateValue(TORTICRANE_POSITION));
+        $territoryBuildings = [];
+        if ($torticranePosition == -1) {
+            foreach ([1,2,3,4,5,6,7] as $number) {
+                $territoryBuildings = array_merge($territoryBuildings, $this->getTerritoryBuildingsForTerritoryNumber($number));
+            }
+        } else {
+            $territoryBuildings = $this->getTerritoryBuildingsForTerritoryNumber($territories[$torticranePosition][0]);
+        }
+        return $territoryBuildings;
     }
 }

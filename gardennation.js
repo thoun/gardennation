@@ -324,12 +324,16 @@ var GardenNation = /** @class */ (function () {
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'chooseAction':
-                    var chooseActionArgs = args;
+                    var chooseActionArgs_1 = args;
                     this.addActionButton("chooseConstructBuilding-button", _("Construct building"), function () { return _this.chooseConstructBuilding(); });
                     this.addActionButton("chooseAbandonBuilding-button", _("Abandon building"), function () { return _this.chooseAbandonBuilding(); });
+                    if (chooseActionArgs_1.canChangeTerritory) {
+                        this.addActionButton("changeTerritory-button", _("Go to territory ${number}").replace('${number}', chooseActionArgs_1.canChangeTerritory), function () { return _this.changeTerritory(chooseActionArgs_1.canChangeTerritory); }, null, null, 'red');
+                    }
                     this.addActionButton("chooseUsePloyToken-button", _("Use ploy token"), function () { return _this.chooseUsePloyToken(); }, null, null, 'red');
-                    document.getElementById("chooseAbandonBuilding-button").classList.toggle('disabled', !chooseActionArgs.canAbandonBuilding);
-                    document.getElementById("chooseUsePloyToken-button").classList.toggle('disabled', !chooseActionArgs.canUsePloy);
+                    document.getElementById("chooseConstructBuilding-button").classList.toggle('disabled', !chooseActionArgs_1.canConstructBuilding);
+                    document.getElementById("chooseAbandonBuilding-button").classList.toggle('disabled', !chooseActionArgs_1.canAbandonBuilding);
+                    document.getElementById("chooseUsePloyToken-button").classList.toggle('disabled', !chooseActionArgs_1.canUsePloy);
                     break;
                 case 'constructBuilding':
                     this.addActionButton("cancelConstructBuilding-button", _("Cancel"), function () { return _this.cancelConstructBuilding(); }, null, null, 'gray');
@@ -552,6 +556,14 @@ var GardenNation = /** @class */ (function () {
             return;
         }
         this.takeAction('cancelChooseTypeOfLand');
+    };
+    GardenNation.prototype.changeTerritory = function (territoryNumber) {
+        if (!this.checkAction('changeTerritory')) {
+            return;
+        }
+        this.takeAction('changeTerritory', {
+            territoryNumber: territoryNumber
+        });
     };
     GardenNation.prototype.chooseNextPlayer = function (playerId) {
         if (!this.checkAction('chooseNextPlayer')) {

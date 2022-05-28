@@ -200,7 +200,11 @@ class GardenNation implements GardenNationGame {
                     const chooseActionArgs = args as EnteringChooseActionArgs;   
                     (this as any).addActionButton(`chooseConstructBuilding-button`, _("Construct building"), () => this.chooseConstructBuilding());
                     (this as any).addActionButton(`chooseAbandonBuilding-button`, _("Abandon building"), () => this.chooseAbandonBuilding());
+                    if (chooseActionArgs.canChangeTerritory) {
+                        (this as any).addActionButton(`changeTerritory-button`, _("Go to territory ${number}").replace('${number}', chooseActionArgs.canChangeTerritory), () => this.changeTerritory(chooseActionArgs.canChangeTerritory), null, null, 'red');
+                    }
                     (this as any).addActionButton(`chooseUsePloyToken-button`, _("Use ploy token"), () => this.chooseUsePloyToken(), null, null, 'red');
+                    document.getElementById(`chooseConstructBuilding-button`).classList.toggle('disabled', !chooseActionArgs.canConstructBuilding);
                     document.getElementById(`chooseAbandonBuilding-button`).classList.toggle('disabled', !chooseActionArgs.canAbandonBuilding);
                     document.getElementById(`chooseUsePloyToken-button`).classList.toggle('disabled', !chooseActionArgs.canUsePloy);
                     break;
@@ -488,6 +492,16 @@ class GardenNation implements GardenNationGame {
         }
 
         this.takeAction('cancelChooseTypeOfLand');
+    }
+
+    public changeTerritory(territoryNumber: number) {
+        if(!(this as any).checkAction('changeTerritory')) {
+            return;
+        }
+
+        this.takeAction('changeTerritory', {
+            territoryNumber
+        });
     }
 
     public chooseNextPlayer(playerId: number) {

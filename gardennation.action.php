@@ -114,6 +114,16 @@
       self::ajaxResponse();
     }
 
+    public function changeTerritory() {
+      self::setAjaxMode();
+
+      $territoryNumber = self::getArg("territoryNumber", AT_posint, true);
+
+      $this->game->changeTerritory($territoryNumber);
+
+      self::ajaxResponse();
+    }
+
     public function chooseNextPlayer() {
       self::setAjaxMode();
 

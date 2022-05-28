@@ -15,53 +15,42 @@ trait ArgsTrait {
     function argChooseAction() {
         $playerId = intval($this->getActivePlayerId());
 
+        $canConstructBuilding = intval($this->buildingFloors->countCardInLocation('table', $playerId)) > 0 && count($this->argConstructBuilding()['possiblePositions']) > 0;
         $canAbandonBuilding = count($this->argAbandonBuilding()['possiblePositions']) > 0;
         $canUsePloy = $this->canUsePloy($playerId);
+
+        $canChangeTerritory = null;
+        if (!$canConstructBuilding) {
+            $territories = $this->getTerritories();
+            $currentTerritoryNumber = $territories[intval($this->getGameStateValue(TORTICRANE_POSITION))][0];
+            $canChangeTerritory = ($currentTerritoryNumber - 1) % 6 + 1;
+        }
     
         return [
             'remainingActions' => $this->getRemainingActions($playerId),
+            'canConstructBuilding' => $canConstructBuilding,
+            'canChangeTerritory' => $canChangeTerritory,
             'canAbandonBuilding' => $canAbandonBuilding,
             'canUsePloy' => $canUsePloy,
         ];
     }
-
-    function getTerritoryPositions() {
-        $territories = $this->getTerritories();
-        $map = $this->getMap();
-        
-        $torticranePosition = intval($this->getGameStateValue(TORTICRANE_POSITION));
-        $territoryPositions = [];
-        foreach ($map as $mapPosition => $area) {
-            if ($torticranePosition == -1 || floor($mapPosition / 10) == $territories[$torticranePosition][0]) {
-                $territoryPositions[$mapPosition] = $area;
-            }
-        }
-
-        return $territoryPositions;
-    }
    
     function argConstructBuilding() {
-        $player = $this->getPlayer($this->getActivePlayerId());
+        $playerId = intval($this->getActivePlayerId());
+        $player = $this->getPlayer($playerId);
 
         $territoryPositions = $this->getTerritoryPositions();
         $possiblePositions = [];
         foreach ($territoryPositions as $position => $area) {
-            $cost = $area[1];
-            if ($cost < $player->inhabitants) {
-                $possiblePositions[] = $position;
+            $building = $this->getTerritoryBuildingByAreaPosition($position);
+            if ($building == null || ($building->playerId == $playerId && !$building->roof)) {                
+                $cost = $area[1] + ($building == null ? 0 : $building->floors);
+
+                if ($cost < $player->inhabitants) {
+                    $possiblePositions[] = $position;
+                }
             }
         }
-        /* TODO
-        It is possible that a player cannot carry out any action in
-the territory occupied by the torticrane. That is, they cannot
-construct (because there are no areas on which they can
-construct, they have no more floors) AND they cannot or do not
-want to abandon a building. In this case, they can play in
-the next territory in numerical order. If they cannot play in
-this territory either, they can play in the next one, and so on.
-Note: If a player cannot play in territory 7, they can play in
-territory 1.
-*/
     
         return [
             'possiblePositions' => $possiblePositions,
@@ -69,15 +58,20 @@ territory 1.
     }
    
     function argAbandonBuilding() {
-        $player = $this->getPlayer($this->getActivePlayerId());
+        $playerId = intval($this->getActivePlayerId());
 
         $territoryPositions = $this->getTerritoryPositions();
-        foreach ($territoryPositions as $position => $area) {   
-            // TODO only existing player buildings
+        $territoryBuildings = $this->getTerritoryBuildings();
+
+        $possiblePositions = [];
+        foreach ($territoryPositions as $areaPosition => $area) { 
+            if ($this->array_find($territoryBuildings, fn($building) => $building->areaPosition == $areaPosition && $building->playerId == $playerId) !== null) {
+                $possiblePositions[] = $areaPosition;
+            }
         }
     
         return [
-            'possiblePositions' => array_keys($territoryPositions),
+            'possiblePositions' => $possiblePositions,
         ];
     }
 
