@@ -58,6 +58,10 @@ interface EnteringConstructBuildingArgs {
     possiblePositions: number[];
 }
 
+interface EnteringChooseTypeOfLandArgs {
+    possibleTypes: number[];
+}
+
 interface EnteringChooseNextPlayerArgs {
     possibleNextPlayers: number[];
 }

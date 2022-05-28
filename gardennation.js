@@ -337,6 +337,15 @@ var GardenNation = /** @class */ (function () {
                 case 'abandonBuilding':
                     this.addActionButton("cancelAbandonBuilding-button", _("Cancel"), function () { return _this.cancelAbandonBuilding(); }, null, null, 'gray');
                     break;
+                case 'chooseTypeOfLand':
+                    var chooseTypeOfLandArgs = args;
+                    chooseTypeOfLandArgs.possibleTypes.forEach(function (type) {
+                        _this.addActionButton("chooseTypeOfLand".concat(type, "-button"), '', function () { return _this.chooseTypeOfLand(type); });
+                        document.getElementById("chooseTypeOfLand".concat(type, "-button")).innerHTML =
+                            "<div class=\"button-bramble-type\" data-type=\"".concat(type, "\"></div>");
+                    });
+                    this.addActionButton("cancelChooseTypeOfLand-button", _("Cancel"), function () { return _this.cancelChooseTypeOfLand(); }, null, null, 'gray');
+                    break;
                 case 'chooseNextPlayer':
                     var chooseNextPlayerArgs = args;
                     if (chooseNextPlayerArgs.possibleNextPlayers.length > 1) {
@@ -529,6 +538,20 @@ var GardenNation = /** @class */ (function () {
             return;
         }
         this.takeAction('cancelAbandonBuilding');
+    };
+    GardenNation.prototype.chooseTypeOfLand = function (typeOfLand) {
+        if (!this.checkAction('chooseTypeOfLand')) {
+            return;
+        }
+        this.takeAction('chooseTypeOfLand', {
+            typeOfLand: typeOfLand
+        });
+    };
+    GardenNation.prototype.cancelChooseTypeOfLand = function () {
+        if (!this.checkAction('cancelChooseTypeOfLand')) {
+            return;
+        }
+        this.takeAction('cancelChooseTypeOfLand');
     };
     GardenNation.prototype.chooseNextPlayer = function (playerId) {
         if (!this.checkAction('chooseNextPlayer')) {

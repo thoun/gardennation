@@ -196,7 +196,7 @@
 #board .territory .area[data-bramble=true]::before {
   content: "";
   position: absolute;
-  background: url("img/land-tokens.jpg");
+  background: url("img/land-tokens.png");
   background-size: auto 100%;
   top: 0;
   left: 0;
@@ -347,4 +347,21 @@ html {
   height: 32px;
   background-image: url("img/icons.png");
   background-size: auto 100%;
+}
+
+.button-bramble-type {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  background: url("img/land-tokens.png");
+  background-size: auto 100%;
+}
+.button-bramble-type[data-type="1"] {
+  background-position: 0%;
+}
+.button-bramble-type[data-type="2"] {
+  background-position: 50%;
+}
+.button-bramble-type[data-type="3"] {
+  background-position: 100%;
 }

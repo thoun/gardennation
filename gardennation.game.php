@@ -47,6 +47,7 @@ class GardenNation extends Table {
             PLAYED_ACTIONS => 11,
             PLOY_USED => 12,
             TORTICRANE_POSITION => 13,
+            BRAMBLE_CHOICE_AREA => 14,
 
             //    "my_first_game_variant" => 100,
             //    "my_second_game_variant" => 101,

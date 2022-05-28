@@ -29,10 +29,18 @@ trait ActionTrait {
         $this->gamestate->nextState('usePloyToken');
     }
 
-    public function constructBuilding($areaPosition) {
-        self::checkAction('constructBuilding');
-        
-        $playerId = intval(self::getActivePlayerId());
+    private function applyConstructBuilding(int $areaPosition) {
+        $map = $this->getMap();
+        $area = $map[$areaPosition];
+
+        // TODO check can pay
+
+        if ($area[0] == 0) {
+            $this->setGameStateValue(BRAMBLE_CHOICE_AREA, $areaPosition);
+            $this->gamestate->nextState('chooseTypeOfLand');
+            return;
+        } 
+
 
         /*$allPlacedRoutes = $this->getPlacedRoutes();
         $playerPlacedRoutes = array_filter($allPlacedRoutes, fn($placedRoute) => $placedRoute->playerId === $playerId);
@@ -86,6 +94,25 @@ trait ActionTrait {
 
         $this->gamestate->nextState('endAction');
     }
+
+    public function constructBuilding(int $areaPosition) {
+        self::checkAction('constructBuilding');
+        
+        $playerId = intval(self::getActivePlayerId());
+        
+        $map = $this->getMap();
+        $area = $map[$areaPosition];
+
+        // TODO check can pay
+
+        if ($area[0] == 0) {
+            $this->setGameStateValue(BRAMBLE_CHOICE_AREA, $areaPosition);
+            $this->gamestate->nextState('chooseTypeOfLand');
+            return;
+        } 
+
+        $this->applyConstructBuilding($areaPosition);
+    }
     
     public function cancelConstructBuilding() {
         self::checkAction('cancelConstructBuilding');
@@ -93,7 +120,7 @@ trait ActionTrait {
         $this->gamestate->nextState('cancel');
     }
 
-    public function abandonBuilding($areaPosition) {
+    public function abandonBuilding(int $areaPosition) {
         self::checkAction('abandonBuilding');
         
         $playerId = intval(self::getActivePlayerId());
@@ -107,6 +134,24 @@ trait ActionTrait {
     
     public function cancelAbandonBuilding() {
         self::checkAction('cancelAbandonBuilding');
+
+        $this->gamestate->nextState('cancel');
+    }
+
+    public function chooseTypeOfLand(int $typeOfLand) {
+        self::checkAction('chooseTypeOfLand');
+        
+        $areaPosition = intval($this->getGameStateValue(BRAMBLE_CHOICE_AREA));
+        
+        $this->DbQuery("INSERT INTO `bramble_area` (`position`, `type`) VALUES ($areaPosition, $typeOfLand)");
+
+        // TODO notif
+
+        $this->applyConstructBuilding($areaPosition);
+    }
+    
+    public function cancelChooseTypeOfLand() {
+        self::checkAction('cancelChooseTypeOfLand');
 
         $this->gamestate->nextState('cancel');
     }

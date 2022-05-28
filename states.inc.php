@@ -105,8 +105,25 @@ $playerActionsGameStates = [
             "cancelConstructBuilding",
         ],
         "transitions" => [
+            "chooseTypeOfLand" => ST_PLAYER_CHOOSE_TYPE_OF_LAND,
             "endAction" => ST_END_ACTION,
             "cancel" => ST_PLAYER_CHOOSE_ACTION,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_TYPE_OF_LAND => [
+        "name" => "chooseTypeOfLand",
+        "description" => clienttranslate('${actplayer} must choose a type of land'),
+        "descriptionmyturn" => clienttranslate('${you} must choose a type of land'),
+        "type" => "activeplayer",
+        "args" => "argChooseTypeOfLand",
+        "possibleactions" => [ 
+            "chooseTypeOfLand",
+            "cancelChooseTypeOfLand",
+        ],
+        "transitions" => [
+            "endAction" => ST_END_ACTION,
+            "cancel" => ST_PLAYER_CONSTRUCT_BUILDING,
         ]
     ],
 

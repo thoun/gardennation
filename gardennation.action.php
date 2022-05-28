@@ -96,6 +96,24 @@
       self::ajaxResponse();
     }
 
+    public function chooseTypeOfLand() {
+      self::setAjaxMode();
+
+      $typeOfLand = self::getArg("typeOfLand", AT_posint, true);
+
+      $this->game->chooseTypeOfLand($typeOfLand);
+
+      self::ajaxResponse();
+    }
+
+    public function cancelChooseTypeOfLand() {
+      self::setAjaxMode();
+
+      $this->game->cancelChooseTypeOfLand();
+
+      self::ajaxResponse();
+    }
+
     public function chooseNextPlayer() {
       self::setAjaxMode();
 

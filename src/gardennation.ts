@@ -210,6 +210,15 @@ class GardenNation implements GardenNationGame {
                 case 'abandonBuilding':
                     (this as any).addActionButton(`cancelAbandonBuilding-button`, _("Cancel"), () => this.cancelAbandonBuilding(), null, null, 'gray');
                     break;
+                case 'chooseTypeOfLand':
+                    const chooseTypeOfLandArgs = args as EnteringChooseTypeOfLandArgs;
+                    chooseTypeOfLandArgs.possibleTypes.forEach(type => {
+                        (this as any).addActionButton(`chooseTypeOfLand${type}-button`, '', () => this.chooseTypeOfLand(type));
+                        document.getElementById(`chooseTypeOfLand${type}-button`).innerHTML = 
+                            `<div class="button-bramble-type" data-type="${type}"></div>`;
+                    });
+                    (this as any).addActionButton(`cancelChooseTypeOfLand-button`, _("Cancel"), () => this.cancelChooseTypeOfLand(), null, null, 'gray');
+                    break;
                 case 'chooseNextPlayer':
                     const chooseNextPlayerArgs = args as EnteringChooseNextPlayerArgs;
                     if (chooseNextPlayerArgs.possibleNextPlayers.length > 1) {          
@@ -461,6 +470,24 @@ class GardenNation implements GardenNationGame {
         }
 
         this.takeAction('cancelAbandonBuilding');
+    }
+
+    public chooseTypeOfLand(typeOfLand: number) {
+        if(!(this as any).checkAction('chooseTypeOfLand')) {
+            return;
+        }
+
+        this.takeAction('chooseTypeOfLand', {
+            typeOfLand
+        });
+    }
+
+    public cancelChooseTypeOfLand() {
+        if (!(this as any).checkAction('cancelChooseTypeOfLand')) {
+            return;
+        }
+
+        this.takeAction('cancelChooseTypeOfLand');
     }
 
     public chooseNextPlayer(playerId: number) {

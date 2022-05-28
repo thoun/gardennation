@@ -81,6 +81,21 @@ territory 1.
         ];
     }
 
+    function argChooseTypeOfLand() {
+        $brambleAreasDb = $this->getCollectionFromDb("SELECT `type`, count(*) as `count` FROM `bramble_area` GROUP BY `type`");
+        $possibleTypes = [];
+        foreach([1, 2, 3] as $type) {
+            $brambleAreaDb = $this->array_find($brambleAreasDb, fn($brambleAreaDb) => intval($brambleAreaDb['type']) == $type);
+            if ($brambleAreaDb == null || intval($brambleAreaDb['count']) < 3) {
+                $possibleTypes[] = $type;
+            }
+        }
+    
+        return [
+            'possibleTypes' => $possibleTypes,
+        ];
+    }
+
     function argChooseNextPlayer() {
         $players = $this->getPlayers();
         $playersAtOrderZero = array_values(array_filter($players, fn($player) => $player->turnTrack == 0));
