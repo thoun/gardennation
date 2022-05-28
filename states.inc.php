@@ -115,7 +115,7 @@ $playerActionsGameStates = [
         "description" => clienttranslate('${actplayer} must choose a building to abandon'),
         "descriptionmyturn" => clienttranslate('${you} must choose a building to abandon'),
         "type" => "activeplayer",
-        //"args" => "argAbandonBuilding",
+        "args" => "argAbandonBuilding",
         "possibleactions" => [ 
             "abandonBuilding",
             "cancelAbandonBuilding",

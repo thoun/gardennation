@@ -18,6 +18,15 @@ trait UtilTrait {
         return null;
     }
 
+    function array_find_index(array $array, callable $fn) {
+        foreach ($array as $key => $value) {
+            if($fn($value)) {
+                return $key;
+            }
+        }
+        return null;
+    }
+
     function array_find_key(array $array, callable $fn) {
         foreach ($array as $key => $value) {
             if($fn($value)) {
@@ -118,5 +127,21 @@ trait UtilTrait {
         $player = $this->getPlayer($playerId);
 
         return ($player->turnTrack == 1 ? 1 : 2) - intval($this->getGameStateValue(PLAYED_ACTIONS));
+    }
+    
+    function moveTorticrane(int $areaPosition) {
+        $territories = $this->getTerritories();
+        $currentTerritoryPosition = $this->array_find_index($territories, fn($territory) => $territory[0] == floor($areaPosition / 10));
+        $currentTerritoryRotation = $territories[$currentTerritoryPosition][1];
+        $areaPositionUnrotated = $areaPosition % 10;
+        if ($areaPositionUnrotated > 0) {
+            $areaPositionUnrotated = ($areaPositionUnrotated + $currentTerritoryRotation - 1) % 6 + 1;
+        }
+
+        $this->setGameStateValue(TORTICRANE_POSITION, $areaPositionUnrotated);
+        
+        self::notifyAllPlayers('moveTorticrane', '', [
+            'torticranePosition' => $areaPositionUnrotated,
+        ]);
     }
 }

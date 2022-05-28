@@ -78,6 +78,24 @@
       self::ajaxResponse();
     }
 
+    public function abandonBuilding() {
+      self::setAjaxMode();
+
+      $areaPosition = self::getArg("areaPosition", AT_posint, true);
+
+      $this->game->abandonBuilding($areaPosition);
+
+      self::ajaxResponse();
+    }
+
+    public function cancelAbandonBuilding() {
+      self::setAjaxMode();
+
+      $this->game->cancelAbandonBuilding();
+
+      self::ajaxResponse();
+    }
+
     public function chooseNextPlayer() {
       self::setAjaxMode();
 

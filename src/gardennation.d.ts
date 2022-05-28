@@ -49,6 +49,11 @@ interface GardenNationGame extends Game {
     getPlayerId(): number;
 }
 
+interface EnteringChooseActionArgs {
+    canAbandonBuilding: boolean;
+    canUsePloy: boolean;
+}
+
 interface EnteringConstructBuildingArgs {
     possiblePositions: number[];
 }

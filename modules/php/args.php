@@ -14,9 +14,14 @@ trait ArgsTrait {
    
     function argChooseAction() {
         $playerId = intval($this->getActivePlayerId());
+
+        $canAbandonBuilding = count($this->argAbandonBuilding()['possiblePositions']) > 0;
+        $canUsePloy = true; // TODO
     
         return [
             'remainingActions' => $this->getRemainingActions($playerId),
+            'canAbandonBuilding' => $canAbandonBuilding,
+            'canUsePloy' => $canUsePloy,
         ];
     }
 
@@ -56,6 +61,19 @@ this territory either, they can play in the next one, and so on.
 Note: If a player cannot play in territory 7, they can play in
 territory 1.
 */
+    
+        return [
+            'possiblePositions' => array_keys($territoryPositions),
+        ];
+    }
+   
+    function argAbandonBuilding() {
+        $player = $this->getPlayer($this->getActivePlayerId());
+
+        $territoryPositions = $this->getTerritoryPositions();
+        foreach ($territoryPositions as $position => $area) {   
+            // TODO only existing player buildings
+        }
     
         return [
             'possiblePositions' => array_keys($territoryPositions),

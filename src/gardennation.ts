@@ -96,6 +96,7 @@ class GardenNation implements GardenNationGame {
 
         switch (stateName) {
             case 'constructBuilding':
+            case 'abandonBuilding':
                 this.onEnteringConstructBuilding(args.args);
                 break;
 
@@ -179,6 +180,7 @@ class GardenNation implements GardenNationGame {
 
         switch (stateName) {
             case 'constructBuilding':
+            case 'abandonBuilding':
                 this.onLeavingConstructBuilding();
                 break;
         }
@@ -195,12 +197,18 @@ class GardenNation implements GardenNationGame {
         if ((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'chooseAction':
+                    const chooseActionArgs = args as EnteringChooseActionArgs;   
                     (this as any).addActionButton(`chooseConstructBuilding-button`, _("Construct building"), () => this.chooseConstructBuilding());
                     (this as any).addActionButton(`chooseAbandonBuilding-button`, _("Abandon building"), () => this.chooseAbandonBuilding());
                     (this as any).addActionButton(`chooseUsePloyToken-button`, _("Use ploy token"), () => this.chooseUsePloyToken(), null, null, 'red');
+                    document.getElementById(`chooseAbandonBuilding-button`).classList.toggle('disabled', !chooseActionArgs.canAbandonBuilding);
+                    document.getElementById(`chooseUsePloyToken-button`).classList.toggle('disabled', !chooseActionArgs.canUsePloy);
                     break;
                 case 'constructBuilding':
                     (this as any).addActionButton(`cancelConstructBuilding-button`, _("Cancel"), () => this.cancelConstructBuilding(), null, null, 'gray');
+                    break;
+                case 'abandonBuilding':
+                    (this as any).addActionButton(`cancelAbandonBuilding-button`, _("Cancel"), () => this.cancelAbandonBuilding(), null, null, 'gray');
                     break;
                 case 'chooseNextPlayer':
                     const chooseNextPlayerArgs = args as EnteringChooseNextPlayerArgs;                
@@ -387,6 +395,9 @@ class GardenNation implements GardenNationGame {
             case 'constructBuilding':
                 this.constructBuilding(areaPosition);
                 break;
+            case 'abandonBuilding':
+                this.abandonBuilding(areaPosition);
+                break;
         }
     }
 
@@ -430,6 +441,24 @@ class GardenNation implements GardenNationGame {
         }
 
         this.takeAction('cancelConstructBuilding');
+    }
+
+    public abandonBuilding(areaPosition: number) {
+        if(!(this as any).checkAction('abandonBuilding')) {
+            return;
+        }
+
+        this.takeAction('abandonBuilding', {
+            areaPosition
+        });
+    }
+
+    public cancelAbandonBuilding() {
+        if (!(this as any).checkAction('cancelAbandonBuilding')) {
+            return;
+        }
+
+        this.takeAction('cancelAbandonBuilding');
     }
 
     public chooseNextPlayer(playerId: number) {
@@ -511,8 +540,9 @@ class GardenNation implements GardenNationGame {
         //log( 'notifications subscriptions setup' );
 
         const notifs = [
-            /*['chosenAdventurer', ANIMATION_MS],
-            ['scoreBeforeEnd', SCORE_MS],
+            ['moveTorticrane', ANIMATION_MS],
+            ['setPlayerOrder', ANIMATION_MS],
+            /*['scoreBeforeEnd', SCORE_MS],
             ['scoreCards', SCORE_MS],
             ['scoreBoard', SCORE_MS],
             ['scoreFireflies', SCORE_MS],
@@ -526,22 +556,14 @@ class GardenNation implements GardenNationGame {
         });
     }
 
-    /*notif_chosenAdventurer(notif: Notif<NotifChosenAdventurerArgs>) {
-        const playerTable = this.getPlayerTable(notif.args.playerId);
-        playerTable.setAdventurer(notif.args.adventurer);
-        playerTable.addDice(notif.args.dice);
+    notif_moveTorticrane(notif: Notif<NotifMoveTorticraneArgs>) {
+        slideToObjectAndAttach(this, document.getElementById('torticrane'), `torticrane-spot-${notif.args.torticranePosition}`);
+        // TODO fix slideToObjectAndAttach
+    }
 
-        const newPlayerColor = notif.args.newPlayerColor;
-        const nameLink = document.getElementById(`player_name_${notif.args.playerId}`).getElementsByTagName('a')[0];
-        if (nameLink) {
-            nameLink.style.color = `#${newPlayerColor}`;
-        }
-        this.board.setColor(notif.args.playerId, newPlayerColor);
-        playerTable.setColor(newPlayerColor);
-        this.gamedatas.players[notif.args.playerId].color = newPlayerColor;
-        
-        setTimeout(() => playerTable.sortDice(), ANIMATION_MS);
-    }*/
+    notif_setPlayerOrder(notif: Notif<NotifSetPlayerOrderArgs>) {
+        // TODO
+    }
 
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

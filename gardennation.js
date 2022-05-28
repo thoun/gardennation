@@ -251,6 +251,7 @@ var GardenNation = /** @class */ (function () {
         log('Entering state: ' + stateName, args.args);
         switch (stateName) {
             case 'constructBuilding':
+            case 'abandonBuilding':
                 this.onEnteringConstructBuilding(args.args);
                 break;
             case 'endScore':
@@ -329,6 +330,7 @@ var GardenNation = /** @class */ (function () {
         log('Leaving state: ' + stateName);
         switch (stateName) {
             case 'constructBuilding':
+            case 'abandonBuilding':
                 this.onLeavingConstructBuilding();
                 break;
         }
@@ -344,12 +346,18 @@ var GardenNation = /** @class */ (function () {
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'chooseAction':
+                    var chooseActionArgs = args;
                     this.addActionButton("chooseConstructBuilding-button", _("Construct building"), function () { return _this.chooseConstructBuilding(); });
                     this.addActionButton("chooseAbandonBuilding-button", _("Abandon building"), function () { return _this.chooseAbandonBuilding(); });
                     this.addActionButton("chooseUsePloyToken-button", _("Use ploy token"), function () { return _this.chooseUsePloyToken(); }, null, null, 'red');
+                    document.getElementById("chooseAbandonBuilding-button").classList.toggle('disabled', !chooseActionArgs.canAbandonBuilding);
+                    document.getElementById("chooseUsePloyToken-button").classList.toggle('disabled', !chooseActionArgs.canUsePloy);
                     break;
                 case 'constructBuilding':
                     this.addActionButton("cancelConstructBuilding-button", _("Cancel"), function () { return _this.cancelConstructBuilding(); }, null, null, 'gray');
+                    break;
+                case 'abandonBuilding':
+                    this.addActionButton("cancelAbandonBuilding-button", _("Cancel"), function () { return _this.cancelAbandonBuilding(); }, null, null, 'gray');
                     break;
                 case 'chooseNextPlayer':
                     var chooseNextPlayerArgs = args;
@@ -491,6 +499,9 @@ var GardenNation = /** @class */ (function () {
             case 'constructBuilding':
                 this.constructBuilding(areaPosition);
                 break;
+            case 'abandonBuilding':
+                this.abandonBuilding(areaPosition);
+                break;
         }
     };
     GardenNation.prototype.chooseConstructBuilding = function () {
@@ -524,6 +535,20 @@ var GardenNation = /** @class */ (function () {
             return;
         }
         this.takeAction('cancelConstructBuilding');
+    };
+    GardenNation.prototype.abandonBuilding = function (areaPosition) {
+        if (!this.checkAction('abandonBuilding')) {
+            return;
+        }
+        this.takeAction('abandonBuilding', {
+            areaPosition: areaPosition
+        });
+    };
+    GardenNation.prototype.cancelAbandonBuilding = function () {
+        if (!this.checkAction('cancelAbandonBuilding')) {
+            return;
+        }
+        this.takeAction('cancelAbandonBuilding');
     };
     GardenNation.prototype.chooseNextPlayer = function (playerId) {
         if (!this.checkAction('chooseNextPlayer')) {
@@ -572,35 +597,27 @@ var GardenNation = /** @class */ (function () {
         //log( 'notifications subscriptions setup' );
         var _this = this;
         var notifs = [
-        /*['chosenAdventurer', ANIMATION_MS],
-        ['scoreBeforeEnd', SCORE_MS],
-        ['scoreCards', SCORE_MS],
-        ['scoreBoard', SCORE_MS],
-        ['scoreFireflies', SCORE_MS],
-        ['scoreFootprints', SCORE_MS],
-        ['scoreAfterEnd', SCORE_MS],*/
+            ['moveTorticrane', ANIMATION_MS],
+            ['setPlayerOrder', ANIMATION_MS],
+            /*['scoreBeforeEnd', SCORE_MS],
+            ['scoreCards', SCORE_MS],
+            ['scoreBoard', SCORE_MS],
+            ['scoreFireflies', SCORE_MS],
+            ['scoreFootprints', SCORE_MS],
+            ['scoreAfterEnd', SCORE_MS],*/
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
             _this.notifqueue.setSynchronous(notif[0], notif[1]);
         });
     };
-    /*notif_chosenAdventurer(notif: Notif<NotifChosenAdventurerArgs>) {
-        const playerTable = this.getPlayerTable(notif.args.playerId);
-        playerTable.setAdventurer(notif.args.adventurer);
-        playerTable.addDice(notif.args.dice);
-
-        const newPlayerColor = notif.args.newPlayerColor;
-        const nameLink = document.getElementById(`player_name_${notif.args.playerId}`).getElementsByTagName('a')[0];
-        if (nameLink) {
-            nameLink.style.color = `#${newPlayerColor}`;
-        }
-        this.board.setColor(notif.args.playerId, newPlayerColor);
-        playerTable.setColor(newPlayerColor);
-        this.gamedatas.players[notif.args.playerId].color = newPlayerColor;
-        
-        setTimeout(() => playerTable.sortDice(), ANIMATION_MS);
-    }*/
+    GardenNation.prototype.notif_moveTorticrane = function (notif) {
+        slideToObjectAndAttach(this, document.getElementById('torticrane'), "torticrane-spot-".concat(notif.args.torticranePosition));
+        // TODO fix slideToObjectAndAttach
+    };
+    GardenNation.prototype.notif_setPlayerOrder = function (notif) {
+        // TODO
+    };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
     GardenNation.prototype.format_string_recursive = function (log, args) {

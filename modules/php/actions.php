@@ -29,8 +29,8 @@ trait ActionTrait {
         $this->gamestate->nextState('usePloyToken');
     }
 
-   public function constructBuilding($areaPosition) {
-    self::checkAction('constructBuilding');
+    public function constructBuilding($areaPosition) {
+        self::checkAction('constructBuilding');
         
         $playerId = intval(self::getActivePlayerId());
 
@@ -82,17 +82,31 @@ trait ActionTrait {
         //self::incStat(1, 'placedRoutes');
         //self::incStat(1, 'placedRoutes', $playerId);*/
 
-        $this->setGameStateValue(TORTICRANE_POSITION, $areaPosition % 10);
-        
-        self::notifyAllPlayers('moveTorticrane', '', [
-            'torticranePosition' => $areaPosition % 10,
-        ]);
+        $this->moveTorticrane($areaPosition);
 
         $this->gamestate->nextState('endAction');
     }
     
     public function cancelConstructBuilding() {
         self::checkAction('cancelConstructBuilding');
+
+        $this->gamestate->nextState('cancel');
+    }
+
+    public function abandonBuilding($areaPosition) {
+        self::checkAction('abandonBuilding');
+        
+        $playerId = intval(self::getActivePlayerId());
+
+        // TODO
+
+        $this->moveTorticrane($areaPosition);
+
+        $this->gamestate->nextState('endAction');
+    }
+    
+    public function cancelAbandonBuilding() {
+        self::checkAction('cancelAbandonBuilding');
 
         $this->gamestate->nextState('cancel');
     }
