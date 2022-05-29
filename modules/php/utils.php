@@ -71,7 +71,7 @@ trait UtilTrait {
     }
 
     function getPlayerName(int $playerId) {
-        return self::getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = $playerId");
+        return $this->getUniqueValueFromDB("SELECT player_name FROM player WHERE player_id = $playerId");
     }
 
     function getPlayer(int $id) {
@@ -84,6 +84,24 @@ trait UtilTrait {
         $sql = "SELECT * FROM player ORDER BY player_no";
         $dbResults = $this->getCollectionFromDb($sql);
         return array_map(fn($dbResult) => new GardenNationPlayer($dbResult), array_values($dbResults));
+    }
+
+    function incPlayerScore(int $playerId, int $amount) {
+        $this->DbQuery("UPDATE player SET `player_score` = `player_score` + $amount WHERE player_id = $playerId");
+            
+        self::notifyAllPlayers('score', '', [
+            'playerId' => $playerId,
+            'newScore' => $this->getPlayer($playerId)->score,
+        ]);
+    }
+
+    function incPlayerInhabitants(int $playerId, int $amount) {
+        $this->DbQuery("UPDATE player SET `player_inhabitants` = `player_inhabitants` + $amount WHERE player_id = $playerId");
+            
+        self::notifyAllPlayers('inhabitant', '', [
+            'playerId' => $playerId,
+            'newInhabitants' => $this->getPlayer($playerId)->inhabitants,
+        ]);
     }
 
     function getBuildingFloorFromDb(array $dbCard) {
@@ -99,12 +117,19 @@ trait UtilTrait {
 
     function setupBuildingFloors(array $playersIds) {
         $count = $this->BUILDING_FLOORS[count($playersIds)];
-        
-        foreach ($playersIds as $playerId) {
-            $this->buildingFloors->createCards([[ 'type' => 0, 'type_arg' => $playerId, 'nbr' => $count ]], 'table', $playerId);
-        }
 
-        $this->buildingFloors->createCards([[ 'type' => 1, 'type_arg' => 0, 'nbr' => 19 ]], 'table');
+        $sql = "INSERT INTO `building_floor`(`player_id`) VALUES ";
+        $values = [];
+        foreach ($playersIds as $playerId) {
+            for ($i = 1; $i <= $count; $i++) {
+                $values[] = "($playerId)";
+            }
+        }
+        for ($i = 1; $i <= 19; $i++) {
+            $values[] = "(0)";
+        }
+        $sql .= implode(',', $values);
+        self::DbQuery($sql);
     }
 
     function getTerritories() {        
@@ -241,5 +266,20 @@ trait UtilTrait {
             $territoryBuildings = $this->getTerritoryBuildingsForTerritoryNumber($territories[$torticranePosition][0]);
         }
         return $territoryBuildings;
+    }
+
+    function getAvailableBuildingsIds(int $playerId) {
+        $buildingFloorsIdsDb = $this->getCollectionFromDb("SELECT `id` FROM `building_floor` WHERE player_id = $playerId AND `territory_number` is null");
+        return array_values(array_map(fn($buildingFloorsIdDb) => intval($buildingFloorsIdDb['id']), $buildingFloorsIdsDb));
+    }
+
+    function placeBuildingsFloor(int $playerId, int $territoryNumber, int $areaPosition, $message = '') {
+        $buildingFloorId = $this->getAvailableBuildingsIds($playerId)[0];
+
+        $this->DbQuery("UPDATE `building_floor` SET `territory_number` = $territoryNumber, `area_position` = $areaPosition WHERE `id` = $buildingFloorId");
+        
+        // TODO notif
+
+        return $buildingFloorId;
     }
 }

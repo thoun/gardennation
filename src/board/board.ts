@@ -28,13 +28,13 @@ class Board {
                 const position = territoryNumber * 10 + areaPosition;
                 const mapPosition = map[position];
                 const type = mapPosition[0] % 10;
-                const bramble = type > 10;
+                const bramble = mapPosition[0] == 0 || mapPosition[0] > 10;
                 let rotation = areaPosition;
                 if (areaPosition > 0) {
                     rotation = (areaPosition + territoryRotation - 1) % 6 + 1;
                 }
                 dojo.place(`
-                    <div id="area${position}" class="area" data-position="${position}" data-type="${type}" data-bramble="${bramble.toString()}" data-cost="${mapPosition[1]}" data-position="${areaPosition}" data-rotation="${rotation}">${position}<br>type ${mapPosition[0]}<br>cost ${mapPosition[1]}</div>
+                    <div id="area${position}" class="area" data-position="${position}" data-type="${type}" data-bramble="${bramble.toString()}" data-cost="${mapPosition[1]}" data-position="${areaPosition}" data-rotation="${rotation}"></div>
                 `, `territory${territoryPosition}`);
 
                 document.getElementById(`area${position}`).addEventListener('click', () => this.game.onAreaClick(position));
@@ -50,5 +50,10 @@ class Board {
     
     public activatePossibleAreas(possibleAreas: number[]) {
         Array.from(document.getElementsByClassName('area')).forEach((area: HTMLDivElement) => area.classList.toggle('selectable', possibleAreas.includes(Number(area.dataset.position))));
+    }
+    
+    public setBrambleType(areaPosition: number, type: number) {
+        const areaDiv = document.getElementById(`area${areaPosition}`);
+        areaDiv.dataset.type = ''+type;
     }
 }

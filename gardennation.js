@@ -125,12 +125,12 @@ var Board = /** @class */ (function () {
                 var position = territoryNumber * 10 + areaPosition;
                 var mapPosition = map[position];
                 var type = mapPosition[0] % 10;
-                var bramble = type > 10;
+                var bramble = mapPosition[0] == 0 || mapPosition[0] > 10;
                 var rotation = areaPosition;
                 if (areaPosition > 0) {
                     rotation = (areaPosition + territoryRotation - 1) % 6 + 1;
                 }
-                dojo.place("\n                    <div id=\"area".concat(position, "\" class=\"area\" data-position=\"").concat(position, "\" data-type=\"").concat(type, "\" data-bramble=\"").concat(bramble.toString(), "\" data-cost=\"").concat(mapPosition[1], "\" data-position=\"").concat(areaPosition, "\" data-rotation=\"").concat(rotation, "\">").concat(position, "<br>type ").concat(mapPosition[0], "<br>cost ").concat(mapPosition[1], "</div>\n                "), "territory".concat(territoryPosition));
+                dojo.place("\n                    <div id=\"area".concat(position, "\" class=\"area\" data-position=\"").concat(position, "\" data-type=\"").concat(type, "\" data-bramble=\"").concat(bramble.toString(), "\" data-cost=\"").concat(mapPosition[1], "\" data-position=\"").concat(areaPosition, "\" data-rotation=\"").concat(rotation, "\"></div>\n                "), "territory".concat(territoryPosition));
                 document.getElementById("area".concat(position)).addEventListener('click', function () { return _this.game.onAreaClick(position); });
             });
         });
@@ -141,6 +141,10 @@ var Board = /** @class */ (function () {
     };
     Board.prototype.activatePossibleAreas = function (possibleAreas) {
         Array.from(document.getElementsByClassName('area')).forEach(function (area) { return area.classList.toggle('selectable', possibleAreas.includes(Number(area.dataset.position))); });
+    };
+    Board.prototype.setBrambleType = function (areaPosition, type) {
+        var areaDiv = document.getElementById("area".concat(areaPosition));
+        areaDiv.dataset.type = '' + type;
     };
     return Board;
 }());
@@ -465,7 +469,7 @@ var GardenNation = /** @class */ (function () {
             _this.inhabitantCounters[playerId] = inhabitantCounter;
             var buildingFloorCounter = new ebg.counter();
             buildingFloorCounter.create("building-floor-counter-".concat(playerId));
-            buildingFloorCounter.setValue(player.buildingFloors.length);
+            buildingFloorCounter.setValue(player.buildingFloorsIds.length);
             _this.buildingFloorCounters[playerId] = buildingFloorCounter;
             var ployTokenCounter = new ebg.counter();
             ployTokenCounter.create("ploy-token-counter-".concat(playerId));
@@ -583,6 +587,11 @@ var GardenNation = /** @class */ (function () {
         (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(points);
         this.board.setPoints(playerId, points);
     };
+    GardenNation.prototype.setInhabitants = function (playerId, inhabitants) {
+        var _a;
+        (_a = this.inhabitantCounters[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(inhabitants);
+        // TODO player board this.board.setPoints(playerId, inhabitants);
+    };
     GardenNation.prototype.addHelp = function () {
         var _this = this;
         dojo.place("<button id=\"gardennation-help-button\">?</button>", 'left-side');
@@ -614,6 +623,9 @@ var GardenNation = /** @class */ (function () {
         var notifs = [
             ['moveTorticrane', ANIMATION_MS],
             ['setPlayerOrder', ANIMATION_MS],
+            ['score', 1],
+            ['inhabitant', 1],
+            ['setBrambleType', 1],
             /*['scoreBeforeEnd', SCORE_MS],
             ['scoreCards', SCORE_MS],
             ['scoreBoard', SCORE_MS],
@@ -626,11 +638,20 @@ var GardenNation = /** @class */ (function () {
             _this.notifqueue.setSynchronous(notif[0], notif[1]);
         });
     };
+    GardenNation.prototype.notif_score = function (notif) {
+        this.setPoints(notif.args.playerId, notif.args.newScore);
+    };
+    GardenNation.prototype.notif_inhabitant = function (notif) {
+        this.setInhabitants(notif.args.playerId, notif.args.newInhabitants);
+    };
     GardenNation.prototype.notif_moveTorticrane = function (notif) {
         slideToObjectAndAttach(this, document.getElementById('torticrane'), "torticrane-spot-".concat(notif.args.torticranePosition));
     };
     GardenNation.prototype.notif_setPlayerOrder = function (notif) {
         slideToObjectAndAttach(this, document.getElementById("order-token-".concat(notif.args.playerId)), "order-track-".concat(notif.args.order));
+    };
+    GardenNation.prototype.notif_setBrambleType = function (notif) {
+        this.board.setBrambleType(notif.args.areaPosition, notif.args.type);
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

@@ -194,20 +194,21 @@ $area-spacing: 106px;
                 }
             }
 
-            &[data-bramble="true"]::before {
-                content: '';
-                position: absolute;
-                background: url('img/land-tokens.png');
-                background-size: auto 100%;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                right: 0;
+            
 
-                @for $i from 1 through 3 {
-                    &[data-type="#{$i}"] { 
-                        background-position: #{($i - 1) * 50%};
-                    }
+            @for $i from 1 through 3 {
+                &[data-bramble="true"][data-type="#{$i}"]::before {
+                    content: '';
+                    position: absolute;
+                    background: url('img/land-tokens.png');
+                    background-size: auto 100%;
+                    background-position: #{($i - 1) * 50%};
+                    top: 0;
+                    left: 0;
+                    bottom: 0;
+                    right: 0;
+                    box-shadow: 1px 1px 3px 2px black;
+                    border-radius: 50%;
                 }
             }
 
@@ -234,6 +235,7 @@ $area-spacing: 106px;
         width: 71px;
         height: 76px;
         background: url('img/torticrane.png');
+        z-index: 1;
     }
 }
 

@@ -6,19 +6,11 @@
     location_arg: number;
 }*/
 
-interface BuildingFloor {
-    id: number;
-    type: number;
-    playerId: number;
-    location: string;
-    locationArg: number;
-}
-
 interface GardenNationPlayer extends Player {
     playerNo: number;
     inhabitants: number;
     turnTrack: number;
-    buildingFloors: BuildingFloor[];
+    buildingFloorsIds: number[];
     usedPloy: number[];
 }
 
@@ -75,4 +67,19 @@ interface NotifMoveTorticraneArgs {
 interface NotifSetPlayerOrderArgs {
     playerId: number;
     order: number;
+}
+
+interface NotifScoreArgs {
+    playerId: number;
+    newScore: number;
+}
+
+interface NotifInhabitantsArgs {
+    playerId: number;
+    newInhabitants: number;
+}
+
+interface NotifSetBrambleTypeArgs {
+    areaPosition: number;
+    type: number;
 }

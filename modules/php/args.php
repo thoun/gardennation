@@ -15,7 +15,8 @@ trait ArgsTrait {
     function argChooseAction() {
         $playerId = intval($this->getActivePlayerId());
 
-        $canConstructBuilding = intval($this->buildingFloors->countCardInLocation('table', $playerId)) > 0 && count($this->argConstructBuilding()['possiblePositions']) > 0;
+        $remainingFloors = intval($this->getUniqueValueFromDB("SELECT count(*) FROM `building_floor` WHERE player_id = $playerId AND `territory_number` is null"));
+        $canConstructBuilding = $remainingFloors > 0 && count($this->argConstructBuilding()['possiblePositions']) > 0;
         $canAbandonBuilding = count($this->argAbandonBuilding()['possiblePositions']) > 0;
         $canUsePloy = $this->canUsePloy($playerId);
 
@@ -43,7 +44,7 @@ trait ArgsTrait {
         $possiblePositions = [];
         foreach ($territoryPositions as $position => $area) {
             $building = $this->getTerritoryBuildingByAreaPosition($position);
-            if ($building == null || ($building->playerId == $playerId && !$building->roof)) {                
+            if ($building == null || ($building->playerId == $playerId && !$building->roof)) {
                 $cost = $area[1] + ($building == null ? 0 : $building->floors);
 
                 if ($cost < $player->inhabitants) {

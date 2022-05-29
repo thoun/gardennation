@@ -378,7 +378,7 @@ class GardenNation implements GardenNationGame {
 
             const buildingFloorCounter = new ebg.counter();
             buildingFloorCounter.create(`building-floor-counter-${playerId}`);
-            buildingFloorCounter.setValue(player.buildingFloors.length);
+            buildingFloorCounter.setValue(player.buildingFloorsIds.length);
             this.buildingFloorCounters[playerId] = buildingFloorCounter;
 
             const ployTokenCounter = new ebg.counter();
@@ -524,6 +524,11 @@ class GardenNation implements GardenNationGame {
         (this as any).scoreCtrl[playerId]?.toValue(points);
         this.board.setPoints(playerId, points);
     }
+    
+    private setInhabitants(playerId: number, inhabitants: number) {
+        this.inhabitantCounters[playerId]?.toValue(inhabitants);
+        // TODO player board this.board.setPoints(playerId, inhabitants);
+    }
 
     private addHelp() {
         dojo.place(`<button id="gardennation-help-button">?</button>`, 'left-side');
@@ -585,6 +590,9 @@ class GardenNation implements GardenNationGame {
         const notifs = [
             ['moveTorticrane', ANIMATION_MS],
             ['setPlayerOrder', ANIMATION_MS],
+            ['score', 1],
+            ['inhabitant', 1],
+            ['setBrambleType', 1],
             /*['scoreBeforeEnd', SCORE_MS],
             ['scoreCards', SCORE_MS],
             ['scoreBoard', SCORE_MS],
@@ -599,12 +607,24 @@ class GardenNation implements GardenNationGame {
         });
     }
 
+    notif_score(notif: Notif<NotifScoreArgs>) {
+        this.setPoints(notif.args.playerId, notif.args.newScore);
+    }
+
+    notif_inhabitant(notif: Notif<NotifInhabitantsArgs>) {
+        this.setInhabitants(notif.args.playerId, notif.args.newInhabitants);
+    }
+
     notif_moveTorticrane(notif: Notif<NotifMoveTorticraneArgs>) {
         slideToObjectAndAttach(this, document.getElementById('torticrane'), `torticrane-spot-${notif.args.torticranePosition}`);
     }
 
     notif_setPlayerOrder(notif: Notif<NotifSetPlayerOrderArgs>) {
         slideToObjectAndAttach(this, document.getElementById(`order-token-${notif.args.playerId}`), `order-track-${notif.args.order}`);
+    }
+
+    notif_setBrambleType(notif: Notif<NotifSetBrambleTypeArgs>) {
+        this.board.setBrambleType(notif.args.areaPosition, notif.args.type);
     }
 
     /* This enable to inject translatable styled things to logs or action bar */

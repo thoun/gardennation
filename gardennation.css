@@ -193,24 +193,44 @@
 #board .territory .area[data-rotation="6"] {
   transform: rotate(180deg) translateX(106px) rotate(-180deg);
 }
-#board .territory .area[data-bramble=true]::before {
+#board .territory .area[data-bramble=true][data-type="1"]::before {
   content: "";
   position: absolute;
   background: url("img/land-tokens.png");
   background-size: auto 100%;
+  background-position: 0%;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
+  box-shadow: 1px 1px 3px 2px black;
+  border-radius: 50%;
 }
-#board .territory .area[data-bramble=true]::before[data-type="1"] {
-  background-position: 0%;
-}
-#board .territory .area[data-bramble=true]::before[data-type="2"] {
+#board .territory .area[data-bramble=true][data-type="2"]::before {
+  content: "";
+  position: absolute;
+  background: url("img/land-tokens.png");
+  background-size: auto 100%;
   background-position: 50%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  box-shadow: 1px 1px 3px 2px black;
+  border-radius: 50%;
 }
-#board .territory .area[data-bramble=true]::before[data-type="3"] {
+#board .territory .area[data-bramble=true][data-type="3"]::before {
+  content: "";
+  position: absolute;
+  background: url("img/land-tokens.png");
+  background-size: auto 100%;
   background-position: 100%;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  box-shadow: 1px 1px 3px 2px black;
+  border-radius: 50%;
 }
 #board .territory .area.selectable {
   cursor: pointer;
@@ -230,6 +250,7 @@
   width: 71px;
   height: 76px;
   background: url("img/torticrane.png");
+  z-index: 1;
 }
 
 #common-projects {

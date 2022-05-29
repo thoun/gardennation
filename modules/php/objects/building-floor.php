@@ -2,17 +2,15 @@
 
 class BuildingFloor {
     public int $id;
-    public string $location;
-    public int $locationArg;
-    public int $type; // 0 for building floor, 1 for roof
     public int $playerId; // 0 for roof
+    public /*int|null*/ $territoryNumber;
+    public /*int|null*/ $areaPosition;
 
-    public function __construct($dbCard) {
-        $this->id = intval($dbCard['id']);
-        $this->location = $dbCard['location'];
-        $this->locationArg = intval($dbCard['location_arg']);
-        $this->type = intval($dbCard['type']);
-        $this->playerId = intval($dbCard['type_arg']);
+    public function __construct($dbObject) {
+        $this->id = intval($dbObject['id']);
+        $this->playerId = $dbObject['player_id'];
+        $this->territoryNumber = $dbObject['territory_number'] ? intval($dbObject['territory_number']) : null;
+        $this->areaPosition = $dbObject['area_position'] ? intval($dbObject['area_position']) : null;
     } 
 }
 ?>

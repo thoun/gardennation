@@ -29,18 +29,32 @@ trait ActionTrait {
         $this->gamestate->nextState('usePloyToken');
     }
 
-    private function applyConstructBuilding(int $areaPosition) {
+    private function applyConstructBuilding(int $areaPosition) {        
+        $playerId = intval(self::getActivePlayerId());
+        $player = $this->getPlayer($playerId);
+
         $map = $this->getMap();
         $area = $map[$areaPosition];
 
-        // TODO check can pay
+        $building = $this->getTerritoryBuildingByAreaPosition($areaPosition);
+        if ($building != null && ($building->playerId != $playerId || $building->roof)) {
+            throw new BgaUserException("Impossible to build on this building");
+        }
+        $cost = $area[1] + ($building == null ? 0 : $building->floors);
+        if ($cost >= $player->inhabitants) {
+            throw new BgaUserException("Not enough inhabitants");
+        }
 
         if ($area[0] == 0) {
             $this->setGameStateValue(BRAMBLE_CHOICE_AREA, $areaPosition);
             $this->gamestate->nextState('chooseTypeOfLand');
             return;
-        } 
+        }
+    
+        $this->incPlayerInhabitants($playerId, -$cost);
 
+        $message = 'TODO';
+        $this->placeBuildingsFloor($playerId, floor($areaPosition / 10), $areaPosition % 10, $message);
 
         /*$allPlacedRoutes = $this->getPlacedRoutes();
         $playerPlacedRoutes = array_filter($allPlacedRoutes, fn($placedRoute) => $placedRoute->playerId === $playerId);
@@ -141,11 +155,21 @@ trait ActionTrait {
     public function chooseTypeOfLand(int $typeOfLand) {
         self::checkAction('chooseTypeOfLand');
         
+        $playerId = intval(self::getActivePlayerId());
+        
         $areaPosition = intval($this->getGameStateValue(BRAMBLE_CHOICE_AREA));
         
         $this->DbQuery("INSERT INTO `bramble_area` (`position`, `type`) VALUES ($areaPosition, $typeOfLand)");
 
-        // TODO notif
+        $territoryNumber = floor($areaPosition / 10);
+        self::notifyAllPlayers('setBrambleType', clienttranslate('${player_name} choses bramble ${brambleIcon} for territory ${territoryNumber}'), [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'territoryNumber' => $territoryNumber,
+            'areaPosition' => $areaPosition,
+            'brambleIcon' => $typeOfLand,
+            'type' => $typeOfLand,
+        ]);
 
         $this->applyConstructBuilding($areaPosition);
     }

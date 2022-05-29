@@ -53,9 +53,6 @@ class GardenNation extends Table {
             //    "my_second_game_variant" => 101,
         ]);
 		
-        $this->buildingFloors = $this->getNew("module.common.deck");
-        $this->buildingFloors->init("building_floor");
-		
         $this->commonProjects = $this->getNew("module.common.deck");
         $this->commonProjects->init("common_project");
         $this->commonProjects->autoreshuffle = true;
@@ -169,7 +166,7 @@ class GardenNation extends Table {
             $player['turnTrack'] = intval($player['turnTrack']);
             $player['usedPloy'] = json_decode($player['usedPloy']);
 
-            $player['buildingFloors'] = $this->getBuildingFloorsFromDb($this->buildingFloors->getCardsInLocation('table', $playerId));
+            $player['buildingFloorsIds'] = $this->getAvailableBuildingsIds($playerId);
         }
 
         $result['territories'] = $this->getTerritories();
