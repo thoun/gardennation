@@ -378,7 +378,7 @@ class GardenNation implements GardenNationGame {
 
             const buildingFloorCounter = new ebg.counter();
             buildingFloorCounter.create(`building-floor-counter-${playerId}`);
-            buildingFloorCounter.setValue(player.buildingFloorsIds.length);
+            buildingFloorCounter.setValue(player.buildingFloors.length);
             this.buildingFloorCounters[playerId] = buildingFloorCounter;
 
             const ployTokenCounter = new ebg.counter();

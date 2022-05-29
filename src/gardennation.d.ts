@@ -6,11 +6,31 @@
     location_arg: number;
 }*/
 
+interface BuildingFloor {
+    id: number;
+    playerId: number; // 0 for roof
+
+}
+
+interface Building {
+    playerId: number;
+    areaPosition: number;
+    floors: number;
+    roof: boolean;
+    buildingFloors: BuildingFloor[];
+}
+
+interface AreaSpot {        
+    type: number;
+    bramble: boolean;
+    building: Building;
+}
+
 interface GardenNationPlayer extends Player {
     playerNo: number;
     inhabitants: number;
     turnTrack: number;
-    buildingFloorsIds: number[];
+    buildingFloors: BuildingFloor[];
     usedPloy: number[];
 }
 
@@ -32,7 +52,7 @@ interface GardenNationGamedatas {
 
     // Add here variables you set up in getAllDatas
     territories: number[][]; // index 0 is the number of the territory, index 1 is the rotation
-    map: { [position: number]: number[] };
+    map: { [position: number]: AreaSpot };
     torticranePosition: number;
 }
 

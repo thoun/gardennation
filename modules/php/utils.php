@@ -1,6 +1,7 @@
 <?php
 
 require_once(__DIR__.'/objects/building-floor.php');
+require_once(__DIR__.'/objects/building.php');
 require_once(__DIR__.'/objects/player.php');
 
 trait UtilTrait {
@@ -245,36 +246,63 @@ trait UtilTrait {
     }
 
     function getTerritoryBuildingByAreaPosition(int $areaPosition) {
-        return $this->getTerritoryBuildingsForTerritoryNumber(floor($areaPosition / 10), $areaPosition % 10);
+        return $this->getTerritoryBuildings(floor($areaPosition / 10), $areaPosition % 10);
     }
 
-    function getTerritoryBuildingsForTerritoryNumber(int $territoryNumber, $positionInTerritory = null) {
-        // TODO Building
-        return [];
+    function getTerritoryBuildings(/*int|null*/ $territoryNumber = null, /*int|null*/ $positionInTerritory = null) {
+        $sql = "SELECT * FROM `building_floor` WHERE `territory_number` is not null";
+        if ($territoryNumber !== null) {
+            $sql .= " AND `territory_number` = $territoryNumber";
+        }
+        if ($positionInTerritory !== null) {
+            $sql .= " AND `area_position` = $positionInTerritory";
+        }
+        $sql .= " ORDER BY `player_id` DESC";
+        $buildingFloorsDb = $this->getCollectionFromDb($sql);
+        $buildingFloors = array_map(fn($dbResult) => new BuildingFloor($dbResult), array_values($buildingFloorsDb));
+
+        $buildings = [];
+
+        foreach($buildingFloors as $buildingFloor) {
+            $fullAreaPosition = $buildingFloor->territoryNumber * 10 + $buildingFloor->areaPosition;
+            if (!array_key_exists($fullAreaPosition, $buildings)) {
+                $buildings[$fullAreaPosition] = new Building($buildingFloor->playerId, $fullAreaPosition, 0, false);
+            }
+
+            if ($buildingFloor->playerId == 0) {
+                $buildings[$fullAreaPosition]->roof = true;
+            } else {
+                $buildings[$fullAreaPosition]->floors++;
+            }
+
+            $buildings[$fullAreaPosition]->buildingFloors[] = $buildingFloor;
+        }
+
+        return $buildings;
     }
 
-    function getTerritoryBuildings() {
+    function getCurrentTerritoryBuildings() {
         $territories = $this->getTerritories();
         
         $torticranePosition = intval($this->getGameStateValue(TORTICRANE_POSITION));
         $territoryBuildings = [];
         if ($torticranePosition == -1) {
             foreach ([1,2,3,4,5,6,7] as $number) {
-                $territoryBuildings = array_merge($territoryBuildings, $this->getTerritoryBuildingsForTerritoryNumber($number));
+                $territoryBuildings = array_merge($territoryBuildings, $this->getTerritoryBuildings($number));
             }
         } else {
-            $territoryBuildings = $this->getTerritoryBuildingsForTerritoryNumber($territories[$torticranePosition][0]);
+            $territoryBuildings = $this->getTerritoryBuildings($territories[$torticranePosition][0]);
         }
         return $territoryBuildings;
     }
 
-    function getAvailableBuildingsIds(int $playerId) {
-        $buildingFloorsIdsDb = $this->getCollectionFromDb("SELECT `id` FROM `building_floor` WHERE player_id = $playerId AND `territory_number` is null");
-        return array_values(array_map(fn($buildingFloorsIdDb) => intval($buildingFloorsIdDb['id']), $buildingFloorsIdsDb));
+    function getAvailableBuildings(int $playerId) {
+        $buildingFloorsDb = $this->getCollectionFromDb("SELECT * FROM `building_floor` WHERE player_id = $playerId AND `territory_number` is null");
+        return array_values(array_map(fn($buildingFloorDb) => new BuildingFloor($buildingFloorDb), $buildingFloorsDb));
     }
 
-    function placeBuildingsFloor(int $playerId, int $territoryNumber, int $areaPosition, $message = '') {
-        $buildingFloorId = $this->getAvailableBuildingsIds($playerId)[0];
+    function placeBuildingFloor(int $playerId, int $territoryNumber, int $areaPosition, $message = '') {
+        $buildingFloorId = $this->getAvailableBuildings($playerId)[0]->id;
 
         $this->DbQuery("UPDATE `building_floor` SET `territory_number` = $territoryNumber, `area_position` = $areaPosition WHERE `id` = $buildingFloorId");
         

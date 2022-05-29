@@ -124,8 +124,8 @@ var Board = /** @class */ (function () {
             [0, 1, 2, 3, 4, 5, 6].forEach(function (areaPosition) {
                 var position = territoryNumber * 10 + areaPosition;
                 var mapPosition = map[position];
-                var type = mapPosition[0] % 10;
-                var bramble = mapPosition[0] == 0 || mapPosition[0] > 10;
+                var type = mapPosition.type;
+                var bramble = mapPosition.bramble;
                 var rotation = areaPosition;
                 if (areaPosition > 0) {
                     rotation = (areaPosition + territoryRotation - 1) % 6 + 1;
@@ -469,7 +469,7 @@ var GardenNation = /** @class */ (function () {
             _this.inhabitantCounters[playerId] = inhabitantCounter;
             var buildingFloorCounter = new ebg.counter();
             buildingFloorCounter.create("building-floor-counter-".concat(playerId));
-            buildingFloorCounter.setValue(player.buildingFloorsIds.length);
+            buildingFloorCounter.setValue(player.buildingFloors.length);
             _this.buildingFloorCounters[playerId] = buildingFloorCounter;
             var ployTokenCounter = new ebg.counter();
             ployTokenCounter.create("ploy-token-counter-".concat(playerId));

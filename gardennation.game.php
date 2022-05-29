@@ -48,9 +48,6 @@ class GardenNation extends Table {
             PLOY_USED => 12,
             TORTICRANE_POSITION => 13,
             BRAMBLE_CHOICE_AREA => 14,
-
-            //    "my_first_game_variant" => 100,
-            //    "my_second_game_variant" => 101,
         ]);
 		
         $this->commonProjects = $this->getNew("module.common.deck");
@@ -166,11 +163,23 @@ class GardenNation extends Table {
             $player['turnTrack'] = intval($player['turnTrack']);
             $player['usedPloy'] = json_decode($player['usedPloy']);
 
-            $player['buildingFloorsIds'] = $this->getAvailableBuildingsIds($playerId);
+            $player['buildingFloors'] = $this->getAvailableBuildings($playerId);
         }
 
         $result['territories'] = $this->getTerritories();
-        $result['map'] = $this->getMap();
+        $map = $this->getMap();
+        //$this->debug($map);
+        $buildings = $this->getTerritoryBuildings();
+        $result['map'] = [];
+        
+        foreach ($map as $position => $area) {
+            $areaSpot = new stdClass();
+            $areaSpot->type = $area[0] % 10;
+            $areaSpot->bramble = $area[0] == 0 || $area[0] > 10;
+            $areaSpot->building = array_key_exists($position, $buildings) ? $buildings[$position] : null;
+            $result['map'][$position] = $areaSpot;
+        }
+        
         $result['torticranePosition'] = $this->getGameStateValue(TORTICRANE_POSITION);
   
         return $result;
@@ -187,9 +196,18 @@ class GardenNation extends Table {
         (see states.inc.php)
     */
     function getGameProgression() {
+        $stateName = $this->gamestate->state()['name']; 
+        if ($stateName === 'gameEnd') {
+            return 100;
+        }
+
+        $minPlayerBuildings = intval($this->getUniqueValueFromDB("SELECT min(`count`) FROM (SELECT player.player_id, count(*) as `count` FROM player left join `building_floor` ON player.player_id = building_floor.player_id WHERE `territory_number` is null group by player.player_id) tmp"));
+        $maxPlayerBuildings = $this->BUILDING_FLOORS[count($this->getPlayersIds())];
         // TODO: compute and return the game progression
 
-        return 0;
+        
+
+        return 100 * ($maxPlayerBuildings - $minPlayerBuildings) / $maxPlayerBuildings;
     }
 
 //////////////////////////////////////////////////////////////////////////////

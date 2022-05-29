@@ -62,7 +62,7 @@ trait ArgsTrait {
         $playerId = intval($this->getActivePlayerId());
 
         $territoryPositions = $this->getTerritoryPositions();
-        $territoryBuildings = $this->getTerritoryBuildings();
+        $territoryBuildings = $this->getCurrentTerritoryBuildings();
 
         $possiblePositions = [];
         foreach ($territoryPositions as $areaPosition => $area) { 

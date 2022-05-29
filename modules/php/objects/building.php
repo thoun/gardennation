@@ -5,14 +5,16 @@ class Building {
     public int $areaPosition;
     public int $floors;
     public bool $roof;
-    public /*array|null*/ $buildingFloors;
+    public array $buildingFloors = [];
 
     public function __construct(int $playerId, int $areaPosition, int $floors, bool $roof, $buildingFloors = null) {
         $this->playerId = $playerId;
         $this->areaPosition = $areaPosition;
         $this->floors = $floors;
         $this->roof = $roof;
-        $this->buildingFloors = $buildingFloors;
+        if ($buildingFloors != null) {
+            $this->buildingFloors = $buildingFloors;
+        }
     } 
 }
 ?>

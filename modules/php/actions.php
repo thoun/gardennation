@@ -54,7 +54,7 @@ trait ActionTrait {
         $this->incPlayerInhabitants($playerId, -$cost);
 
         $message = 'TODO';
-        $this->placeBuildingsFloor($playerId, floor($areaPosition / 10), $areaPosition % 10, $message);
+        $this->placeBuildingFloor($playerId, floor($areaPosition / 10), $areaPosition % 10, $message);
 
         /*$allPlacedRoutes = $this->getPlacedRoutes();
         $playerPlacedRoutes = array_filter($allPlacedRoutes, fn($placedRoute) => $placedRoute->playerId === $playerId);
@@ -111,19 +111,6 @@ trait ActionTrait {
 
     public function constructBuilding(int $areaPosition) {
         self::checkAction('constructBuilding');
-        
-        $playerId = intval(self::getActivePlayerId());
-        
-        $map = $this->getMap();
-        $area = $map[$areaPosition];
-
-        // TODO check can pay
-
-        if ($area[0] == 0) {
-            $this->setGameStateValue(BRAMBLE_CHOICE_AREA, $areaPosition);
-            $this->gamestate->nextState('chooseTypeOfLand');
-            return;
-        } 
 
         $this->applyConstructBuilding($areaPosition);
     }

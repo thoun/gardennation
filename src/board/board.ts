@@ -4,7 +4,7 @@ class Board {
         private game: GardenNationGame, 
         private players: GardenNationPlayer[],
         private territories: number[][],
-        private map: { [position: number]: number[] },
+        private map: { [position: number]: AreaSpot },
         torticranePosition: number
     ) {
         document.getElementById(`order-track`).dataset.playerNumber = ''+players.length;
@@ -26,9 +26,9 @@ class Board {
 
             [0,1,2,3,4,5,6].forEach(areaPosition => {
                 const position = territoryNumber * 10 + areaPosition;
-                const mapPosition = map[position];
-                const type = mapPosition[0] % 10;
-                const bramble = mapPosition[0] == 0 || mapPosition[0] > 10;
+                const mapPosition: AreaSpot = map[position];
+                const type = mapPosition.type;
+                const bramble = mapPosition.bramble;
                 let rotation = areaPosition;
                 if (areaPosition > 0) {
                     rotation = (areaPosition + territoryRotation - 1) % 6 + 1;
