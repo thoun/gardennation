@@ -38,6 +38,10 @@ class Board {
                 `, `territory${territoryPosition}`);
 
                 document.getElementById(`area${position}`).addEventListener('click', () => this.game.onAreaClick(position));
+
+                if (mapPosition.building) {
+                    this.setBuilding(position, mapPosition.building);
+                }
             });
         });
 
@@ -55,5 +59,21 @@ class Board {
     public setBrambleType(areaPosition: number, type: number) {
         const areaDiv = document.getElementById(`area${areaPosition}`);
         areaDiv.dataset.type = ''+type;
+    }
+
+    public setBuilding(areaPosition: number, building: Building | null) {
+        const buildingDiv = document.getElementById(`building${areaPosition}`);
+        if (building) {
+            if (!buildingDiv) {
+                dojo.place(`<div id="building${areaPosition}" class="building"></div>`, `area${areaPosition}`);
+            }
+            building.buildingFloors.forEach((floor, index) => {
+                if (!document.getElementById(`building-floor-${floor.id}`)) {
+                    dojo.place(`<div id="building-floor-${floor.id}" class="building-floor" data-color="${this.game.getPlayerColor(floor.playerId)}" style="z-index: ${index}"></div>`, `building${areaPosition}`);
+                }
+            });
+        } else {
+            buildingDiv?.parentElement?.removeChild(buildingDiv);
+        }
     }
 }

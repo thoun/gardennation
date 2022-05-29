@@ -59,6 +59,7 @@ interface GardenNationGamedatas {
 interface GardenNationGame extends Game {
     onAreaClick(position: number): void;    
     getPlayerId(): number;
+    getPlayerColor(playerId: number): string;
 }
 
 interface EnteringChooseActionArgs {
@@ -102,4 +103,9 @@ interface NotifInhabitantsArgs {
 interface NotifSetBrambleTypeArgs {
     areaPosition: number;
     type: number;
+}
+
+interface NotifSetBuildingArgs {
+    areaPosition: number;
+    building: Building | null;
 }

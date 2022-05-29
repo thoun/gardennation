@@ -336,6 +336,10 @@ class GardenNation implements GardenNationGame {
         return Number((this as any).player_id);
     }
 
+    public getPlayerColor(playerId: number): string {
+        return this.gamedatas.players[playerId].color;
+    }
+
     public getPlayerScore(playerId: number): number {
         return (this as any).scoreCtrl[playerId]?.getValue() ?? Number(this.gamedatas.players[playerId].score);
     }
@@ -590,6 +594,7 @@ class GardenNation implements GardenNationGame {
         const notifs = [
             ['moveTorticrane', ANIMATION_MS],
             ['setPlayerOrder', ANIMATION_MS],
+            ['setBuilding', ANIMATION_MS],
             ['score', 1],
             ['inhabitant', 1],
             ['setBrambleType', 1],
@@ -625,6 +630,10 @@ class GardenNation implements GardenNationGame {
 
     notif_setBrambleType(notif: Notif<NotifSetBrambleTypeArgs>) {
         this.board.setBrambleType(notif.args.areaPosition, notif.args.type);
+    }
+
+    notif_setBuilding(notif: Notif<NotifSetBuildingArgs>) {
+        this.board.setBuilding(notif.args.areaPosition, notif.args.building);
     }
 
     /* This enable to inject translatable styled things to logs or action bar */

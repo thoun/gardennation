@@ -245,8 +245,9 @@ trait UtilTrait {
         return $territoryPositions;
     }
 
-    function getTerritoryBuildingByAreaPosition(int $areaPosition) {
-        return $this->getTerritoryBuildings(floor($areaPosition / 10), $areaPosition % 10);
+    function getBuildingByAreaPosition(int $areaPosition) {
+        $buildings = $this->getTerritoryBuildings(floor($areaPosition / 10), $areaPosition % 10);
+        return count($buildings) > 0 ? array_values($buildings)[0] : null;
     }
 
     function getTerritoryBuildings(/*int|null*/ $territoryNumber = null, /*int|null*/ $positionInTerritory = null) {
@@ -306,8 +307,31 @@ trait UtilTrait {
 
         $this->DbQuery("UPDATE `building_floor` SET `territory_number` = $territoryNumber, `area_position` = $areaPosition WHERE `id` = $buildingFloorId");
         
-        // TODO notif
+        $building = $this->getBuildingByAreaPosition($territoryNumber * 10 + $areaPosition);
+        self::notifyAllPlayers('setBuilding', $message, [
+            'areaPosition' => $building->areaPosition,
+            'building' => $building,
+        ]);
 
         return $buildingFloorId;
+    }
+
+    function removeBuilding(Building $building, $message = '') {
+        $buildingFloorsId = array_map(fn($buildingFloor) => $buildingFloor->id, $building->buildingFloors);
+        $this->DbQuery("UPDATE `building_floor` SET `territory_number` = null, `area_position` = null WHERE `id` IN (".implode(',', $buildingFloorsId).")");
+        
+        self::notifyAllPlayers('setBuilding', $message, [
+            'areaPosition' => $building->areaPosition,
+            'building' => null,
+        ]);
+    }
+
+    function getBuildingCost(Building $building) {
+        $areaCost = $this->MAP[$building->areaPosition][1];
+        $cost = 0;
+        for ($i = 0; $i < $building->floors; $i++) {
+            $cost += $areaCost + $i;
+        }
+        return $cost * 2;
     }
 }

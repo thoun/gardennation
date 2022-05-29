@@ -36,7 +36,7 @@ trait ActionTrait {
         $map = $this->getMap();
         $area = $map[$areaPosition];
 
-        $building = $this->getTerritoryBuildingByAreaPosition($areaPosition);
+        $building = $this->getBuildingByAreaPosition($areaPosition);
         if ($building != null && ($building->playerId != $playerId || $building->roof)) {
             throw new BgaUserException("Impossible to build on this building");
         }
@@ -126,7 +126,17 @@ trait ActionTrait {
         
         $playerId = intval(self::getActivePlayerId());
 
-        // TODO
+        $building = $this->getBuildingByAreaPosition($areaPosition);
+        if ($building == null || $building->playerId != $playerId) {
+            throw new BgaUserException("No player building");
+        }
+        $cost = $this->getBuildingCost($building);
+        
+    
+        $this->incPlayerInhabitants($playerId, $cost);
+
+        $message = 'TODO';
+        $this->removeBuilding($building, $message);
 
         $this->moveTorticrane($areaPosition);
 

@@ -43,7 +43,7 @@ trait ArgsTrait {
         $territoryPositions = $this->getTerritoryPositions();
         $possiblePositions = [];
         foreach ($territoryPositions as $position => $area) {
-            $building = $this->getTerritoryBuildingByAreaPosition($position);
+            $building = $this->getBuildingByAreaPosition($position);
             if ($building == null || ($building->playerId == $playerId && !$building->roof)) {
                 $cost = $area[1] + ($building == null ? 0 : $building->floors);
 

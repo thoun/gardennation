@@ -250,7 +250,40 @@
   width: 71px;
   height: 76px;
   background: url("img/torticrane.png");
-  z-index: 1;
+  z-index: 20;
+}
+#board .building {
+  position: absolute;
+  bottom: 26px;
+  left: 10px;
+  display: flex;
+  flex-direction: column-reverse;
+}
+#board .building .building-floor {
+  width: 72px;
+  height: 44px;
+  background: url("img/building-floor.png");
+}
+#board .building .building-floor[data-color=fcaf26] {
+  background-position-x: 0%;
+}
+#board .building .building-floor[data-color=ab3b2a] {
+  background-position-x: 33.3333333333%;
+}
+#board .building .building-floor[data-color="5f8637"] {
+  background-position-x: 66.6666666667%;
+}
+#board .building .building-floor[data-color="456e96"] {
+  background-position-x: 100%;
+}
+#board .building .building-floor[data-color="0"] {
+  width: 75px;
+  height: 63px;
+  background: url("img/roof.png");
+  margin-left: -9px;
+}
+#board .building .building-floor:not(:first-child) {
+  margin-bottom: -12px;
 }
 
 #common-projects {

@@ -235,7 +235,39 @@ $area-spacing: 106px;
         width: 71px;
         height: 76px;
         background: url('img/torticrane.png');
-        z-index: 1;
+        z-index: 20;
+    }
+
+    .building {
+        position: absolute;
+        bottom: 26px;
+        left: 10px;
+        display: flex;
+        flex-direction: column-reverse;
+
+        .building-floor {
+            width: 72px;
+            height: 44px;
+            background: url('img/building-floor.png');
+
+            @each $playerColor in $playerColors {
+                $i: index($playerColors, $playerColor) - 1;
+                &[data-color="#{$playerColor}"] { 
+                    background-position-x: #{$i * 100% / 3};
+                }
+            }
+
+            &[data-color="0"] { 
+                width: 75px;
+                height: 63px;
+                background: url('img/roof.png');
+                margin-left: -9px;
+            }
+
+            &:not(:first-child) {
+                margin-bottom: -12px;
+            }
+        }
     }
 }
 
