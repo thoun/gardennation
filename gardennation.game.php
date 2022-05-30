@@ -108,7 +108,7 @@ class GardenNation extends Table {
         //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
         //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
 
-        // TODO: setup the initial game situation here
+        // setup the initial game situation
 
         // init territories
         $territories = [1,2,3,4,5,6,7];        
@@ -175,6 +175,7 @@ class GardenNation extends Table {
         foreach ($map as $position => $area) {
             $areaSpot = new stdClass();
             $areaSpot->type = $area[0] % 10;
+            $areaSpot->cost = $area[1];
             $areaSpot->bramble = $area[0] == 0 || $area[0] > 10;
             $areaSpot->building = array_key_exists($position, $buildings) ? $buildings[$position] : null;
             $result['map'][$position] = $areaSpot;
@@ -203,9 +204,6 @@ class GardenNation extends Table {
 
         $minPlayerBuildings = intval($this->getUniqueValueFromDB("SELECT min(`count`) FROM (SELECT player.player_id, count(*) as `count` FROM player left join `building_floor` ON player.player_id = building_floor.player_id WHERE `territory_number` is null group by player.player_id) tmp"));
         $maxPlayerBuildings = $this->BUILDING_FLOORS[count($this->getPlayersIds())];
-        // TODO: compute and return the game progression
-
-        
 
         return 100 * ($maxPlayerBuildings - $minPlayerBuildings) / $maxPlayerBuildings;
     }

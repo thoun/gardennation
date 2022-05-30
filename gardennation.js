@@ -120,7 +120,7 @@ var Board = /** @class */ (function () {
         [0, 1, 2, 3, 4, 5, 6].forEach(function (territoryPosition) {
             var territoryNumber = territories[territoryPosition][0];
             var territoryRotation = territories[territoryPosition][1];
-            dojo.place("\n                <div id=\"territory".concat(territoryPosition, "\" class=\"territory\" data-position=\"").concat(territoryPosition, "\" data-number=\"").concat(territoryNumber, "\" data-rotation=\"").concat(territoryRotation, "\">\n                    <div id=\"torticrane-spot-").concat(territoryPosition, "\" class=\"torticrane-spot\"></div>\n                </div>\n            "), "board");
+            dojo.place("\n                <div id=\"territory".concat(territoryPosition, "\" class=\"territory\" data-position=\"").concat(territoryPosition, "\" data-number=\"").concat(territoryNumber, "\" data-rotation=\"").concat(territoryRotation, "\">\n                    <div class=\"territory-number top\">").concat(territoryNumber, "</div>\n                    <div class=\"territory-number left\">").concat(territoryNumber, "</div>\n                    <div class=\"territory-number right\">").concat(territoryNumber, "</div>\n                    <div id=\"torticrane-spot-").concat(territoryPosition, "\" class=\"torticrane-spot\"></div>\n                </div>\n            "), "board");
             [0, 1, 2, 3, 4, 5, 6].forEach(function (areaPosition) {
                 var position = territoryNumber * 10 + areaPosition;
                 var mapPosition = map[position];
@@ -130,7 +130,7 @@ var Board = /** @class */ (function () {
                 if (areaPosition > 0) {
                     rotation = (areaPosition + territoryRotation - 1) % 6 + 1;
                 }
-                dojo.place("\n                    <div id=\"area".concat(position, "\" class=\"area\" data-position=\"").concat(position, "\" data-type=\"").concat(type, "\" data-bramble=\"").concat(bramble.toString(), "\" data-cost=\"").concat(mapPosition[1], "\" data-position=\"").concat(areaPosition, "\" data-rotation=\"").concat(rotation, "\"></div>\n                "), "territory".concat(territoryPosition));
+                dojo.place("\n                    <div id=\"area".concat(position, "\" class=\"area\" data-position=\"").concat(position, "\" data-type=\"").concat(type, "\" data-bramble=\"").concat(bramble.toString(), "\" data-cost=\"").concat(mapPosition[1], "\" data-position=\"").concat(areaPosition, "\" data-rotation=\"").concat(rotation, "\">\n                        <div class=\"land-number\">").concat(mapPosition.cost, "</div>\n                    </div>\n                "), "territory".concat(territoryPosition));
                 document.getElementById("area".concat(position)).addEventListener('click', function () { return _this.game.onAreaClick(position); });
                 if (mapPosition.building) {
                     _this.setBuilding(position, mapPosition.building);
@@ -166,6 +166,9 @@ var Board = /** @class */ (function () {
         else {
             (_a = buildingDiv === null || buildingDiv === void 0 ? void 0 : buildingDiv.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(buildingDiv);
         }
+    };
+    Board.prototype.highlightBuilding = function (buildingsToHighlight) {
+        buildingsToHighlight.forEach(function (building) { var _a; return (_a = document.getElementById("building".concat(building.areaPosition))) === null || _a === void 0 ? void 0 : _a.classList.add('highlight'); });
     };
     return Board;
 }());
@@ -257,6 +260,8 @@ var GardenNation = /** @class */ (function () {
             case 'abandonBuilding':
                 this.onEnteringConstructBuilding(args.args);
                 break;
+            case 'endRound':
+                Array.from(document.querySelectorAll(".building.highlight")).forEach(function (elem) { return elem.classList.remove('highlight'); });
             case 'endScore':
                 this.onEnteringShowScore();
                 break;
@@ -371,7 +376,7 @@ var GardenNation = /** @class */ (function () {
                     chooseTypeOfLandArgs.possibleTypes.forEach(function (type) {
                         _this.addActionButton("chooseTypeOfLand".concat(type, "-button"), '', function () { return _this.chooseTypeOfLand(type); });
                         document.getElementById("chooseTypeOfLand".concat(type, "-button")).innerHTML =
-                            "<div class=\"button-bramble-type\" data-type=\"".concat(type, "\"></div>");
+                            "<div class=\"button-bramble-type\" data-type=\"".concat(type, "\"><div class=\"land-number\">5</div></div>");
                     });
                     this.addActionButton("cancelChooseTypeOfLand-button", _("Cancel"), function () { return _this.cancelChooseTypeOfLand(); }, null, null, 'gray');
                     break;
@@ -651,12 +656,7 @@ var GardenNation = /** @class */ (function () {
             ['score', 1],
             ['inhabitant', 1],
             ['setBrambleType', 1],
-            /*['scoreBeforeEnd', SCORE_MS],
-            ['scoreCards', SCORE_MS],
-            ['scoreBoard', SCORE_MS],
-            ['scoreFireflies', SCORE_MS],
-            ['scoreFootprints', SCORE_MS],
-            ['scoreAfterEnd', SCORE_MS],*/
+            ['territoryControl', SCORE_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -681,27 +681,34 @@ var GardenNation = /** @class */ (function () {
     GardenNation.prototype.notif_setBuilding = function (notif) {
         this.board.setBuilding(notif.args.areaPosition, notif.args.building);
     };
+    GardenNation.prototype.notif_territoryControl = function (notif) {
+        this.board.highlightBuilding(notif.args.buildingsToHighlight);
+    };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
     GardenNation.prototype.format_string_recursive = function (log, args) {
+        var _this = this;
         try {
             if (log && args && !args.processed) {
-                /*if (typeof args.adventurerName == 'string' && args.adventurerName[0] != '<') {
-                    args.adventurerName = `<strong style="color: ${this.getColor(args.adventurer?.color)};">${args.adventurerName}</strong>`;
+                if (args.playersNames && (typeof args.playersNames != 'string' || args.playersNames[0] != '<')) {
+                    var namesColored_1 = args.playersNames.map(function (playerName) {
+                        var _a;
+                        var color = (_a = Object.values(_this.gamedatas.players).find(function (player) { return player.name == playerName; })) === null || _a === void 0 ? void 0 : _a.color;
+                        return "<strong ".concat(color ? "style=\"color: #".concat(color, ";\"") : '', ">").concat(playerName, "</strong>");
+                    });
+                    var namesConcat_1 = '';
+                    namesColored_1.forEach(function (name, index) {
+                        namesConcat_1 += name;
+                        if (index < namesColored_1.length - 2) {
+                            namesConcat_1 += ', ';
+                        }
+                        else if (index < namesColored_1.length - 1) {
+                            namesConcat_1 += _(' and ');
+                        }
+                    });
+                    args.playersNames = namesConcat_1;
                 }
-                if (typeof args.companionName == 'string' && args.companionName[0] != '<') {
-                    args.companionName = `<strong>${args.companionName}</strong>`;
-                }
-
-                if (typeof args.effectOrigin == 'string' && args.effectOrigin[0] != '<') {
-                    if (args.adventurer) {
-                        args.effectOrigin = `<strong style="color: ${this.getColor(args.adventurer?.color)};">${args.adventurer.name}</strong>`;
-                    }
-                    if (args.companion) {
-                        args.effectOrigin = `<strong>${args.companion.name}</strong>`;
-                    }
-                }
-
+                /*
                 for (const property in args) {
                     if (args[property]?.indexOf?.(']') > 0) {
                         args[property] = formatTextIcons(_(args[property]));

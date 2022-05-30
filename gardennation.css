@@ -80,15 +80,6 @@
   height: 394px;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
-#board .territory::before {
-  content: "";
-  position: absolute;
-  background: url("img/mainboard.jpg");
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-}
 #board .territory[data-position="0"] {
   left: 421.204px;
   top: 391.5px;
@@ -117,63 +108,16 @@
   left: 80px;
   top: 391.5px;
 }
-#board .territory[data-number="1"]::before {
-  background-position-x: -250.602px;
-  background-position-y: -96px;
-}
-#board .territory[data-number="2"]::before {
-  background-position-x: -591.806px;
-  background-position-y: -96px;
-}
-#board .territory[data-number="3"]::before {
-  background-position-x: -80px;
-  background-position-y: -391.5px;
-}
-#board .territory[data-number="4"]::before {
-  background-position-x: -421.204px;
-  background-position-y: -391.5px;
-}
-#board .territory[data-number="5"]::before {
-  background-position-x: -762.408px;
-  background-position-y: -391.5px;
-}
-#board .territory[data-number="6"]::before {
-  background-position-x: -250.602px;
-  background-position-y: -687px;
-}
-#board .territory[data-number="7"]::before {
-  background-position-x: -591.806px;
-  background-position-y: -687px;
-}
-#board .territory[data-rotation="0"]::before {
-  transform: rotate(0deg);
-}
-#board .territory[data-rotation="1"]::before {
-  transform: rotate(60deg);
-}
-#board .territory[data-rotation="2"]::before {
-  transform: rotate(120deg);
-}
-#board .territory[data-rotation="3"]::before {
-  transform: rotate(180deg);
-}
-#board .territory[data-rotation="4"]::before {
-  transform: rotate(240deg);
-}
-#board .territory[data-rotation="5"]::before {
-  transform: rotate(300deg);
-}
 #board .territory .area {
-  text-align: center;
-  text-shadow: 0 0 1px white, 0 0 2px white;
-  font-weight: bold;
   position: absolute;
   width: 100px;
   height: 100px;
-  left: 120.602px;
-  top: 147px;
+  left: 115px;
+  top: 148px;
   border-radius: 50%;
   border: 3px dashed transparent;
+  background: url("img/land-tokens.png");
+  background-size: auto 100%;
 }
 #board .territory .area[data-rotation="1"] {
   transform: rotate(-120deg) translateX(106px) rotate(120deg);
@@ -193,53 +137,63 @@
 #board .territory .area[data-rotation="6"] {
   transform: rotate(180deg) translateX(106px) rotate(-180deg);
 }
-#board .territory .area[data-bramble=true][data-type="1"]::before {
-  content: "";
-  position: absolute;
-  background: url("img/land-tokens.png");
-  background-size: auto 100%;
-  background-position: 0%;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+#board .territory .area[data-type="1"] {
+  background-position: 33.3333333333%;
+}
+#board .territory .area[data-type="1"][data-bramble=true] {
   box-shadow: 1px 1px 3px 2px black;
   border-radius: 50%;
+  z-index: 1;
 }
-#board .territory .area[data-bramble=true][data-type="2"]::before {
-  content: "";
-  position: absolute;
-  background: url("img/land-tokens.png");
-  background-size: auto 100%;
-  background-position: 50%;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+#board .territory .area[data-type="2"] {
+  background-position: 66.6666666667%;
+}
+#board .territory .area[data-type="2"][data-bramble=true] {
   box-shadow: 1px 1px 3px 2px black;
   border-radius: 50%;
+  z-index: 1;
 }
-#board .territory .area[data-bramble=true][data-type="3"]::before {
-  content: "";
-  position: absolute;
-  background: url("img/land-tokens.png");
-  background-size: auto 100%;
+#board .territory .area[data-type="3"] {
   background-position: 100%;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+}
+#board .territory .area[data-type="3"][data-bramble=true] {
   box-shadow: 1px 1px 3px 2px black;
   border-radius: 50%;
+  z-index: 1;
 }
 #board .territory .area.selectable {
   cursor: pointer;
   border-color: red;
 }
+#board .territory .area[data-type="0"] .land-number {
+  display: none;
+}
 #board .territory .torticrane-spot {
   position: absolute;
   bottom: 87px;
   right: 8px;
+}
+#board .territory .territory-number {
+  position: absolute;
+  text-align: center;
+  color: black;
+  text-shadow: 0 0 1px #c9c9c9, 0 0 2px #c9c9c9, 0 0 3px #c9c9c9;
+  width: 28px;
+  font-family: "rustico-regular";
+  font-size: 19px;
+  font-weight: 100;
+}
+#board .territory .territory-number.top {
+  left: 143px;
+  top: 16px;
+}
+#board .territory .territory-number.left {
+  left: 23px;
+  bottom: 82px;
+}
+#board .territory .territory-number.right {
+  right: 10px;
+  bottom: 108px;
 }
 #board #torticrane-spot--1 {
   position: absolute;
@@ -285,6 +239,9 @@
 #board .building .building-floor:not(:first-child) {
   margin-bottom: -12px;
 }
+#board .building.highlight {
+  animation: highlight-building-animation 1s;
+}
 
 #common-projects {
   position: relative;
@@ -293,6 +250,17 @@
   background: url("img/secondboard.jpg");
 }
 
+@keyframes highlight-building-animation {
+  0% {
+    transform: unset;
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: unset;
+  }
+}
 #playerstables .whiteblock {
   padding: 0;
 }
@@ -383,6 +351,12 @@ html {
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: "rustico-regular";
+  src: url("img/rustico-regular-webfont.woff2") format("woff2"), url("img/rustico-regular-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
 /* make space between buttons on touch devices */
 @media (hover: none) {
   #page-title .action-button.bgabutton, #page-title .bgabutton {
@@ -404,6 +378,7 @@ html {
 }
 
 .button-bramble-type {
+  position: relative;
   display: inline-block;
   width: 100px;
   height: 100px;
@@ -411,11 +386,23 @@ html {
   background-size: auto 100%;
 }
 .button-bramble-type[data-type="1"] {
-  background-position: 0%;
+  background-position: 33.3333333333%;
 }
 .button-bramble-type[data-type="2"] {
-  background-position: 50%;
+  background-position: 66.6666666667%;
 }
 .button-bramble-type[data-type="3"] {
   background-position: 100%;
+}
+
+.land-number {
+  position: absolute;
+  text-align: center;
+  color: white;
+  left: 41px;
+  bottom: 3px;
+  width: 18px;
+  font-family: "rustico-regular";
+  font-size: 15px;
+  font-weight: 100;
 }

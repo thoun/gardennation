@@ -91,21 +91,10 @@ $area-spacing: 106px;
 
     .territory {
         position: absolute;
-        //background: url('img/mainboard.jpg');
         width: $big-hex-width;
         height: $big-hex-height;
         //clip-path: polygon(40% 0%, 100% 25%, 100% 75%, 60% 100%, 0% 75%, 0% 25%);
         clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-
-        &::before {
-            content: '';
-            position: absolute;
-            background: url('img/mainboard.jpg');
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-        }
 
         &[data-position="0"] {
             left: $big-hex-x-offset + $big-hex-width;
@@ -136,79 +125,34 @@ $area-spacing: 106px;
             top: $big-hex-y-offset + $big-hex-height * 3 / 4;
         }
 
-        &[data-number="1"]::before {
-            background-position-x: -($big-hex-x-offset + $big-hex-width / 2);
-            background-position-y: -($big-hex-y-offset);
-        }
-        &[data-number="2"]::before {
-            background-position-x: -($big-hex-x-offset + $big-hex-width * 3 / 2);
-            background-position-y: -($big-hex-y-offset);
-        }
-        &[data-number="3"]::before {
-            background-position-x: -($big-hex-x-offset);
-            background-position-y: -($big-hex-y-offset + $big-hex-height * 3 / 4);
-        }
-        &[data-number="4"]::before {
-            background-position-x: -($big-hex-x-offset + $big-hex-width);
-            background-position-y: -($big-hex-y-offset + $big-hex-height * 3 / 4);
-        }
-        &[data-number="5"]::before {
-            background-position-x: -($big-hex-x-offset + $big-hex-width * 2);
-            background-position-y: -($big-hex-y-offset + $big-hex-height * 3 / 4);
-        }
-        &[data-number="6"]::before {
-            background-position-x: -($big-hex-x-offset + $big-hex-width / 2);
-            background-position-y: -($big-hex-y-offset + $big-hex-height * 3 / 2);
-        }
-        &[data-number="7"]::before {
-            background-position-x: -($big-hex-x-offset + $big-hex-width * 3 / 2);
-            background-position-y: -($big-hex-y-offset + $big-hex-height * 3 / 2);
-        }
-
-        @for $i from 0 through 5 {
-            &[data-rotation="#{$i}"]::before { 
-                transform: rotate(#{$i * 60}deg);
-            }
-        }
-
         .area {
-            // TEMP
-            //filter: grayscale(1);
-            //opacity: 0.7;
-            text-align: center;
-            text-shadow: 0 0 1px white, 0 0 2px white;
-            font-weight: bold;
-            // TEMP
-
             position: absolute;
             width: $area-size;
             height: $area-size;
-            left: $big-hex-width / 2 - $area-size / 2;
-            top: $big-hex-height / 2 - $area-size / 2;
+            left: 115px;
+            top: 148px;
+            //left: $big-hex-width / 2 - $area-size / 2;
+            //top: $big-hex-height / 2 - $area-size / 2;
             border-radius: 50%;
             border: 3px dashed transparent;
+            background: url('img/land-tokens.png');
+            background-size: auto 100%;
 
             @for $i from 1 through 6 {
                 &[data-rotation="#{$i}"] { 
                     transform: rotate(#{($i - 3) * 60}deg) translateX($area-spacing) rotate(#{-($i - 3) * 60}deg);
                 }
             }
-
             
-
             @for $i from 1 through 3 {
-                &[data-bramble="true"][data-type="#{$i}"]::before {
-                    content: '';
-                    position: absolute;
-                    background: url('img/land-tokens.png');
-                    background-size: auto 100%;
-                    background-position: #{($i - 1) * 50%};
-                    top: 0;
-                    left: 0;
-                    bottom: 0;
-                    right: 0;
-                    box-shadow: 1px 1px 3px 2px black;
-                    border-radius: 50%;
+                &[data-type="#{$i}"] {
+                    background-position: #{$i * 100% / 3};
+
+                    &[data-bramble="true"] {
+                        box-shadow: 1px 1px 3px 2px black;
+                        border-radius: 50%;
+                        z-index: 1;
+                    }
                 }
             }
 
@@ -216,12 +160,42 @@ $area-spacing: 106px;
                 cursor: pointer;
                 border-color: red;
             }
+
+            &[data-type="0"] {
+                .land-number {
+                    display: none;
+                }
+            }
         }
 
         .torticrane-spot {
             position: absolute;
             bottom: 87px;
             right: 8px;
+        }
+
+        .territory-number {
+          position: absolute;
+          text-align: center;
+          color: black;
+          text-shadow: 0 0 1px #c9c9c9, 0 0 2px #c9c9c9, 0 0 3px #c9c9c9;
+          width: 28px;
+          font-family: 'rustico-regular';
+          font-size: 19px;
+          font-weight: 100;
+
+          &.top {
+            left: 143px;
+            top: 16px;
+          }
+          &.left {
+            left: 23px;
+            bottom: 82px;
+          }
+          &.right {
+            right: 10px;
+            bottom: 108px;
+          }
         }
     }
         
@@ -268,6 +242,10 @@ $area-spacing: 106px;
                 margin-bottom: -12px;
             }
         }
+
+        &.highlight {            
+            animation: highlight-building-animation 1s;
+        }
     }
 }
 
@@ -276,4 +254,16 @@ $area-spacing: 106px;
     width: 1181px;
     height: 283px;
     background: url('img/secondboard.jpg');
+}
+
+@keyframes highlight-building-animation {
+  0% { 
+    transform: unset;
+  }
+  50% { 
+    transform: scale(1.5);
+  }
+  100% { 
+    transform: unset;
+  }
 }

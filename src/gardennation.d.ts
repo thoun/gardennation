@@ -22,6 +22,7 @@ interface Building {
 
 interface AreaSpot {        
     type: number;
+    cost: number;
     bramble: boolean;
     building: Building;
 }
@@ -108,4 +109,9 @@ interface NotifSetBrambleTypeArgs {
 interface NotifSetBuildingArgs {
     areaPosition: number;
     building: Building | null;
+}
+
+interface NotifTerritoryControlArgs {
+    territoryNumber: number | string;
+    buildingsToHighlight: Building[];
 }

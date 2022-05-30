@@ -199,8 +199,35 @@ trait UtilTrait {
     }
 
     function scoreTerritoryControl() {
-        // TODO
-        self::notifyAllPlayers('log', 'TODO scoreTerritoryControl', []);
+        for ($i=1; $i<=7; $i++) {
+            $playersIdsDb = $this->getCollectionFromDb("select player_id from (SELECT player_id, count(*) as `count` FROM `building_floor` where territory_number = $i and player_id <> 0 GROUP BY player_id ORDER BY 2 DESC) tmp WHERE tmp.count = (select max(tmp2.count) from (SELECT player_id, count(*) as `count` FROM `building_floor` where territory_number = $i and player_id <> 0 GROUP BY player_id ORDER BY 2 DESC) tmp2)");
+            $playersIds = array_map(fn($playerIdDb) => intval($playerIdDb['player_id']), array_values($playersIdsDb));
+            
+            if (count($playersIds) > 0) {
+                $buildingsToHighlight = $this->getTerritoryBuildings($i);
+                $buildingsToHighlight = array_values(array_filter($buildingsToHighlight, fn($building) => in_array($building->playerId, $playersIds)));
+
+                $alone = count($playersIds) == 1;
+                $message = $alone ? 
+                    clienttranslate('${player_name} controls the territory ${territoryNumber} and gains 2 inhabitants') :
+                    clienttranslate('${playersNames} control the territory ${territoryNumber} gains 1 inhabitant');
+                $args = [
+                    'buildingsToHighlight' => $buildingsToHighlight,
+                    'territoryNumber' => $i,
+                ];
+                if ($alone) {
+                    $args['player_name'] = $this->getPlayerName($playersIds[0]);
+                } else {
+                    $args['playersNames'] = array_map(fn($playerId) => $this->getPlayerName($playerId), $playersIds);
+                }
+                self::notifyAllPlayers('territoryControl', $message, $args);
+
+                $inc = $alone ? 2 : 1;
+                foreach($playersIds as $playerId) {
+                    $this->incPlayerInhabitants($playerId, $inc);
+                }
+            }
+        }
     }
 
     function resetPlayerOrder() {        
@@ -302,7 +329,7 @@ trait UtilTrait {
         return array_values(array_map(fn($buildingFloorDb) => new BuildingFloor($buildingFloorDb), $buildingFloorsDb));
     }
 
-    function placeBuildingFloor(int $playerId, int $territoryNumber, int $areaPosition, $message = '') {
+    function placeBuildingFloor(int $playerId, int $territoryNumber, int $areaPosition, $message = '', $args = []) {
         $buildingFloorId = $this->getAvailableBuildings($playerId)[0]->id;
 
         $this->DbQuery("UPDATE `building_floor` SET `territory_number` = $territoryNumber, `area_position` = $areaPosition WHERE `id` = $buildingFloorId");
@@ -311,19 +338,19 @@ trait UtilTrait {
         self::notifyAllPlayers('setBuilding', $message, [
             'areaPosition' => $building->areaPosition,
             'building' => $building,
-        ]);
+        ] + $args);
 
         return $buildingFloorId;
     }
 
-    function removeBuilding(Building $building, $message = '') {
+    function removeBuilding(Building $building, $message = '', $args = []) {
         $buildingFloorsId = array_map(fn($buildingFloor) => $buildingFloor->id, $building->buildingFloors);
         $this->DbQuery("UPDATE `building_floor` SET `territory_number` = null, `area_position` = null WHERE `id` IN (".implode(',', $buildingFloorsId).")");
         
         self::notifyAllPlayers('setBuilding', $message, [
             'areaPosition' => $building->areaPosition,
             'building' => null,
-        ]);
+        ] + $args);
     }
 
     function getBuildingCost(Building $building) {

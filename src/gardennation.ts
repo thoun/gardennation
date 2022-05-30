@@ -100,6 +100,8 @@ class GardenNation implements GardenNationGame {
                 this.onEnteringConstructBuilding(args.args);
                 break;
 
+            case 'endRound':
+                Array.from(document.querySelectorAll(`.building.highlight`)).forEach(elem => elem.classList.remove('highlight'));
             case 'endScore':
                 this.onEnteringShowScore();
                 break;
@@ -219,7 +221,7 @@ class GardenNation implements GardenNationGame {
                     chooseTypeOfLandArgs.possibleTypes.forEach(type => {
                         (this as any).addActionButton(`chooseTypeOfLand${type}-button`, '', () => this.chooseTypeOfLand(type));
                         document.getElementById(`chooseTypeOfLand${type}-button`).innerHTML = 
-                            `<div class="button-bramble-type" data-type="${type}"></div>`;
+                            `<div class="button-bramble-type" data-type="${type}"><div class="land-number">5</div></div>`;
                     });
                     (this as any).addActionButton(`cancelChooseTypeOfLand-button`, _("Cancel"), () => this.cancelChooseTypeOfLand(), null, null, 'gray');
                     break;
@@ -598,12 +600,7 @@ class GardenNation implements GardenNationGame {
             ['score', 1],
             ['inhabitant', 1],
             ['setBrambleType', 1],
-            /*['scoreBeforeEnd', SCORE_MS],
-            ['scoreCards', SCORE_MS],
-            ['scoreBoard', SCORE_MS],
-            ['scoreFireflies', SCORE_MS],
-            ['scoreFootprints', SCORE_MS],
-            ['scoreAfterEnd', SCORE_MS],*/
+            ['territoryControl', SCORE_MS],
         ];
 
         notifs.forEach((notif) => {
@@ -636,27 +633,32 @@ class GardenNation implements GardenNationGame {
         this.board.setBuilding(notif.args.areaPosition, notif.args.building);
     }
 
+    notif_territoryControl(notif: Notif<NotifTerritoryControlArgs>) {
+        this.board.highlightBuilding(notif.args.buildingsToHighlight);
+    }
+
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
     public format_string_recursive(log: string, args: any) {
         try {
             if (log && args && !args.processed) {
-                /*if (typeof args.adventurerName == 'string' && args.adventurerName[0] != '<') {
-                    args.adventurerName = `<strong style="color: ${this.getColor(args.adventurer?.color)};">${args.adventurerName}</strong>`;
+                if (args.playersNames && (typeof args.playersNames != 'string' || args.playersNames[0] != '<')) {
+                    const namesColored = args.playersNames.map(playerName => {
+                        const color = Object.values(this.gamedatas.players).find(player => player.name == playerName)?.color;
+                        return `<strong ${color ? `style="color: #${color};"` : ''}>${playerName}</strong>`;
+                    });
+                    let namesConcat = '';
+                    namesColored.forEach((name, index) => {
+                        namesConcat += name;
+                        if (index < namesColored.length - 2) {
+                            namesConcat += ', ';
+                        } else if (index < namesColored.length - 1) {
+                            namesConcat += _(' and ');
+                        }
+                    });
+                    args.playersNames = namesConcat;
                 }
-                if (typeof args.companionName == 'string' && args.companionName[0] != '<') {
-                    args.companionName = `<strong>${args.companionName}</strong>`;
-                }
-
-                if (typeof args.effectOrigin == 'string' && args.effectOrigin[0] != '<') {
-                    if (args.adventurer) {
-                        args.effectOrigin = `<strong style="color: ${this.getColor(args.adventurer?.color)};">${args.adventurer.name}</strong>`;
-                    }
-                    if (args.companion) {
-                        args.effectOrigin = `<strong>${args.companion.name}</strong>`;
-                    }
-                }
-
+                /*
                 for (const property in args) {
                     if (args[property]?.indexOf?.(']') > 0) {
                         args[property] = formatTextIcons(_(args[property]));

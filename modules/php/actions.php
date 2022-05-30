@@ -53,8 +53,14 @@ trait ActionTrait {
     
         $this->incPlayerInhabitants($playerId, -$cost);
 
-        $message = 'TODO';
-        $this->placeBuildingFloor($playerId, floor($areaPosition / 10), $areaPosition % 10, $message);
+        $message = $building == null ? 
+            clienttranslate('${player_name} starts a building on territory ${territoryNumber}') : 
+            clienttranslate('${player_name} adds a floor to existing building on territory ${territoryNumber}');
+        $args = [
+            'player_name' => $this->getPlayerName($playerId),
+            'territoryNumber' => floor($areaPosition / 10),
+        ];
+        $this->placeBuildingFloor($playerId, floor($areaPosition / 10), $areaPosition % 10, $message, $args);
 
         /*$allPlacedRoutes = $this->getPlacedRoutes();
         $playerPlacedRoutes = array_filter($allPlacedRoutes, fn($placedRoute) => $placedRoute->playerId === $playerId);
@@ -132,11 +138,14 @@ trait ActionTrait {
         }
         $cost = $this->getBuildingCost($building);
         
-    
         $this->incPlayerInhabitants($playerId, $cost);
 
-        $message = 'TODO';
-        $this->removeBuilding($building, $message);
+        $message = clienttranslate('${player_name} abandons building on territory ${territoryNumber}');
+        $args = [
+            'player_name' => $this->getPlayerName($playerId),
+            'territoryNumber' => floor($areaPosition / 10),
+        ];
+        $this->removeBuilding($building, $message, $args);
 
         $this->moveTorticrane($areaPosition);
 

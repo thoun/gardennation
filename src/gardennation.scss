@@ -24,6 +24,13 @@ html {
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+    font-family: 'rustico-regular';
+    src: url('img/rustico-regular-webfont.woff2') format('woff2'),
+         url('img/rustico-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
 
 /* make space between buttons on touch devices */
 @media (hover: none) {
@@ -47,6 +54,7 @@ html {
 }
 
 .button-bramble-type {
+  position: relative;
   display: inline-block;
   width: $area-size;
   height: $area-size;
@@ -55,7 +63,19 @@ html {
 
   @for $i from 1 through 3 {
       &[data-type="#{$i}"] { 
-          background-position: #{($i - 1) * 50%};
+          background-position: #{$i * 100% / 3};
       }
   }
+}
+
+.land-number {
+  position: absolute;
+  text-align: center;
+  color: white;
+  left: 41px;
+  bottom: 3px;
+  width: 18px;
+  font-family: 'rustico-regular';
+  font-size: 15px;
+  font-weight: 100;
 }

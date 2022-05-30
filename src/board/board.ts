@@ -20,6 +20,9 @@ class Board {
             const territoryRotation = territories[territoryPosition][1];
             dojo.place(`
                 <div id="territory${territoryPosition}" class="territory" data-position="${territoryPosition}" data-number="${territoryNumber}" data-rotation="${territoryRotation}">
+                    <div class="territory-number top">${territoryNumber}</div>
+                    <div class="territory-number left">${territoryNumber}</div>
+                    <div class="territory-number right">${territoryNumber}</div>
                     <div id="torticrane-spot-${territoryPosition}" class="torticrane-spot"></div>
                 </div>
             `, `board`);
@@ -34,7 +37,9 @@ class Board {
                     rotation = (areaPosition + territoryRotation - 1) % 6 + 1;
                 }
                 dojo.place(`
-                    <div id="area${position}" class="area" data-position="${position}" data-type="${type}" data-bramble="${bramble.toString()}" data-cost="${mapPosition[1]}" data-position="${areaPosition}" data-rotation="${rotation}"></div>
+                    <div id="area${position}" class="area" data-position="${position}" data-type="${type}" data-bramble="${bramble.toString()}" data-cost="${mapPosition[1]}" data-position="${areaPosition}" data-rotation="${rotation}">
+                        <div class="land-number">${mapPosition.cost}</div>
+                    </div>
                 `, `territory${territoryPosition}`);
 
                 document.getElementById(`area${position}`).addEventListener('click', () => this.game.onAreaClick(position));
@@ -75,5 +80,11 @@ class Board {
         } else {
             buildingDiv?.parentElement?.removeChild(buildingDiv);
         }
+    }
+
+    highlightBuilding(buildingsToHighlight: Building[]) {
+        buildingsToHighlight.forEach(building => 
+            document.getElementById(`building${building.areaPosition}`)?.classList.add('highlight')
+        );
     }
 }
