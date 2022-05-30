@@ -107,7 +107,7 @@ function formatTextIcons(rawText) {
         .replace(/\[symbol(\d)\]/ig, '<span class="icon symbol$1"></span>')
         .replace(/\[die:(\d):(\d)\]/ig, '<span class="die-icon" data-color="$1" data-face="$2"></span>');
 }
-var POINT_CASE_SIZE = 25.5;
+var POINT_CASE_SIZE = 47.24;
 var Board = /** @class */ (function () {
     function Board(game, players, gamedatas) {
         var _this = this;
@@ -161,9 +161,8 @@ var Board = /** @class */ (function () {
     };
     Board.prototype.getPointsCoordinates = function (points) {
         var cases = points % 70;
-        // TODO
-        var top = cases < 86 ? Math.min(Math.max(cases - 34, 0), 17) * POINT_CASE_SIZE : (102 - cases) * POINT_CASE_SIZE;
-        var left = cases < 52 ? Math.min(cases, 34) * POINT_CASE_SIZE : Math.max((33 - Math.max(cases - 52, 0)) * POINT_CASE_SIZE, 0);
+        var top = cases >= 48 ? 0 : (24 - Math.max(0, cases - 24)) * POINT_CASE_SIZE;
+        var left = cases < 48 ? (24 - Math.min(cases, 24)) * POINT_CASE_SIZE : (cases - 48) * POINT_CASE_SIZE;
         return [10 + left, 10 + top];
     };
     Board.prototype.movePoints = function () {
@@ -176,7 +175,7 @@ var Board = /** @class */ (function () {
             var topShift = 0;
             var leftShift = 0;
             _this.points.forEach(function (iPoints, iPlayerId) {
-                if (iPoints === points && iPlayerId < playerId) {
+                if (iPoints % 70 === points % 70 && iPlayerId < playerId) {
                     topShift += 5;
                     leftShift += 5;
                 }

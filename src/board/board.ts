@@ -1,4 +1,4 @@
-const POINT_CASE_SIZE = 25.5;
+const POINT_CASE_SIZE = 47.24;
 
 class Board {
     private points = new Map<number, number>();
@@ -90,9 +90,8 @@ class Board {
     private getPointsCoordinates(points: number) {
         const cases = points % 70;
 
-        // TODO
-        const top = cases < 86 ? Math.min(Math.max(cases - 34, 0), 17) * POINT_CASE_SIZE : (102 - cases) * POINT_CASE_SIZE;
-        const left = cases < 52 ? Math.min(cases, 34) * POINT_CASE_SIZE : Math.max((33 - Math.max(cases - 52, 0))*POINT_CASE_SIZE, 0);
+        const top = cases >= 48 ? 0 : (24 - Math.max(0, cases - 24)) * POINT_CASE_SIZE;
+        const left = cases < 48 ? (24 - Math.min(cases, 24)) * POINT_CASE_SIZE : (cases - 48)*POINT_CASE_SIZE;
 
         return [10 + left, 10 + top];
     }
@@ -108,7 +107,7 @@ class Board {
             let topShift = 0;
             let leftShift = 0;
             this.points.forEach((iPoints, iPlayerId) => {
-                if (iPoints === points && iPlayerId < playerId) {
+                if (iPoints % 70 === points % 70 && iPlayerId < playerId) {
                     topShift += 5;
                     leftShift += 5;
                 }
