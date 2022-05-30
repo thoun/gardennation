@@ -198,6 +198,9 @@ $area-spacing: 106px;
                 cursor: pointer;
                 border-color: red;
             }
+            &.selected {
+                border-color: blue;
+            }
 
             &[data-type="0"] {
                 .land-number {

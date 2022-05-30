@@ -98,7 +98,9 @@ class GardenNation implements GardenNationGame {
             case 'constructBuilding':
             case 'abandonBuilding':
             case 'buildingInvasion':
-                this.onEnteringConstructBuilding(args.args);
+            case 'chooseRoofToTransfer':
+            case 'chooseRoofDestination':
+                this.onEnteringSelectAreaPosition(args.args);
                 break;
 
             case 'endRound':
@@ -115,9 +117,9 @@ class GardenNation implements GardenNationGame {
         }
     }
 
-    private onEnteringConstructBuilding(args: EnteringConstructBuildingArgs) {
+    private onEnteringSelectAreaPosition(args: EnteringSelectAreaPositionArgs) {
         if ((this as any).isCurrentPlayerActive()) {
-            this.board.activatePossibleAreas(args.possiblePositions);
+            this.board.activatePossibleAreas(args.possiblePositions, arg.selectedPosition);
         }
     }
 
@@ -185,13 +187,15 @@ class GardenNation implements GardenNationGame {
             case 'constructBuilding':
             case 'abandonBuilding':
             case 'buildingInvasion':
-                this.onLeavingConstructBuilding();
+            case 'chooseRoofToTransfer':
+            case 'chooseRoofDestination':
+                this.onLeavingSelectAreaPosition();
                 break;
         }
     }
 
-    private onLeavingConstructBuilding() {
-        this.board.activatePossibleAreas([]);
+    private onLeavingSelectAreaPosition() {
+        this.board.activatePossibleAreas([], null);
     }
 
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -250,10 +254,12 @@ class GardenNation implements GardenNationGame {
                     const strategicMovementArgs = args as EnteringStrategicMovementArgs;
                     (this as any).addActionButton(`strategicMovementDown-button`, _("Move to territory ${number}").replace('${number}', strategicMovementArgs.down), () => this.strategicMovement(strategicMovementArgs.down));
                     (this as any).addActionButton(`strategicMovementUp-button`, _("Move to territory ${number}").replace('${number}', strategicMovementArgs.up), () => this.strategicMovement(strategicMovementArgs.up));
-                    (this as any).addActionButton(`cancelStrategicMovement-button`, _("Cancel"), () => this.cancelStrategicMovement(), null, null, 'gray');
+                    (this as any).addActionButton(`cancelUsePloy-button`, _("Cancel"), () => this.cancelUsePloy(), null, null, 'gray');
                     break;
+                case 'chooseRoofToTransfer':
+                case 'chooseRoofDestination':
                 case 'buildingInvasion':
-                    (this as any).addActionButton(`cancelBuildingInvasion-button`, _("Cancel"), () => this.cancelBuildingInvasion(), null, null, 'gray');
+                    (this as any).addActionButton(`cancelUsePloy-button`, _("Cancel"), () => this.cancelUsePloy(), null, null, 'gray');
                     break;
             }
         }
@@ -439,6 +445,12 @@ class GardenNation implements GardenNationGame {
             case 'abandonBuilding':
                 this.abandonBuilding(areaPosition);
                 break;
+            case 'chooseRoofToTransfer':
+                this.chooseRoofToTransfer(areaPosition);
+                break;
+            case 'chooseRoofDestination':
+                this.chooseRoofDestination(areaPosition);
+                break;
             case 'buildingInvasion':
                 this.buildingInvasion(areaPosition);
                 break;
@@ -571,12 +583,32 @@ class GardenNation implements GardenNationGame {
         });
     }
 
-    public cancelStrategicMovement() {
-        if(!(this as any).checkAction('cancelStrategicMovement')) {
+    public cancelUsePloy() {
+        if(!(this as any).checkAction('cancelUsePloy')) {
             return;
         }
 
-        this.takeAction('cancelStrategicMovement');
+        this.takeAction('cancelUsePloy');
+    }
+
+    public chooseRoofToTransfer(areaPosition: number) {
+        if(!(this as any).checkAction('chooseRoofToTransfer')) {
+            return;
+        }
+
+        this.takeAction('chooseRoofToTransfer', {
+            areaPosition
+        });
+    }
+
+    public chooseRoofDestination(areaPosition: number) {
+        if(!(this as any).checkAction('chooseRoofDestination')) {
+            return;
+        }
+
+        this.takeAction('chooseRoofDestination', {
+            areaPosition
+        });
     }
 
     public buildingInvasion(areaPosition: number) {
@@ -587,14 +619,6 @@ class GardenNation implements GardenNationGame {
         this.takeAction('buildingInvasion', {
             areaPosition
         });
-    }
-
-    public cancelBuildingInvasion() {
-        if(!(this as any).checkAction('cancelBuildingInvasion')) {
-            return;
-        }
-
-        this.takeAction('cancelBuildingInvasion');
     }
     
     public takeAction(action: string, data?: any) {
@@ -678,6 +702,7 @@ class GardenNation implements GardenNationGame {
             ['inhabitant', 1],
             ['setBrambleType', 1],
             ['ployTokenUsed', 1],
+            ['lastTurn', 1],
             ['territoryControl', SCORE_MS],
         ];
 
@@ -718,6 +743,12 @@ class GardenNation implements GardenNationGame {
     notif_ployTokenUsed(notif: Notif<NotifPloyTokenUsedArgs>) {
         this.ployTokenCounters[notif.args.playerId]?.incValue(-1);
         this.getPlayerTable(notif.args.playerId)?.setPloyTokenUsed(notif.args.type);
+    }
+
+    notif_lastTurn() {
+        dojo.place(`<div id="last-round">
+            ${_("This is the last round of the game!")}
+        </div>`, 'page-title');
     }
 
     /* This enable to inject translatable styled things to logs or action bar */

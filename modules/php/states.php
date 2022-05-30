@@ -59,6 +59,29 @@ trait StateTrait {
     }
 
     function stEndScore() {
+        $players = $this->getPlayers();
+
+        foreach($players as $player) {
+            foreach($this->END_INHABITANTS_POINTS as $min => $points) {
+                $inhabitantsScore = $this->END_INHABITANTS_POINTS[1];
+                if ($player->inhabitants >= $min) {
+                    $inhabitantsScore = $points;
+                } else {
+                    break;
+                }
+            }
+            // TODO notif
+            $this->incPlayerScore($player->id, $inhabitantsScore);
+        }
+
+        /* TODO
+        The game ends when a player places their last floor, even if they
+retrieve another one before the end of their turn. The players finish
+the current round (Player Actions + Territory Control).
+The players then move forward on the score track according to the
+victory points (VP) they earn from:
+• their secret missions;
+*/
         /* TODO $playersIds = $this->getPlayersIds();
         $map = $this->getMap();
         foreach ($playersIds as $playerId) {

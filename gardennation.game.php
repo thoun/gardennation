@@ -48,6 +48,7 @@ class GardenNation extends Table {
             PLOY_USED => 12,
             TORTICRANE_POSITION => 13,
             BRAMBLE_CHOICE_AREA => 14,
+            ROOF_AREA_POSITION => 15,
         ]);
 		
         $this->commonProjects = $this->getNew("module.common.deck");
@@ -193,6 +194,12 @@ class GardenNation extends Table {
         $result['brambleIds'] = $brambleIds;
         
         $result['torticranePosition'] = $this->getGameStateValue(TORTICRANE_POSITION);
+
+        $isEndScore = intval($this->gamestate->state_id()) >= ST_END_SCORE;
+        if (!$isEndScore) {
+            $result['endTurn'] = boolval($this->getGameStateValue(LAST_ROUND));
+            
+        }
   
         return $result;
     }

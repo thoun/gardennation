@@ -32,6 +32,13 @@ html {
     font-style: normal;
 }
 
+#last-round {
+    margin: 5px -5px -5px;
+    text-align: center;
+    background-color: #9e1a27;
+    color: #fed698;
+}
+
 /* make space between buttons on touch devices */
 @media (hover: none) {
   #page-title .action-button.bgabutton, #page-title .bgabutton {

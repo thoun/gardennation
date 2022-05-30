@@ -160,10 +160,30 @@
       self::ajaxResponse();
     }
 
-    public function cancelStrategicMovement() {
+    public function cancelUsePloy() {
       self::setAjaxMode();
 
-      $this->game->cancelStrategicMovement();
+      $this->game->cancelUsePloy();
+
+      self::ajaxResponse();
+    }
+
+    public function chooseRoofToTransfer() {
+      self::setAjaxMode();
+
+      $areaPosition = self::getArg("areaPosition", AT_posint, true);
+
+      $this->game->chooseRoofToTransfer($areaPosition);
+
+      self::ajaxResponse();
+    }
+
+    public function chooseRoofDestination() {
+      self::setAjaxMode();
+
+      $areaPosition = self::getArg("areaPosition", AT_posint, true);
+
+      $this->game->chooseRoofDestination($areaPosition);
 
       self::ajaxResponse();
     }

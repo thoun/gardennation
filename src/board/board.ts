@@ -122,8 +122,11 @@ class Board {
         this.movePoints();
     }
     
-    public activatePossibleAreas(possibleAreas: number[]) {
-        Array.from(document.getElementsByClassName('area')).forEach((area: HTMLDivElement) => area.classList.toggle('selectable', possibleAreas.includes(Number(area.dataset.position))));
+    public activatePossibleAreas(possibleAreas: number[], selectedPosition: number) {
+        Array.from(document.getElementsByClassName('area')).forEach((area: HTMLDivElement) => {
+            area.classList.toggle('selectable', possibleAreas.includes(Number(area.dataset.position)))
+            area.classList.toggle('selected', selectedPosition == Number(area.dataset.position))
+        });
     }
     
     public setBrambleType(areaPosition: number, type: number, id: number) {

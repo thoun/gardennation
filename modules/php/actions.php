@@ -63,6 +63,15 @@ trait ActionTrait {
         ];
         $this->placeBuildingFloor($playerId, floor($areaPosition / 10), $areaPosition % 10, $message, $args);
 
+        if (!boolval($this->getGameStateValue(LAST_ROUND)) && count($this->getAvailableBuildings($playerId)) == 0) {
+            $this->setGameStateValue(LAST_ROUND, 1);
+            
+            self::notifyAllPlayers('lastTurn', clienttranslate('${player_name} played its last floor, starting last round!'), [
+                'playerId' => $playerId,
+                'player_name' => $this->getPlayerName($playerId),
+            ]);
+        }
+
         /*$allPlacedRoutes = $this->getPlacedRoutes();
         $playerPlacedRoutes = array_filter($allPlacedRoutes, fn($placedRoute) => $placedRoute->playerId === $playerId);
         $currentPosition = $this->getCurrentPosition($playerId, $playerPlacedRoutes);
@@ -268,11 +277,40 @@ trait ActionTrait {
         $this->gamestate->nextState('endPloy');
     }
 
-    public function cancelStrategicMovement() {
-        self::checkAction('cancelStrategicMovement');
+    public function cancelUsePloy() {
+        self::checkAction('cancelUsePloy');
 
         $this->gamestate->nextState('cancel');
     } 
+
+    public function chooseRoofToTransfer(int $areaPosition) {
+        self::checkAction('chooseRoofToTransfer');
+        
+        $this->setGameStateValue(ROOF_AREA_POSITION, $areaPosition);
+
+        $this->gamestate->nextState('chooseRoofDestination');
+    }
+
+    public function chooseRoofDestination(int $areaPosition) {
+        self::checkAction('chooseRoofDestination');
+        
+        $playerId = intval($this->getActivePlayerId());
+        
+        $originBuilding = $this->getBuildingByAreaPosition($this->getGameStateValue(ROOF_AREA_POSITION));
+        $this->removeRoof($originBuilding);
+        
+        $building = $this->getBuildingByAreaPosition($areaPosition);
+        $this->addRoof($building);
+
+        $this->setPloyTokenUsed($this->getActivePlayerId(), 2);
+
+        $this->notifyAllPlayers('log', clienttranslate('${player_name} moved a roof to another building'), [
+            'player_name' => $this->getPlayerName($playerId),
+        ]);
+
+        $this->setGameStateValue(PLOY_USED, 1);
+        $this->gamestate->nextState('endPloy');
+    }
 
     public function buildingInvasion(int $areaPosition) {
         self::checkAction('buildingInvasion');

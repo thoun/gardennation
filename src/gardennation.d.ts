@@ -56,6 +56,7 @@ interface GardenNationGamedatas {
     map: { [position: number]: AreaSpot };
     brambleIds: number[][];
     torticranePosition: number;
+    endTurn: boolean;
 }
 
 interface GardenNationGame extends Game {
@@ -71,8 +72,9 @@ interface EnteringChooseActionArgs {
     canChangeTerritory: number | null;
 }
 
-interface EnteringConstructBuildingArgs {
+interface EnteringSelectAreaPositionArgs {
     possiblePositions: number[];
+    selectedPosition?: number;
 }
 
 interface EnteringChooseTypeOfLandArgs {

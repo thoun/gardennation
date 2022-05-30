@@ -365,6 +365,14 @@ trait UtilTrait {
         }
         return $cost * 2;
     }
+
+    function removeRoof(Building $building) {
+        // TODO
+    }
+
+    function addRoof(Building $building) {
+        // TODO
+    }
     
     function setPloyTokenUsed(int $playerId, int $type) {
         $player = $this->getPlayer($playerId);

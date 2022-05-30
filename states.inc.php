@@ -171,7 +171,7 @@ $playerActionsGameStates = [
         "args" => "argStrategicMovement",
         "possibleactions" => [ 
             "strategicMovement",
-            "cancelStrategicMovement",
+            "cancelUsePloy",
         ],
         "transitions" => [
             "endPloy" => ST_PLAYER_CHOOSE_ACTION,
@@ -187,7 +187,7 @@ $playerActionsGameStates = [
         "args" => "argChooseRoofToTransfer",
         "possibleactions" => [ 
             "chooseRoofToTransfer",
-            "cancelRoofTransfer",
+            "cancelUsePloy",
         ],
         "transitions" => [
             "chooseRoofDestination" => ST_PLAYER_CHOOSE_ACTION,
@@ -203,7 +203,7 @@ $playerActionsGameStates = [
         "args" => "argChooseRoofDestination",
         "possibleactions" => [ 
             "chooseRoofDestination",
-            "cancelRoofTransfer",
+            "cancelUsePloy",
         ],
         "transitions" => [
             "endPloy" => ST_PLAYER_CHOOSE_ACTION,
@@ -219,7 +219,7 @@ $playerActionsGameStates = [
         "args" => "argBuildingInvasion",
         "possibleactions" => [ 
             "buildingInvasion",
-            "cancelBuildingInvasion",
+            "cancelUsePloy",
         ],
         "transitions" => [
             "endAction" => ST_PLAYER_CHOOSE_ACTION,

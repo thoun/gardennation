@@ -15,7 +15,7 @@ trait ArgsTrait {
     function argChooseAction() {
         $playerId = intval($this->getActivePlayerId());
 
-        $remainingFloors = intval($this->getUniqueValueFromDB("SELECT count(*) FROM `building_floor` WHERE player_id = $playerId AND `territory_number` is null"));
+        $remainingFloors = count($this->getAvailableBuildings($playerId));
         $canConstructBuilding = $remainingFloors > 0 && count($this->argConstructBuilding()['possiblePositions']) > 0;
         $canAbandonBuilding = count($this->argAbandonBuilding()['possiblePositions']) > 0;
         $canUsePloy = $this->canUsePloy($playerId);
@@ -24,7 +24,7 @@ trait ArgsTrait {
         if (!$canConstructBuilding) {
             $territories = $this->getTerritories();
             $currentTerritoryNumber = $territories[intval($this->getGameStateValue(TORTICRANE_POSITION))][0];
-            $canChangeTerritory = ($currentTerritoryNumber - 1) % 6 + 1;
+            $canChangeTerritory = ($currentTerritoryNumber + 4) % 6 + 1;
         }
     
         return [
@@ -134,11 +134,26 @@ trait ArgsTrait {
     }
     
     function argChooseRoofToTransfer() {
-        return []; // TODO
+        $playerId = intval($this->getActivePlayerId());
+        $buildings = $this->getTerritoryBuildings();
+
+        $possibleBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId == $playerId && $building->roof));
+
+        return [
+            'possiblePositions' => array_map(fn($building) => $building->areaPosition, $possibleBuildings),
+        ];
     }
     
     function argChooseRoofDestination() {
-        return []; // TODO
+        $playerId = intval($this->getActivePlayerId());
+        $buildings = $this->getTerritoryBuildings();
+
+        $possibleBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId == $playerId && !$building->roof));
+
+        return [
+            'possiblePositions' => array_map(fn($building) => $building->areaPosition, $possibleBuildings),
+            'selectedPosition' => intval($this->getGameStateValue(ROOF_AREA_POSITION)),
+        ];
     }
     
     function argBuildingInvasion() {
@@ -146,7 +161,8 @@ trait ArgsTrait {
         $player = $this->getPlayer($playerId);
         $buildings = $this->getTerritoryBuildings();
 
-        $possibleBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId != $playerId && $this->getBuildingCost($building) < $player->inhabitants));
+        $remainingBuildingFloors = $this->getAvailableBuildings($playerId);
+        $possibleBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId != $playerId && $this->getBuildingCost($building) < $player->inhabitants && $remainingBuildingFloors >= $building->floors));
 
         return [
             'possiblePositions' => array_map(fn($building) => $building->areaPosition, $possibleBuildings),

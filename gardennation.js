@@ -187,8 +187,11 @@ var Board = /** @class */ (function () {
         this.points.set(playerId, points);
         this.movePoints();
     };
-    Board.prototype.activatePossibleAreas = function (possibleAreas) {
-        Array.from(document.getElementsByClassName('area')).forEach(function (area) { return area.classList.toggle('selectable', possibleAreas.includes(Number(area.dataset.position))); });
+    Board.prototype.activatePossibleAreas = function (possibleAreas, selectedPosition) {
+        Array.from(document.getElementsByClassName('area')).forEach(function (area) {
+            area.classList.toggle('selectable', possibleAreas.includes(Number(area.dataset.position)));
+            area.classList.toggle('selected', selectedPosition == Number(area.dataset.position));
+        });
     };
     Board.prototype.setBrambleType = function (areaPosition, type, id) {
         var _a;
@@ -331,7 +334,9 @@ var GardenNation = /** @class */ (function () {
             case 'constructBuilding':
             case 'abandonBuilding':
             case 'buildingInvasion':
-                this.onEnteringConstructBuilding(args.args);
+            case 'chooseRoofToTransfer':
+            case 'chooseRoofDestination':
+                this.onEnteringSelectAreaPosition(args.args);
                 break;
             case 'endRound':
                 Array.from(document.querySelectorAll(".building.highlight")).forEach(function (elem) { return elem.classList.remove('highlight'); });
@@ -346,9 +351,9 @@ var GardenNation = /** @class */ (function () {
                 break;
         }
     };
-    GardenNation.prototype.onEnteringConstructBuilding = function (args) {
+    GardenNation.prototype.onEnteringSelectAreaPosition = function (args) {
         if (this.isCurrentPlayerActive()) {
-            this.board.activatePossibleAreas(args.possiblePositions);
+            this.board.activatePossibleAreas(args.possiblePositions, arg.selectedPosition);
         }
     };
     GardenNation.prototype.onEnteringShowScore = function (fromReload) {
@@ -413,12 +418,14 @@ var GardenNation = /** @class */ (function () {
             case 'constructBuilding':
             case 'abandonBuilding':
             case 'buildingInvasion':
-                this.onLeavingConstructBuilding();
+            case 'chooseRoofToTransfer':
+            case 'chooseRoofDestination':
+                this.onLeavingSelectAreaPosition();
                 break;
         }
     };
-    GardenNation.prototype.onLeavingConstructBuilding = function () {
-        this.board.activatePossibleAreas([]);
+    GardenNation.prototype.onLeavingSelectAreaPosition = function () {
+        this.board.activatePossibleAreas([], null);
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -477,10 +484,12 @@ var GardenNation = /** @class */ (function () {
                     var strategicMovementArgs_1 = args;
                     this.addActionButton("strategicMovementDown-button", _("Move to territory ${number}").replace('${number}', strategicMovementArgs_1.down), function () { return _this.strategicMovement(strategicMovementArgs_1.down); });
                     this.addActionButton("strategicMovementUp-button", _("Move to territory ${number}").replace('${number}', strategicMovementArgs_1.up), function () { return _this.strategicMovement(strategicMovementArgs_1.up); });
-                    this.addActionButton("cancelStrategicMovement-button", _("Cancel"), function () { return _this.cancelStrategicMovement(); }, null, null, 'gray');
+                    this.addActionButton("cancelUsePloy-button", _("Cancel"), function () { return _this.cancelUsePloy(); }, null, null, 'gray');
                     break;
+                case 'chooseRoofToTransfer':
+                case 'chooseRoofDestination':
                 case 'buildingInvasion':
-                    this.addActionButton("cancelBuildingInvasion-button", _("Cancel"), function () { return _this.cancelBuildingInvasion(); }, null, null, 'gray');
+                    this.addActionButton("cancelUsePloy-button", _("Cancel"), function () { return _this.cancelUsePloy(); }, null, null, 'gray');
                     break;
             }
         }
@@ -620,6 +629,12 @@ var GardenNation = /** @class */ (function () {
             case 'abandonBuilding':
                 this.abandonBuilding(areaPosition);
                 break;
+            case 'chooseRoofToTransfer':
+                this.chooseRoofToTransfer(areaPosition);
+                break;
+            case 'chooseRoofDestination':
+                this.chooseRoofDestination(areaPosition);
+                break;
             case 'buildingInvasion':
                 this.buildingInvasion(areaPosition);
                 break;
@@ -723,11 +738,27 @@ var GardenNation = /** @class */ (function () {
             territory: territory
         });
     };
-    GardenNation.prototype.cancelStrategicMovement = function () {
-        if (!this.checkAction('cancelStrategicMovement')) {
+    GardenNation.prototype.cancelUsePloy = function () {
+        if (!this.checkAction('cancelUsePloy')) {
             return;
         }
-        this.takeAction('cancelStrategicMovement');
+        this.takeAction('cancelUsePloy');
+    };
+    GardenNation.prototype.chooseRoofToTransfer = function (areaPosition) {
+        if (!this.checkAction('chooseRoofToTransfer')) {
+            return;
+        }
+        this.takeAction('chooseRoofToTransfer', {
+            areaPosition: areaPosition
+        });
+    };
+    GardenNation.prototype.chooseRoofDestination = function (areaPosition) {
+        if (!this.checkAction('chooseRoofDestination')) {
+            return;
+        }
+        this.takeAction('chooseRoofDestination', {
+            areaPosition: areaPosition
+        });
     };
     GardenNation.prototype.buildingInvasion = function (areaPosition) {
         if (!this.checkAction('buildingInvasion')) {
@@ -736,12 +767,6 @@ var GardenNation = /** @class */ (function () {
         this.takeAction('buildingInvasion', {
             areaPosition: areaPosition
         });
-    };
-    GardenNation.prototype.cancelBuildingInvasion = function () {
-        if (!this.checkAction('cancelBuildingInvasion')) {
-            return;
-        }
-        this.takeAction('cancelBuildingInvasion');
     };
     GardenNation.prototype.takeAction = function (action, data) {
         data = data || {};
@@ -794,6 +819,7 @@ var GardenNation = /** @class */ (function () {
             ['inhabitant', 1],
             ['setBrambleType', 1],
             ['ployTokenUsed', 1],
+            ['lastTurn', 1],
             ['territoryControl', SCORE_MS],
         ];
         notifs.forEach(function (notif) {
@@ -826,6 +852,9 @@ var GardenNation = /** @class */ (function () {
         var _a, _b;
         (_a = this.ployTokenCounters[notif.args.playerId]) === null || _a === void 0 ? void 0 : _a.incValue(-1);
         (_b = this.getPlayerTable(notif.args.playerId)) === null || _b === void 0 ? void 0 : _b.setPloyTokenUsed(notif.args.type);
+    };
+    GardenNation.prototype.notif_lastTurn = function () {
+        dojo.place("<div id=\"last-round\">\n            ".concat(_("This is the last round of the game!"), "\n        </div>"), 'page-title');
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */
