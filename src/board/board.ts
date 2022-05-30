@@ -1,5 +1,7 @@
-class Board {
+const POINT_CASE_SIZE = 25.5;
 
+class Board {
+    private points = new Map<number, number>();
 
     constructor(
         private game: GardenNationGame, 
@@ -17,6 +19,17 @@ class Board {
         players.forEach(player => dojo.place(`
             <div id="order-token-${player.id}" class="token" data-color="${player.color}"></div>
         `, `order-track-${player.turnTrack}`));
+
+        let html = '';
+        // points
+        players.forEach(player =>
+            html += `<div id="player-${player.id}-point-marker" class="point-marker ${/*this.game.isColorBlindMode() ? 'color-blind' : */''}" data-player-no="${player.playerNo}" style="background: #${player.color};"></div>`
+        );
+        dojo.place(html, 'board');
+        players.forEach(player => {
+            this.points.set(Number(player.id), Number(player.score));
+        });
+        this.movePoints();
 
         dojo.place(`<div id="torticrane-spot--1" class="torticrane-spot"></div>`, `board`);
 
@@ -73,9 +86,41 @@ class Board {
                 dojo.place(`<div id="bramble${id}" class="bramble-type-token" data-type="${type}"><div class="land-number">5</div></div>`, `remaining-bramble-tokens-container-${type}`)
         ));
     }
+
+    private getPointsCoordinates(points: number) {
+        const cases = points % 70;
+
+        // TODO
+        const top = cases < 86 ? Math.min(Math.max(cases - 34, 0), 17) * POINT_CASE_SIZE : (102 - cases) * POINT_CASE_SIZE;
+        const left = cases < 52 ? Math.min(cases, 34) * POINT_CASE_SIZE : Math.max((33 - Math.max(cases - 52, 0))*POINT_CASE_SIZE, 0);
+
+        return [10 + left, 10 + top];
+    }
+
+    private movePoints() {
+        this.points.forEach((points, playerId) => {
+            const markerDiv = document.getElementById(`player-${playerId}-point-marker`);
+
+            const coordinates = this.getPointsCoordinates(points);
+            const left = coordinates[0];
+            const top = coordinates[1];
+    
+            let topShift = 0;
+            let leftShift = 0;
+            this.points.forEach((iPoints, iPlayerId) => {
+                if (iPoints === points && iPlayerId < playerId) {
+                    topShift += 5;
+                    leftShift += 5;
+                }
+            });
+    
+            markerDiv.style.transform = `translateX(${left + leftShift}px) translateY(${top + topShift}px)`;
+        });
+    }
     
     setPoints(playerId: number, points: number) {
-        // TODO
+        this.points.set(playerId, points);
+        this.movePoints();
     }
     
     public activatePossibleAreas(possibleAreas: number[]) {

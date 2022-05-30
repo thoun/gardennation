@@ -107,17 +107,29 @@ function formatTextIcons(rawText) {
         .replace(/\[symbol(\d)\]/ig, '<span class="icon symbol$1"></span>')
         .replace(/\[die:(\d):(\d)\]/ig, '<span class="die-icon" data-color="$1" data-face="$2"></span>');
 }
+var POINT_CASE_SIZE = 25.5;
 var Board = /** @class */ (function () {
     function Board(game, players, gamedatas) {
         var _this = this;
         this.game = game;
         this.players = players;
+        this.points = new Map();
         var territories = gamedatas.territories;
         var map = gamedatas.map;
         var torticranePosition = gamedatas.torticranePosition;
         document.getElementById("order-track").dataset.playerNumber = '' + players.length;
         this.createRemainingBrambleTokens(gamedatas.brambleIds);
         players.forEach(function (player) { return dojo.place("\n            <div id=\"order-token-".concat(player.id, "\" class=\"token\" data-color=\"").concat(player.color, "\"></div>\n        "), "order-track-".concat(player.turnTrack)); });
+        var html = '';
+        // points
+        players.forEach(function (player) {
+            return html += "<div id=\"player-".concat(player.id, "-point-marker\" class=\"point-marker ").concat(/*this.game.isColorBlindMode() ? 'color-blind' : */ '', "\" data-player-no=\"").concat(player.playerNo, "\" style=\"background: #").concat(player.color, ";\"></div>");
+        });
+        dojo.place(html, 'board');
+        players.forEach(function (player) {
+            _this.points.set(Number(player.id), Number(player.score));
+        });
+        this.movePoints();
         dojo.place("<div id=\"torticrane-spot--1\" class=\"torticrane-spot\"></div>", "board");
         [0, 1, 2, 3, 4, 5, 6].forEach(function (territoryPosition) {
             var territoryNumber = territories[territoryPosition][0];
@@ -147,8 +159,34 @@ var Board = /** @class */ (function () {
             return dojo.place("<div id=\"bramble".concat(id, "\" class=\"bramble-type-token\" data-type=\"").concat(type, "\"><div class=\"land-number\">5</div></div>"), "remaining-bramble-tokens-container-".concat(type));
         }); });
     };
-    Board.prototype.setPoints = function (playerId, points) {
+    Board.prototype.getPointsCoordinates = function (points) {
+        var cases = points % 70;
         // TODO
+        var top = cases < 86 ? Math.min(Math.max(cases - 34, 0), 17) * POINT_CASE_SIZE : (102 - cases) * POINT_CASE_SIZE;
+        var left = cases < 52 ? Math.min(cases, 34) * POINT_CASE_SIZE : Math.max((33 - Math.max(cases - 52, 0)) * POINT_CASE_SIZE, 0);
+        return [10 + left, 10 + top];
+    };
+    Board.prototype.movePoints = function () {
+        var _this = this;
+        this.points.forEach(function (points, playerId) {
+            var markerDiv = document.getElementById("player-".concat(playerId, "-point-marker"));
+            var coordinates = _this.getPointsCoordinates(points);
+            var left = coordinates[0];
+            var top = coordinates[1];
+            var topShift = 0;
+            var leftShift = 0;
+            _this.points.forEach(function (iPoints, iPlayerId) {
+                if (iPoints === points && iPlayerId < playerId) {
+                    topShift += 5;
+                    leftShift += 5;
+                }
+            });
+            markerDiv.style.transform = "translateX(".concat(left + leftShift, "px) translateY(").concat(top + topShift, "px)");
+        });
+    };
+    Board.prototype.setPoints = function (playerId, points) {
+        this.points.set(playerId, points);
+        this.movePoints();
     };
     Board.prototype.activatePossibleAreas = function (possibleAreas) {
         Array.from(document.getElementsByClassName('area')).forEach(function (area) { return area.classList.toggle('selectable', possibleAreas.includes(Number(area.dataset.position))); });
@@ -188,9 +226,23 @@ var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player) {
         this.game = game;
         this.playerId = Number(player.id);
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\"></div>\n        </div>");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-meeple-marker\" class=\"meeple-marker\" data-color=\"").concat(player.color, "\"></div>\n            </div>\n        </div>");
         dojo.place(html, 'playerstables');
+        this.setInhabitants(player.inhabitants);
     }
+    PlayerTable.prototype.getPointsCoordinates = function (points) {
+        var cases = Math.min(points, 40);
+        var top = points <= 20 ? 0 : 44;
+        var left = (cases % 20) * 29.5;
+        return [-17 + left, 203 + top];
+    };
+    PlayerTable.prototype.setInhabitants = function (points) {
+        var markerDiv = document.getElementById("player-table-".concat(this.playerId, "-meeple-marker"));
+        var coordinates = this.getPointsCoordinates(points);
+        var left = coordinates[0];
+        var top = coordinates[1];
+        markerDiv.style.transform = "translateX(".concat(left, "px) translateY(").concat(top, "px)");
+    };
     return PlayerTable;
 }());
 var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
@@ -629,9 +681,9 @@ var GardenNation = /** @class */ (function () {
         this.board.setPoints(playerId, points);
     };
     GardenNation.prototype.setInhabitants = function (playerId, inhabitants) {
-        var _a;
+        var _a, _b;
         (_a = this.inhabitantCounters[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(inhabitants);
-        // TODO player board this.board.setPoints(playerId, inhabitants);
+        (_b = this.getPlayerTable(playerId)) === null || _b === void 0 ? void 0 : _b.setInhabitants(inhabitants);
     };
     GardenNation.prototype.addHelp = function () {
         var _this = this;

@@ -1,3 +1,4 @@
+@charset "UTF-8";
 #board {
   position: relative;
   width: 1181px;
@@ -73,6 +74,36 @@
 }
 #board #order-track .token[data-color="456e96"] {
   background-position-y: 100%;
+}
+#board .point-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  box-shadow: 1px 1px 1px 1px black;
+  border-radius: 50%;
+  transition: transform 0.5s;
+  pointer-events: none;
+}
+#board .point-marker.color-blind::after {
+  font-size: 120%;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  margin-top: -4px;
+}
+#board .point-marker.color-blind[data-player-no="1"]::after {
+  content: "●";
+}
+#board .point-marker.color-blind[data-player-no="2"]::after {
+  content: "▲";
+}
+#board .point-marker.color-blind[data-player-no="3"]::after {
+  content: "■";
+}
+#board .point-marker.color-blind[data-player-no="4"]::after {
+  content: "◆";
 }
 #board .territory {
   position: absolute;
@@ -312,6 +343,47 @@
 }
 #playerstables .player-table .player-score-board[data-color="456e96"] {
   background: url("img/player-board-456e96.png");
+}
+#playerstables .player-table .player-score-board .meeple-marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 34px;
+  height: 34px;
+  background: url("img/meeples.png");
+  transition: transform 0.5s;
+  pointer-events: none;
+}
+#playerstables .player-table .player-score-board .meeple-marker[data-color=fcaf26] {
+  background-position-x: 0%;
+}
+#playerstables .player-table .player-score-board .meeple-marker[data-color=ab3b2a] {
+  background-position-x: 33.3333333333%;
+}
+#playerstables .player-table .player-score-board .meeple-marker[data-color="5f8637"] {
+  background-position-x: 66.6666666667%;
+}
+#playerstables .player-table .player-score-board .meeple-marker[data-color="456e96"] {
+  background-position-x: 100%;
+}
+#playerstables .player-table .player-score-board .meeple-marker.color-blind::after {
+  font-size: 120%;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  margin-top: -4px;
+}
+#playerstables .player-table .player-score-board .meeple-marker.color-blind[data-player-no="1"]::after {
+  content: "●";
+}
+#playerstables .player-table .player-score-board .meeple-marker.color-blind[data-player-no="2"]::after {
+  content: "▲";
+}
+#playerstables .player-table .player-score-board .meeple-marker.color-blind[data-player-no="3"]::after {
+  content: "■";
+}
+#playerstables .player-table .player-score-board .meeple-marker.color-blind[data-player-no="4"]::after {
+  content: "◆";
 }
 
 .player-board {

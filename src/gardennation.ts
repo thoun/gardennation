@@ -533,7 +533,7 @@ class GardenNation implements GardenNationGame {
     
     private setInhabitants(playerId: number, inhabitants: number) {
         this.inhabitantCounters[playerId]?.toValue(inhabitants);
-        // TODO player board this.board.setPoints(playerId, inhabitants);
+        this.getPlayerTable(playerId)?.setInhabitants(inhabitants);
     }
 
     private addHelp() {
