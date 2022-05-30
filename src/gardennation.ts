@@ -97,6 +97,7 @@ class GardenNation implements GardenNationGame {
         switch (stateName) {
             case 'constructBuilding':
             case 'abandonBuilding':
+            case 'buildingInvasion':
                 this.onEnteringConstructBuilding(args.args);
                 break;
 
@@ -183,6 +184,7 @@ class GardenNation implements GardenNationGame {
         switch (stateName) {
             case 'constructBuilding':
             case 'abandonBuilding':
+            case 'buildingInvasion':
                 this.onLeavingConstructBuilding();
                 break;
         }
@@ -249,6 +251,9 @@ class GardenNation implements GardenNationGame {
                     (this as any).addActionButton(`strategicMovementDown-button`, _("Move to territory ${number}").replace('${number}', strategicMovementArgs.down), () => this.strategicMovement(strategicMovementArgs.down));
                     (this as any).addActionButton(`strategicMovementUp-button`, _("Move to territory ${number}").replace('${number}', strategicMovementArgs.up), () => this.strategicMovement(strategicMovementArgs.up));
                     (this as any).addActionButton(`cancelStrategicMovement-button`, _("Cancel"), () => this.cancelStrategicMovement(), null, null, 'gray');
+                    break;
+                case 'buildingInvasion':
+                    (this as any).addActionButton(`cancelBuildingInvasion-button`, _("Cancel"), () => this.cancelBuildingInvasion(), null, null, 'gray');
                     break;
             }
         }
@@ -434,6 +439,9 @@ class GardenNation implements GardenNationGame {
             case 'abandonBuilding':
                 this.abandonBuilding(areaPosition);
                 break;
+            case 'buildingInvasion':
+                this.buildingInvasion(areaPosition);
+                break;
         }
     }
 
@@ -570,6 +578,24 @@ class GardenNation implements GardenNationGame {
 
         this.takeAction('cancelStrategicMovement');
     }
+
+    public buildingInvasion(areaPosition: number) {
+        if(!(this as any).checkAction('buildingInvasion')) {
+            return;
+        }
+
+        this.takeAction('buildingInvasion', {
+            areaPosition
+        });
+    }
+
+    public cancelBuildingInvasion() {
+        if(!(this as any).checkAction('cancelBuildingInvasion')) {
+            return;
+        }
+
+        this.takeAction('cancelBuildingInvasion');
+    }
     
     public takeAction(action: string, data?: any) {
         data = data || {};
@@ -651,6 +677,7 @@ class GardenNation implements GardenNationGame {
             ['score', 1],
             ['inhabitant', 1],
             ['setBrambleType', 1],
+            ['ployTokenUsed', 1],
             ['territoryControl', SCORE_MS],
         ];
 
@@ -686,6 +713,11 @@ class GardenNation implements GardenNationGame {
 
     notif_territoryControl(notif: Notif<NotifTerritoryControlArgs>) {
         this.board.highlightBuilding(notif.args.buildingsToHighlight);
+    }
+
+    notif_ployTokenUsed(notif: Notif<NotifPloyTokenUsedArgs>) {
+        this.ployTokenCounters[notif.args.playerId]?.incValue(-1);
+        this.getPlayerTable(notif.args.playerId)?.setPloyTokenUsed(notif.args.type);
     }
 
     /* This enable to inject translatable styled things to logs or action bar */

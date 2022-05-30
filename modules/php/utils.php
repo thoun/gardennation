@@ -90,7 +90,7 @@ trait UtilTrait {
     function incPlayerScore(int $playerId, int $amount) {
         $this->DbQuery("UPDATE player SET `player_score` = `player_score` + $amount WHERE player_id = $playerId");
             
-        self::notifyAllPlayers('score', '', [
+        $this->notifyAllPlayers('score', '', [
             'playerId' => $playerId,
             'newScore' => $this->getPlayer($playerId)->score,
         ]);
@@ -99,7 +99,7 @@ trait UtilTrait {
     function incPlayerInhabitants(int $playerId, int $amount) {
         $this->DbQuery("UPDATE player SET `player_inhabitants` = `player_inhabitants` + $amount WHERE player_id = $playerId");
             
-        self::notifyAllPlayers('inhabitant', '', [
+        $this->notifyAllPlayers('inhabitant', '', [
             'playerId' => $playerId,
             'newInhabitants' => $this->getPlayer($playerId)->inhabitants,
         ]);
@@ -171,7 +171,7 @@ trait UtilTrait {
         if ($territoryPosition != intval($this->getGameStateValue(TORTICRANE_POSITION))) {
             $this->setGameStateValue(TORTICRANE_POSITION, $territoryPosition);
             
-            self::notifyAllPlayers('moveTorticrane', '', [
+            $this->notifyAllPlayers('moveTorticrane', '', [
                 'torticranePosition' => $territoryPosition,
             ]);
         }
@@ -193,7 +193,7 @@ trait UtilTrait {
 
         $this->DbQuery("UPDATE player SET `player_turn_track` = $order WHERE `player_id` = $playerId");
 
-        self::notifyAllPlayers('setPlayerOrder', clienttranslate('${player_name} is the next player'), [
+        $this->notifyAllPlayers('setPlayerOrder', clienttranslate('${player_name} is the next player'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'order' => $order,
@@ -224,7 +224,7 @@ trait UtilTrait {
                 } else {
                     $args['playersNames'] = array_map(fn($playerId) => $this->getPlayerName($playerId), $playersIds);
                 }
-                self::notifyAllPlayers('territoryControl', $message, $args);
+                $this->notifyAllPlayers('territoryControl', $message, $args);
 
                 $inc = $alone ? 2 : 1;
                 foreach($playersIds as $playerId) {
@@ -247,14 +247,14 @@ trait UtilTrait {
 
         foreach ($players as $player) {
             if ($player->id != $playerId) {
-                self::notifyAllPlayers('setPlayerOrder', '', [
+                $this->notifyAllPlayers('setPlayerOrder', '', [
                     'playerId' => $player->id,
                     'player_name' => $this->getPlayerName($player->id),
                     'order' => 0,
                 ]);
             }
         }
-        self::notifyAllPlayers('setPlayerOrder', '', [
+        $this->notifyAllPlayers('setPlayerOrder', '', [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'order' => 1,
@@ -339,7 +339,7 @@ trait UtilTrait {
         $this->DbQuery("UPDATE `building_floor` SET `territory_number` = $territoryNumber, `area_position` = $areaPosition WHERE `id` = $buildingFloorId");
         
         $building = $this->getBuildingByAreaPosition($territoryNumber * 10 + $areaPosition);
-        self::notifyAllPlayers('setBuilding', $message, [
+        $this->notifyAllPlayers('setBuilding', $message, [
             'areaPosition' => $building->areaPosition,
             'building' => $building,
         ] + $args);
@@ -351,7 +351,7 @@ trait UtilTrait {
         $buildingFloorsId = array_map(fn($buildingFloor) => $buildingFloor->id, $building->buildingFloors);
         $this->DbQuery("UPDATE `building_floor` SET `territory_number` = null, `area_position` = null WHERE `id` IN (".implode(',', $buildingFloorsId).")");
         
-        self::notifyAllPlayers('setBuilding', $message, [
+        $this->notifyAllPlayers('setBuilding', $message, [
             'areaPosition' => $building->areaPosition,
             'building' => null,
         ] + $args);
@@ -364,5 +364,19 @@ trait UtilTrait {
             $cost += $areaCost + $i;
         }
         return $cost * 2;
+    }
+    
+    function setPloyTokenUsed(int $playerId, int $type) {
+        $player = $this->getPlayer($playerId);
+        $player->usedPloy[$type - 1]++;
+        $usedPloyStr = json_encode($player->usedPloy);
+
+        $this->DbQuery("UPDATE `player` SET `player_used_ploy` = '$usedPloyStr' WHERE `player_id` = $playerId");
+
+        $this->notifyAllPlayers('ployTokenUsed', '', [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+            'type' => $type,
+        ]);
     }
 }

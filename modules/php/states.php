@@ -71,7 +71,7 @@ trait StateTrait {
             $personalObjective = intval($this->getUniqueValueFromDB("SELECT player_personal_objective FROM `player` where `player_id` = $playerId"));
 
             $personalObjectiveLetters = array_map(fn($code) => chr($code), $this->getPersonalObjectiveLetters($playerId));
-            self::notifyAllPlayers('revealPersonalObjective', clienttranslate('${player_name} personal objective was ${objectiveLetters}'), [
+            $this->notifyAllPlayers('revealPersonalObjective', clienttranslate('${player_name} personal objective was ${objectiveLetters}'), [
                 'playerId' => $playerId,
                 'player_name' => self::getActivePlayerName(),
                 'objectiveLetters' => implode(' ', $personalObjectiveLetters),

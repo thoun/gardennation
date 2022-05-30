@@ -223,10 +223,16 @@ var Board = /** @class */ (function () {
 }());
 var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player) {
+        var _this = this;
         this.game = game;
         this.playerId = Number(player.id);
         var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-meeple-marker\" class=\"meeple-marker\" data-color=\"").concat(player.color, "\"></div>\n            </div>\n        </div>");
         dojo.place(html, 'playerstables');
+        [0, 1, 2].forEach(function (type) {
+            for (var i = 0; i < player.usedPloy[type]; i++) {
+                _this.setPloyTokenUsed(type + 1);
+            }
+        });
         this.setInhabitants(player.inhabitants);
     }
     PlayerTable.prototype.getPointsCoordinates = function (points) {
@@ -241,6 +247,9 @@ var PlayerTable = /** @class */ (function () {
         var left = coordinates[0];
         var top = coordinates[1];
         markerDiv.style.transform = "translateX(".concat(left, "px) translateY(").concat(top, "px)");
+    };
+    PlayerTable.prototype.setPloyTokenUsed = function (type) {
+        // TODO
     };
     return PlayerTable;
 }());
@@ -321,6 +330,7 @@ var GardenNation = /** @class */ (function () {
         switch (stateName) {
             case 'constructBuilding':
             case 'abandonBuilding':
+            case 'buildingInvasion':
                 this.onEnteringConstructBuilding(args.args);
                 break;
             case 'endRound':
@@ -402,6 +412,7 @@ var GardenNation = /** @class */ (function () {
         switch (stateName) {
             case 'constructBuilding':
             case 'abandonBuilding':
+            case 'buildingInvasion':
                 this.onLeavingConstructBuilding();
                 break;
         }
@@ -467,6 +478,9 @@ var GardenNation = /** @class */ (function () {
                     this.addActionButton("strategicMovementDown-button", _("Move to territory ${number}").replace('${number}', strategicMovementArgs_1.down), function () { return _this.strategicMovement(strategicMovementArgs_1.down); });
                     this.addActionButton("strategicMovementUp-button", _("Move to territory ${number}").replace('${number}', strategicMovementArgs_1.up), function () { return _this.strategicMovement(strategicMovementArgs_1.up); });
                     this.addActionButton("cancelStrategicMovement-button", _("Cancel"), function () { return _this.cancelStrategicMovement(); }, null, null, 'gray');
+                    break;
+                case 'buildingInvasion':
+                    this.addActionButton("cancelBuildingInvasion-button", _("Cancel"), function () { return _this.cancelBuildingInvasion(); }, null, null, 'gray');
                     break;
             }
         }
@@ -606,6 +620,9 @@ var GardenNation = /** @class */ (function () {
             case 'abandonBuilding':
                 this.abandonBuilding(areaPosition);
                 break;
+            case 'buildingInvasion':
+                this.buildingInvasion(areaPosition);
+                break;
         }
     };
     GardenNation.prototype.chooseConstructBuilding = function () {
@@ -712,6 +729,20 @@ var GardenNation = /** @class */ (function () {
         }
         this.takeAction('cancelStrategicMovement');
     };
+    GardenNation.prototype.buildingInvasion = function (areaPosition) {
+        if (!this.checkAction('buildingInvasion')) {
+            return;
+        }
+        this.takeAction('buildingInvasion', {
+            areaPosition: areaPosition
+        });
+    };
+    GardenNation.prototype.cancelBuildingInvasion = function () {
+        if (!this.checkAction('cancelBuildingInvasion')) {
+            return;
+        }
+        this.takeAction('cancelBuildingInvasion');
+    };
     GardenNation.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;
@@ -762,6 +793,7 @@ var GardenNation = /** @class */ (function () {
             ['score', 1],
             ['inhabitant', 1],
             ['setBrambleType', 1],
+            ['ployTokenUsed', 1],
             ['territoryControl', SCORE_MS],
         ];
         notifs.forEach(function (notif) {
@@ -789,6 +821,11 @@ var GardenNation = /** @class */ (function () {
     };
     GardenNation.prototype.notif_territoryControl = function (notif) {
         this.board.highlightBuilding(notif.args.buildingsToHighlight);
+    };
+    GardenNation.prototype.notif_ployTokenUsed = function (notif) {
+        var _a, _b;
+        (_a = this.ployTokenCounters[notif.args.playerId]) === null || _a === void 0 ? void 0 : _a.incValue(-1);
+        (_b = this.getPlayerTable(notif.args.playerId)) === null || _b === void 0 ? void 0 : _b.setPloyTokenUsed(notif.args.type);
     };
     /* This enable to inject translatable styled things to logs or action bar */
     /* @Override */

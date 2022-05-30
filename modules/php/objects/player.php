@@ -18,7 +18,7 @@ class GardenNationPlayer {
         $this->score = intval($dbPlayer['player_score']);
         $this->inhabitants = intval($dbPlayer['player_inhabitants']);
         $this->turnTrack = intval($dbPlayer['player_turn_track']);
-        $this->usedPloy = json_decode($dbPlayer['player_used_ploy']);
+        $this->usedPloy = json_decode($dbPlayer['player_used_ploy'], true);
     } 
 }
 ?>

@@ -166,7 +166,25 @@
       $this->game->cancelStrategicMovement();
 
       self::ajaxResponse();
-    }    
+    }
+
+    public function buildingInvasion() {
+      self::setAjaxMode();
+
+      $areaPosition = self::getArg("areaPosition", AT_posint, true);
+
+      $this->game->buildingInvasion($areaPosition);
+
+      self::ajaxResponse();
+    }
+
+    public function cancelBuildingInvasion() {
+      self::setAjaxMode();
+
+      $this->game->cancelBuildingInvasion();
+
+      self::ajaxResponse();
+    }
 
   }
   

@@ -29,8 +29,8 @@ trait ActionTrait {
         $this->gamestate->nextState('usePloyToken');
     }
 
-    private function applyConstructBuilding(int $areaPosition) {        
-        $playerId = intval(self::getActivePlayerId());
+    private function applyConstructBuildingFloor(int $areaPosition, bool $forced) {
+        $playerId = intval($this->getActivePlayerId());
         $player = $this->getPlayer($playerId);
 
         $map = $this->getMap();
@@ -51,11 +51,11 @@ trait ActionTrait {
             return;
         }
     
-        $this->incPlayerInhabitants($playerId, -$cost);
+        $this->incPlayerInhabitants($playerId, -($cost * ($forced ? 2 : 1)));
 
-        $message = $building == null ? 
+        $message = $forced ? '' : ($building == null ? 
             clienttranslate('${player_name} starts a building on territory ${territoryNumber} and sends ${cost} inhabitant(s)') : 
-            clienttranslate('${player_name} adds a floor to existing building on territory ${territoryNumber} and sends ${cost} inhabitants');
+            clienttranslate('${player_name} adds a floor to existing building on territory ${territoryNumber} and sends ${cost} inhabitants'));
         $args = [
             'player_name' => $this->getPlayerName($playerId),
             'territoryNumber' => floor($areaPosition / 10),
@@ -92,7 +92,7 @@ trait ActionTrait {
 
         $logElements = array_values(array_filter($mapElements, fn($element) => in_array($element, [0, 20, 30, 32, 40, 41, 42, 50, 51])));
         
-        self::notifyAllPlayers('placedRoute', clienttranslate('${player_name} places a route marker to ${elements}'), [
+        $this->notifyAllPlayers('placedRoute', clienttranslate('${player_name} places a route marker to ${elements}'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'marker' => PlacedRoute::forNotif($from, $to, false),
@@ -110,16 +110,16 @@ trait ActionTrait {
 
         //self::incStat(1, 'placedRoutes');
         //self::incStat(1, 'placedRoutes', $playerId);*/
-
-        $this->moveTorticrane($areaPosition);
-
-        $this->gamestate->nextState('endAction');
     }
 
     public function constructBuilding(int $areaPosition) {
         self::checkAction('constructBuilding');
 
-        $this->applyConstructBuilding($areaPosition);
+        $this->applyConstructBuildingFloor($areaPosition, false);
+
+        $this->moveTorticrane($areaPosition);
+
+        $this->gamestate->nextState('endAction');
     }
     
     public function cancelConstructBuilding() {
@@ -128,26 +128,31 @@ trait ActionTrait {
         $this->gamestate->nextState('cancel');
     }
 
+    public function applyAbandonBuilding(Building $building, bool $forced) {
+        $cost = $this->getBuildingCost($building);
+        
+        $this->incPlayerInhabitants($building->playerId, $cost);
+
+        $message = $forced ? '' : clienttranslate('${player_name} abandons building on territory ${territoryNumber} and increases its population by ${cost} inhabitants');
+        $args = [
+            'player_name' => $this->getPlayerName($building->playerId),
+            'territoryNumber' => floor($building->areaPosition / 10),
+            'cost' => $cost,
+        ];
+        $this->removeBuilding($building, $message, $args);
+    }
+
     public function abandonBuilding(int $areaPosition) {
         self::checkAction('abandonBuilding');
         
-        $playerId = intval(self::getActivePlayerId());
+        $playerId = intval($this->getActivePlayerId());
 
         $building = $this->getBuildingByAreaPosition($areaPosition);
         if ($building == null || $building->playerId != $playerId) {
             throw new BgaUserException("No player building");
         }
-        $cost = $this->getBuildingCost($building);
         
-        $this->incPlayerInhabitants($playerId, $cost);
-
-        $message = clienttranslate('${player_name} abandons building on territory ${territoryNumber} and inscreases its population by ${cost} inhabitants');
-        $args = [
-            'player_name' => $this->getPlayerName($playerId),
-            'territoryNumber' => floor($areaPosition / 10),
-            'cost' => $cost,
-        ];
-        $this->removeBuilding($building, $message, $args);
+        $this->applyAbandonBuilding($building, false);
 
         $this->moveTorticrane($areaPosition);
 
@@ -163,7 +168,7 @@ trait ActionTrait {
     public function chooseTypeOfLand(int $typeOfLand) {
         self::checkAction('chooseTypeOfLand');
         
-        $playerId = intval(self::getActivePlayerId());
+        $playerId = intval($this->getActivePlayerId());
         
         $areaPosition = intval($this->getGameStateValue(BRAMBLE_CHOICE_AREA));
         
@@ -171,7 +176,7 @@ trait ActionTrait {
         $this->DbQuery("UPDATE `bramble_area` SET `position` = $areaPosition WHERE `id` = $id");
 
         $territoryNumber = floor($areaPosition / 10);
-        self::notifyAllPlayers('setBrambleType', clienttranslate('${player_name} choses bramble ${brambleIcon} for territory ${territoryNumber}'), [
+        $this->notifyAllPlayers('setBrambleType', clienttranslate('${player_name} choses bramble ${brambleIcon} for territory ${territoryNumber}'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'territoryNumber' => $territoryNumber,
@@ -181,7 +186,11 @@ trait ActionTrait {
             'brambleId' => $id,
         ]);
 
-        $this->applyConstructBuilding($areaPosition);
+        $this->applyConstructBuildingFloor($areaPosition, false);
+
+        $this->moveTorticrane($areaPosition);
+
+        $this->gamestate->nextState('endAction');
     }
     
     public function cancelChooseTypeOfLand() {
@@ -246,6 +255,13 @@ trait ActionTrait {
         $territories = $this->getTerritories();
         $newTerritoryPosition = $this->array_find_index($territories, fn($territory) => $territory[0] == $territoryNumber);
 
+        $this->setPloyTokenUsed($this->getActivePlayerId(), 1);
+
+        $this->notifyAllPlayers('log', clienttranslate('${player_name} makes a strategic movement to go to territory ${number}'), [
+            'player_name' => $this->getPlayerName($this->getActivePlayerId()),
+            'number' => $territoryNumber,
+        ]);
+
         $this->moveTorticraneToPosition($newTerritoryPosition);
 
         $this->setGameStateValue(PLOY_USED, 1);
@@ -257,4 +273,38 @@ trait ActionTrait {
 
         $this->gamestate->nextState('cancel');
     } 
+
+    public function buildingInvasion(int $areaPosition) {
+        self::checkAction('buildingInvasion');
+        
+        $playerId = intval($this->getActivePlayerId());
+
+        $building = $this->getBuildingByAreaPosition($areaPosition);
+        $cost = $this->getBuildingCost($building);
+        if ($building == null || $building->playerId == $playerId) {
+            throw new BgaUserException("No opponent building");
+        }
+        
+        $this->applyAbandonBuilding($building, true);
+        for ($i = 0; $i < $building->floors; $i++) {
+            $this->applyConstructBuildingFloor($areaPosition, true);
+        }
+
+        $this->setPloyTokenUsed($this->getActivePlayerId(), 3);
+
+        $this->notifyAllPlayers('log', clienttranslate('${player_name} invades a ${player_name2} ${floors}-floor(s) building and sends ${cost} inhabitants'), [
+            'player_name' => $this->getPlayerName($playerId),
+            'player_name2' => $this->getPlayerName($building->playerId),
+            'floors' => $building->floors,
+            'cost' => $cost,
+        ]);
+
+        $this->gamestate->nextState('endAction');
+    }
+
+    public function cancelBuildingInvasion() {
+        self::checkAction('cancelBuildingInvasion');
+
+        $this->gamestate->nextState('cancel');
+    }
 }

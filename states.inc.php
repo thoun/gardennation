@@ -184,10 +184,10 @@ $playerActionsGameStates = [
         "description" => clienttranslate('${actplayer} must choose a roof to transfer'),
         "descriptionmyturn" => clienttranslate('${you} must choose a roof to transfer'),
         "type" => "activeplayer",
-        //"args" => "argChooseRoofToTransfer",
+        "args" => "argChooseRoofToTransfer",
         "possibleactions" => [ 
             "chooseRoofToTransfer",
-            "cancelStrategicMovement",
+            "cancelRoofTransfer",
         ],
         "transitions" => [
             "chooseRoofDestination" => ST_PLAYER_CHOOSE_ACTION,
@@ -200,10 +200,10 @@ $playerActionsGameStates = [
         "description" => clienttranslate('${actplayer} must choose a new building for the roof'),
         "descriptionmyturn" => clienttranslate('${you} must choose a new building for the roof'),
         "type" => "activeplayer",
-        //"args" => "argChooseRoofDestination",
+        "args" => "argChooseRoofDestination",
         "possibleactions" => [ 
             "chooseRoofDestination",
-            "cancelStrategicMovement",
+            "cancelRoofTransfer",
         ],
         "transitions" => [
             "endPloy" => ST_PLAYER_CHOOSE_ACTION,
@@ -216,13 +216,13 @@ $playerActionsGameStates = [
         "description" => clienttranslate('${actplayer} must choose a building to invade'),
         "descriptionmyturn" => clienttranslate('${you} must choose a building to invade'),
         "type" => "activeplayer",
-        //"args" => "argBuildingInvasion",
+        "args" => "argBuildingInvasion",
         "possibleactions" => [ 
             "buildingInvasion",
-            "cancelStrategicMovement",
+            "cancelBuildingInvasion",
         ],
         "transitions" => [
-            "endPloy" => ST_PLAYER_CHOOSE_ACTION,
+            "endAction" => ST_PLAYER_CHOOSE_ACTION,
             "cancel" => ST_PLAYER_USE_PLOY_TOKEN,
         ]
     ],

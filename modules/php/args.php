@@ -133,4 +133,24 @@ trait ArgsTrait {
         ];
     }
     
+    function argChooseRoofToTransfer() {
+        return []; // TODO
+    }
+    
+    function argChooseRoofDestination() {
+        return []; // TODO
+    }
+    
+    function argBuildingInvasion() {
+        $playerId = intval($this->getActivePlayerId());
+        $player = $this->getPlayer($playerId);
+        $buildings = $this->getTerritoryBuildings();
+
+        $possibleBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId != $playerId && $this->getBuildingCost($building) < $player->inhabitants));
+
+        return [
+            'possiblePositions' => array_map(fn($building) => $building->areaPosition, $possibleBuildings),
+        ];
+    }
+    
 }

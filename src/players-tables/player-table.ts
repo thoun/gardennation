@@ -16,6 +16,12 @@ class PlayerTable {
         </div>`;
 
         dojo.place(html, 'playerstables');
+
+        [0,1,2].forEach(type => {
+            for (let i=0; i<player.usedPloy[type]; i++) {
+                this.setPloyTokenUsed(type + 1);
+            }
+        });
     
         this.setInhabitants(player.inhabitants);
     }
@@ -37,5 +43,9 @@ class PlayerTable {
         const top = coordinates[1];
 
         markerDiv.style.transform = `translateX(${left}px) translateY(${top}px)`;
+    }
+
+    public setPloyTokenUsed(type: number) {
+        // TODO
     }
 }

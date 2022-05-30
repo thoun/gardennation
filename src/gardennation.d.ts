@@ -127,3 +127,8 @@ interface NotifTerritoryControlArgs {
     territoryNumber: number | string;
     buildingsToHighlight: Building[];
 }
+
+interface NotifPloyTokenUsedArgs {
+    playerId: number;
+    type: number;
+}
