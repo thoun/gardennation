@@ -210,4 +210,51 @@ trait ActionTrait {
 
         $this->applyChooseNextPlayer($playerId);
     }
+
+    public function usePloyToken(int $type) {
+        self::checkAction('usePloyToken');
+        
+        switch ($type) {
+            case 1:
+                $this->gamestate->nextState('strategicMovement');
+                return;
+            case 2:
+                $this->gamestate->nextState('roofTransfer');
+                return;
+            case 3:
+                $this->gamestate->nextState('buildingInvasion');
+                return;
+        }
+
+        throw new BgaUserException("Invalid action");
+    }
+
+    public function cancelUsePloyToken() {
+        self::checkAction('cancelUsePloyToken');
+
+        $this->gamestate->nextState('cancel');
+    }
+
+    public function strategicMovement(int $territoryNumber) {
+        self::checkAction('strategicMovement');
+
+        $args = $this->argStrategicMovement();
+        if (!in_array($territoryNumber, [$args['down'], $args['up']])) {
+            throw new BgaUserException("Invalid territory number");
+        }
+
+        $territories = $this->getTerritories();
+        $newTerritoryPosition = $this->array_find_index($territories, fn($territory) => $territory[0] == $territoryNumber);
+
+        $this->moveTorticraneToPosition($newTerritoryPosition);
+
+        $this->setGameStateValue(PLOY_USED, 1);
+        $this->gamestate->nextState('endPloy');
+    }
+
+    public function cancelStrategicMovement() {
+        self::checkAction('cancelStrategicMovement');
+
+        $this->gamestate->nextState('cancel');
+    } 
 }

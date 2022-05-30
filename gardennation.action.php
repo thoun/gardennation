@@ -132,6 +132,42 @@
       self::ajaxResponse();
     }
 
+    public function usePloyToken() {
+      self::setAjaxMode();
+
+      $type = self::getArg("type", AT_posint, true);
+
+      $this->game->usePloyToken($type);
+
+      self::ajaxResponse();
+    }
+
+    public function cancelUsePloyToken() {
+      self::setAjaxMode();
+
+      $this->game->cancelUsePloyToken();
+
+      self::ajaxResponse();
+    }
+
+    public function strategicMovement() {
+      self::setAjaxMode();
+
+      $territory = self::getArg("territory", AT_posint, true);
+
+      $this->game->strategicMovement($territory);
+
+      self::ajaxResponse();
+    }
+
+    public function cancelStrategicMovement() {
+      self::setAjaxMode();
+
+      $this->game->cancelStrategicMovement();
+
+      self::ajaxResponse();
+    }    
+
   }
   
 

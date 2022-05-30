@@ -83,6 +83,16 @@ interface EnteringChooseNextPlayerArgs {
     possibleNextPlayers: number[];
 }
 
+interface EnteringUsePloyTokenArgs {
+    canTransferRoof: boolean;
+    canInvade: boolean;
+}
+
+interface EnteringStrategicMovementArgs {
+    down: number;
+    up: number;
+}
+
 interface NotifMoveTorticraneArgs {
     torticranePosition: number;
 }

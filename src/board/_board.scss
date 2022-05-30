@@ -210,6 +210,7 @@ $area-spacing: 106px;
             position: absolute;
             bottom: 87px;
             right: 8px;
+            z-index: 20;
         }
 
         .territory-number {
@@ -253,8 +254,8 @@ $area-spacing: 106px;
 
     .building {
         position: absolute;
-        bottom: 26px;
-        left: 10px;
+        bottom: 28px;
+        left: 15px;
         display: flex;
         flex-direction: column-reverse;
 

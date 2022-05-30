@@ -150,7 +150,7 @@ $playerActionsGameStates = [
         "description" => clienttranslate('${actplayer} must choose a ploy'),
         "descriptionmyturn" => clienttranslate('${you} must choose a ploy'),
         "type" => "activeplayer",
-        //"args" => "argUsePloyToken",
+        "args" => "argUsePloyToken",
         "possibleactions" => [ 
             "usePloyToken",
             "cancelUsePloyToken",
@@ -168,7 +168,7 @@ $playerActionsGameStates = [
         "description" => clienttranslate('${actplayer} must choose a territory for the Torticrane'),
         "descriptionmyturn" => clienttranslate('${you} must choose a territory for the Torticrane'),
         "type" => "activeplayer",
-        //"args" => "argStrategicMovement",
+        "args" => "argStrategicMovement",
         "possibleactions" => [ 
             "strategicMovement",
             "cancelStrategicMovement",

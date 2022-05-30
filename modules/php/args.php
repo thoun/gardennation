@@ -107,5 +107,30 @@ trait ArgsTrait {
             'possibleNextPlayers' => array_map(fn($player) => $player->id, $playersAtOrderZero),
         ];
     }
+
+    function argUsePloyToken() {
+        $playerId = intval($this->getActivePlayerId());
+        $buildings = $this->getTerritoryBuildings();
+
+        $canTransferRoof = $this->array_some($buildings, fn($building) => $building->playerId == $playerId && $building->roof) && 
+            $this->array_some($buildings, fn($building) => $building->playerId == $playerId && !$building->roof);
+
+        $canInvade = $this->array_some($buildings, fn($building) => $building->playerId != $playerId);
+
+        return [
+            'canTransferRoof' => $canTransferRoof,
+            'canInvade' => $canInvade,
+        ];
+    }
+
+    function argStrategicMovement() {
+        $territories = $this->getTerritories();
+        $currentTerritoryNumber = $territories[intval($this->getGameStateValue(TORTICRANE_POSITION))][0];
+
+        return [
+            'down' => $currentTerritoryNumber == 1 ? 7 : $currentTerritoryNumber - 1,
+            'up' => $currentTerritoryNumber == 7 ? 1 : $currentTerritoryNumber + 1,
+        ];
+    }
     
 }

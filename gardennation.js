@@ -453,6 +453,21 @@ var GardenNation = /** @class */ (function () {
                         });
                     }
                     break;
+                case 'usePloyToken':
+                    var usePloyTokenArgs = args;
+                    this.addActionButton("strategicMovement-button", _("Strategic Movement"), function () { return _this.usePloyToken(1); });
+                    this.addActionButton("roofTransfer-button", _("Roof Transfer"), function () { return _this.usePloyToken(2); });
+                    this.addActionButton("buildingInvasion-button", _("Building Invasion"), function () { return _this.usePloyToken(3); });
+                    this.addActionButton("cancelUsePloyToken-button", _("Cancel"), function () { return _this.cancelUsePloyToken(); }, null, null, 'gray');
+                    document.getElementById("roofTransfer-button").classList.toggle('disabled', !usePloyTokenArgs.canTransferRoof);
+                    document.getElementById("buildingInvasion-button").classList.toggle('disabled', !usePloyTokenArgs.canInvade);
+                    break;
+                case 'strategicMovement':
+                    var strategicMovementArgs_1 = args;
+                    this.addActionButton("strategicMovementDown-button", _("Move to territory ${number}").replace('${number}', strategicMovementArgs_1.down), function () { return _this.strategicMovement(strategicMovementArgs_1.down); });
+                    this.addActionButton("strategicMovementUp-button", _("Move to territory ${number}").replace('${number}', strategicMovementArgs_1.up), function () { return _this.strategicMovement(strategicMovementArgs_1.up); });
+                    this.addActionButton("cancelStrategicMovement-button", _("Cancel"), function () { return _this.cancelStrategicMovement(); }, null, null, 'gray');
+                    break;
             }
         }
     };
@@ -668,6 +683,34 @@ var GardenNation = /** @class */ (function () {
         this.takeAction('chooseNextPlayer', {
             playerId: playerId
         });
+    };
+    GardenNation.prototype.usePloyToken = function (type) {
+        if (!this.checkAction('usePloyToken')) {
+            return;
+        }
+        this.takeAction('usePloyToken', {
+            type: type
+        });
+    };
+    GardenNation.prototype.cancelUsePloyToken = function () {
+        if (!this.checkAction('cancelUsePloyToken')) {
+            return;
+        }
+        this.takeAction('cancelUsePloyToken');
+    };
+    GardenNation.prototype.strategicMovement = function (territory) {
+        if (!this.checkAction('strategicMovement')) {
+            return;
+        }
+        this.takeAction('strategicMovement', {
+            territory: territory
+        });
+    };
+    GardenNation.prototype.cancelStrategicMovement = function () {
+        if (!this.checkAction('cancelStrategicMovement')) {
+            return;
+        }
+        this.takeAction('cancelStrategicMovement');
     };
     GardenNation.prototype.takeAction = function (action, data) {
         data = data || {};

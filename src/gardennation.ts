@@ -235,6 +235,21 @@ class GardenNation implements GardenNationGame {
                         });
                     }
                     break;
+                case 'usePloyToken':
+                    const usePloyTokenArgs = args as EnteringUsePloyTokenArgs;
+                    (this as any).addActionButton(`strategicMovement-button`, _("Strategic Movement"), () => this.usePloyToken(1));
+                    (this as any).addActionButton(`roofTransfer-button`, _("Roof Transfer"), () => this.usePloyToken(2));
+                    (this as any).addActionButton(`buildingInvasion-button`, _("Building Invasion"), () => this.usePloyToken(3));
+                    (this as any).addActionButton(`cancelUsePloyToken-button`, _("Cancel"), () => this.cancelUsePloyToken(), null, null, 'gray');
+                    document.getElementById(`roofTransfer-button`).classList.toggle('disabled', !usePloyTokenArgs.canTransferRoof);
+                    document.getElementById(`buildingInvasion-button`).classList.toggle('disabled', !usePloyTokenArgs.canInvade);
+                    break;
+                case 'strategicMovement':
+                    const strategicMovementArgs = args as EnteringStrategicMovementArgs;
+                    (this as any).addActionButton(`strategicMovementDown-button`, _("Move to territory ${number}").replace('${number}', strategicMovementArgs.down), () => this.strategicMovement(strategicMovementArgs.down));
+                    (this as any).addActionButton(`strategicMovementUp-button`, _("Move to territory ${number}").replace('${number}', strategicMovementArgs.up), () => this.strategicMovement(strategicMovementArgs.up));
+                    (this as any).addActionButton(`cancelStrategicMovement-button`, _("Cancel"), () => this.cancelStrategicMovement(), null, null, 'gray');
+                    break;
             }
         }
     }  
@@ -520,6 +535,42 @@ class GardenNation implements GardenNationGame {
         });
     }
 
+    public usePloyToken(type: number) {
+        if(!(this as any).checkAction('usePloyToken')) {
+            return;
+        }
+
+        this.takeAction('usePloyToken', {
+            type
+        });
+    }
+
+    public cancelUsePloyToken() {
+        if(!(this as any).checkAction('cancelUsePloyToken')) {
+            return;
+        }
+
+        this.takeAction('cancelUsePloyToken');
+    }
+
+    public strategicMovement(territory: number) {
+        if(!(this as any).checkAction('strategicMovement')) {
+            return;
+        }
+
+        this.takeAction('strategicMovement', {
+            territory
+        });
+    }
+
+    public cancelStrategicMovement() {
+        if(!(this as any).checkAction('cancelStrategicMovement')) {
+            return;
+        }
+
+        this.takeAction('cancelStrategicMovement');
+    }
+    
     public takeAction(action: string, data?: any) {
         data = data || {};
         data.lock = true;
