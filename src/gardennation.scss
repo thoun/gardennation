@@ -53,13 +53,14 @@ html {
   background-size: auto 100%;
 }
 
-.button-bramble-type {
+.button-bramble-type, .bramble-type-token {
   position: relative;
   display: inline-block;
   width: $area-size;
   height: $area-size;
   background: url('img/land-tokens.png');
   background-size: auto 100%;
+  border-radius: 50%;
 
   @for $i from 1 through 3 {
       &[data-type="#{$i}"] { 

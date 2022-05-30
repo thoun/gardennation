@@ -54,6 +54,7 @@ interface GardenNationGamedatas {
     // Add here variables you set up in getAllDatas
     territories: number[][]; // index 0 is the number of the territory, index 1 is the rotation
     map: { [position: number]: AreaSpot };
+    brambleIds: number[][];
     torticranePosition: number;
 }
 
@@ -104,6 +105,7 @@ interface NotifInhabitantsArgs {
 interface NotifSetBrambleTypeArgs {
     areaPosition: number;
     type: number;
+    brambleId: number;
 }
 
 interface NotifSetBuildingArgs {

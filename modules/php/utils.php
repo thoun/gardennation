@@ -141,7 +141,7 @@ trait UtilTrait {
     function getMap() {
         $map = $this->MAP;
 
-        $brambleAreasDb = $this->getCollectionFromDb("SELECT * FROM `bramble_area` ORDER BY `position` ASC");
+        $brambleAreasDb = $this->getCollectionFromDb("SELECT * FROM `bramble_area` WHERE `position` IS NOT NULL ORDER BY `position` ASC");
         foreach ($brambleAreasDb as $brambleAreaDb) {
             $map[intval($brambleAreaDb['position'])][0] = intval($brambleAreaDb['type']) + 10;
         }
@@ -178,6 +178,10 @@ trait UtilTrait {
     }
 
     function canUsePloy(int $playerId) {
+        if (boolval($this->getGameStateValue(PLOY_USED))) {
+            return false;
+        }
+
         $player = $this->getPlayer($playerId);
         return 4 - array_reduce($player->usedPloy, fn($a, $b) => $a + $b, 0) > 0;
     }

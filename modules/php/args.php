@@ -77,11 +77,11 @@ trait ArgsTrait {
     }
 
     function argChooseTypeOfLand() {
-        $brambleAreasDb = $this->getCollectionFromDb("SELECT `type`, count(*) as `count` FROM `bramble_area` GROUP BY `type`");
+        $brambleAreasDb = $this->getCollectionFromDb("SELECT `type`, count(*) as `count` FROM `bramble_area` WHERE `position` IS NULL GROUP BY `type`");
         $possibleTypes = [];
         foreach([1, 2, 3] as $type) {
             $brambleAreaDb = $this->array_find($brambleAreasDb, fn($brambleAreaDb) => intval($brambleAreaDb['type']) == $type);
-            if ($brambleAreaDb == null || intval($brambleAreaDb['count']) < 3) {
+            if ($brambleAreaDb != null && intval($brambleAreaDb['count']) > 0) {
                 $possibleTypes[] = $type;
             }
         }

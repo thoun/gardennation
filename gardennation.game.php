@@ -127,6 +127,9 @@ class GardenNation extends Table {
         $sql .= implode(',', $values);
         $this->DbQuery($sql);
 
+        // bramble areas
+        $this->DbQuery("INSERT INTO `bramble_area` (`type`) VALUES (1), (1), (1), (2), (2), (2), (3), (3), (3)");
+
         // building floors
         $this->setupBuildingFloors(array_keys($players));
 
@@ -180,6 +183,14 @@ class GardenNation extends Table {
             $areaSpot->building = array_key_exists($position, $buildings) ? $buildings[$position] : null;
             $result['map'][$position] = $areaSpot;
         }
+
+        $brambleTokensDb = $this->getCollectionFromDb("SELECT `id`, `type` FROM `bramble_area` WHERE `position` IS NULL");
+        $brambleIds = [];
+        foreach([1, 2, 3] as $type) {
+            $brambleTokensDbForType = array_filter($brambleTokensDb, fn($brambleTokenDb) => $brambleTokenDb['type'] == $type);
+            $brambleIds[$type] = array_values(array_map(fn($brambleToken) => intval($brambleToken['id']), $brambleTokensDbForType));
+        }
+        $result['brambleIds'] = $brambleIds;
         
         $result['torticranePosition'] = $this->getGameStateValue(TORTICRANE_POSITION);
   

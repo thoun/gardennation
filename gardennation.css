@@ -199,6 +199,7 @@
   position: absolute;
   bottom: 68px;
   right: 233px;
+  z-index: 20;
 }
 #board #torticrane {
   width: 71px;
@@ -241,6 +242,28 @@
 }
 #board .building.highlight {
   animation: highlight-building-animation 1s;
+}
+#board #remaining-bramble-tokens {
+  position: absolute;
+  text-align: center;
+  right: 10px;
+  top: 50px;
+  width: 130px;
+  border-radius: 15px 15px 50px 50px;
+}
+#board #remaining-bramble-tokens .title {
+  font-size: 90%;
+  text-shadow: 0 0 2px white;
+}
+#board #remaining-bramble-tokens .container {
+  margin-top: 10px;
+}
+#board #remaining-bramble-tokens .container .bramble-type-token {
+  box-shadow: 1px 1px 3px 2px black;
+}
+#board #remaining-bramble-tokens .container .bramble-type-token:not(:first-child) {
+  margin-left: -90px;
+  margin-top: -90px;
 }
 
 #common-projects {
@@ -377,21 +400,22 @@ html {
   background-size: auto 100%;
 }
 
-.button-bramble-type {
+.button-bramble-type, .bramble-type-token {
   position: relative;
   display: inline-block;
   width: 100px;
   height: 100px;
   background: url("img/land-tokens.png");
   background-size: auto 100%;
+  border-radius: 50%;
 }
-.button-bramble-type[data-type="1"] {
+.button-bramble-type[data-type="1"], .bramble-type-token[data-type="1"] {
   background-position: 33.3333333333%;
 }
-.button-bramble-type[data-type="2"] {
+.button-bramble-type[data-type="2"], .bramble-type-token[data-type="2"] {
   background-position: 66.6666666667%;
 }
-.button-bramble-type[data-type="3"] {
+.button-bramble-type[data-type="3"], .bramble-type-token[data-type="3"] {
   background-position: 100%;
 }
 

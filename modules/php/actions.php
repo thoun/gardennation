@@ -54,11 +54,12 @@ trait ActionTrait {
         $this->incPlayerInhabitants($playerId, -$cost);
 
         $message = $building == null ? 
-            clienttranslate('${player_name} starts a building on territory ${territoryNumber}') : 
-            clienttranslate('${player_name} adds a floor to existing building on territory ${territoryNumber}');
+            clienttranslate('${player_name} starts a building on territory ${territoryNumber} and sends ${cost} inhabitant(s)') : 
+            clienttranslate('${player_name} adds a floor to existing building on territory ${territoryNumber} and sends ${cost} inhabitants');
         $args = [
             'player_name' => $this->getPlayerName($playerId),
             'territoryNumber' => floor($areaPosition / 10),
+            'cost' => $cost,
         ];
         $this->placeBuildingFloor($playerId, floor($areaPosition / 10), $areaPosition % 10, $message, $args);
 
@@ -140,10 +141,11 @@ trait ActionTrait {
         
         $this->incPlayerInhabitants($playerId, $cost);
 
-        $message = clienttranslate('${player_name} abandons building on territory ${territoryNumber}');
+        $message = clienttranslate('${player_name} abandons building on territory ${territoryNumber} and inscreases its population by ${cost} inhabitants');
         $args = [
             'player_name' => $this->getPlayerName($playerId),
             'territoryNumber' => floor($areaPosition / 10),
+            'cost' => $cost,
         ];
         $this->removeBuilding($building, $message, $args);
 
@@ -165,7 +167,8 @@ trait ActionTrait {
         
         $areaPosition = intval($this->getGameStateValue(BRAMBLE_CHOICE_AREA));
         
-        $this->DbQuery("INSERT INTO `bramble_area` (`position`, `type`) VALUES ($areaPosition, $typeOfLand)");
+        $id = intval($this->getUniqueValueFromDB("SELECT max(`id`) FROM `bramble_area` WHERE `position` IS NULL AND `type` = $typeOfLand"));
+        $this->DbQuery("UPDATE `bramble_area` SET `position` = $areaPosition WHERE `id` = $id");
 
         $territoryNumber = floor($areaPosition / 10);
         self::notifyAllPlayers('setBrambleType', clienttranslate('${player_name} choses bramble ${brambleIcon} for territory ${territoryNumber}'), [
@@ -175,6 +178,7 @@ trait ActionTrait {
             'areaPosition' => $areaPosition,
             'brambleIcon' => $typeOfLand,
             'type' => $typeOfLand,
+            'brambleId' => $id,
         ]);
 
         $this->applyConstructBuilding($areaPosition);

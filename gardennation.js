@@ -108,13 +108,15 @@ function formatTextIcons(rawText) {
         .replace(/\[die:(\d):(\d)\]/ig, '<span class="die-icon" data-color="$1" data-face="$2"></span>');
 }
 var Board = /** @class */ (function () {
-    function Board(game, players, territories, map, torticranePosition) {
+    function Board(game, players, gamedatas) {
         var _this = this;
         this.game = game;
         this.players = players;
-        this.territories = territories;
-        this.map = map;
+        var territories = gamedatas.territories;
+        var map = gamedatas.map;
+        var torticranePosition = gamedatas.torticranePosition;
         document.getElementById("order-track").dataset.playerNumber = '' + players.length;
+        this.createRemainingBrambleTokens(gamedatas.brambleIds);
         players.forEach(function (player) { return dojo.place("\n            <div id=\"order-token-".concat(player.id, "\" class=\"token\" data-color=\"").concat(player.color, "\"></div>\n        "), "order-track-".concat(player.turnTrack)); });
         dojo.place("<div id=\"torticrane-spot--1\" class=\"torticrane-spot\"></div>", "board");
         [0, 1, 2, 3, 4, 5, 6].forEach(function (territoryPosition) {
@@ -139,15 +141,25 @@ var Board = /** @class */ (function () {
         });
         dojo.place("<div id=\"torticrane\"></div>", "torticrane-spot-".concat(torticranePosition));
     }
+    Board.prototype.createRemainingBrambleTokens = function (brambleIds) {
+        dojo.place("\n        <div id=\"remaining-bramble-tokens\" class=\"whiteblock\">\n            <div class=\"title\">".concat(_('Remaining bramble tokens'), "</div>\n            <div id=\"remaining-bramble-tokens-container-1\" class=\"container\"></div>\n            <div id=\"remaining-bramble-tokens-container-2\" class=\"container\"></div>\n            <div id=\"remaining-bramble-tokens-container-3\" class=\"container\"></div>\n            </div>\n        </div>\n        "), "board");
+        [1, 2, 3].forEach(function (type) { return brambleIds[type].forEach(function (id) {
+            return dojo.place("<div id=\"bramble".concat(id, "\" class=\"bramble-type-token\" data-type=\"").concat(type, "\"><div class=\"land-number\">5</div></div>"), "remaining-bramble-tokens-container-".concat(type));
+        }); });
+    };
     Board.prototype.setPoints = function (playerId, points) {
         // TODO
     };
     Board.prototype.activatePossibleAreas = function (possibleAreas) {
         Array.from(document.getElementsByClassName('area')).forEach(function (area) { return area.classList.toggle('selectable', possibleAreas.includes(Number(area.dataset.position))); });
     };
-    Board.prototype.setBrambleType = function (areaPosition, type) {
+    Board.prototype.setBrambleType = function (areaPosition, type, id) {
+        var _a;
         var areaDiv = document.getElementById("area".concat(areaPosition));
         areaDiv.dataset.type = '' + type;
+        // TODO slide with id
+        var brambleDiv = document.getElementById("bramble".concat(id));
+        (_a = brambleDiv === null || brambleDiv === void 0 ? void 0 : brambleDiv.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(brambleDiv);
     };
     Board.prototype.setBuilding = function (areaPosition, building) {
         var _this = this;
@@ -227,7 +239,7 @@ var GardenNation = /** @class */ (function () {
         log('gamedatas', gamedatas);
         this.createPlayerPanels(gamedatas);
         var players = Object.values(gamedatas.players);
-        this.board = new Board(this, players, gamedatas.territories, gamedatas.map, gamedatas.torticranePosition);
+        this.board = new Board(this, players, gamedatas);
         this.createPlayerTables(gamedatas);
         if (gamedatas.endTurn) {
             this.notif_lastTurn();
@@ -676,7 +688,7 @@ var GardenNation = /** @class */ (function () {
         slideToObjectAndAttach(this, document.getElementById("order-token-".concat(notif.args.playerId)), "order-track-".concat(notif.args.order));
     };
     GardenNation.prototype.notif_setBrambleType = function (notif) {
-        this.board.setBrambleType(notif.args.areaPosition, notif.args.type);
+        this.board.setBrambleType(notif.args.areaPosition, notif.args.type, notif.args.brambleId);
     };
     GardenNation.prototype.notif_setBuilding = function (notif) {
         this.board.setBuilding(notif.args.areaPosition, notif.args.building);

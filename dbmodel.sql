@@ -30,9 +30,10 @@ CREATE TABLE IF NOT EXISTS `territory` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 CREATE TABLE IF NOT EXISTS `bramble_area` (
-  `position` tinyint(2) unsigned NOT NULL,
+  `id` int(1) unsigned NOT NULL AUTO_INCREMENT,
+  `position` tinyint(2) NULL,
   `type` tinyint(1) unsigned NOT NULL,
-  PRIMARY KEY (`position`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 CREATE TABLE IF NOT EXISTS `building_floor` (

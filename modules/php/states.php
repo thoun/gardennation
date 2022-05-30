@@ -14,6 +14,7 @@ trait StateTrait {
     function stEndAction() {
         $playerId = intval($this->getActivePlayerId());
 
+        $this->setGameStateValue(PLOY_USED, 0);
         $this->incGameStateValue(PLAYED_ACTIONS, 1);
         $remainingActions = $this->getRemainingActions($playerId);
 

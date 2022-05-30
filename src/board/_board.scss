@@ -203,6 +203,7 @@ $area-spacing: 106px;
         position: absolute;
         bottom: 68px;
         right: 233px;
+        z-index: 20;
     }
 
     #torticrane {
@@ -245,6 +246,32 @@ $area-spacing: 106px;
 
         &.highlight {            
             animation: highlight-building-animation 1s;
+        }
+    }
+    #remaining-bramble-tokens {
+        position: absolute;
+        text-align: center;
+        right: 10px;
+        top: 50px;
+        width: 130px;
+        border-radius: 15px 15px 50px 50px;
+
+        .title {
+            font-size: 90%;
+            text-shadow: 0 0 2px white;
+        }
+
+        .container {            
+            margin-top: 10px;
+
+            .bramble-type-token {
+                box-shadow: 1px 1px 3px 2px black;
+
+                &:not(:first-child) {
+                    margin-left: -90px;
+                    margin-top: -90px;
+                }
+            }
         }
     }
 }

@@ -1,13 +1,18 @@
 class Board {
 
+
     constructor(
         private game: GardenNationGame, 
         private players: GardenNationPlayer[],
-        private territories: number[][],
-        private map: { [position: number]: AreaSpot },
-        torticranePosition: number
+        gamedatas: GardenNationGamedatas,
     ) {
+        const territories = gamedatas.territories;
+        const map = gamedatas.map;
+        const torticranePosition = gamedatas.torticranePosition;
+
         document.getElementById(`order-track`).dataset.playerNumber = ''+players.length;
+
+        this.createRemainingBrambleTokens(gamedatas.brambleIds);
 
         players.forEach(player => dojo.place(`
             <div id="order-token-${player.id}" class="token" data-color="${player.color}"></div>
@@ -52,6 +57,22 @@ class Board {
 
         dojo.place(`<div id="torticrane"></div>`, `torticrane-spot-${torticranePosition}`);
     }
+
+    private createRemainingBrambleTokens(brambleIds: number[][]) {
+        dojo.place(`
+        <div id="remaining-bramble-tokens" class="whiteblock">
+            <div class="title">${_('Remaining bramble tokens')}</div>
+            <div id="remaining-bramble-tokens-container-1" class="container"></div>
+            <div id="remaining-bramble-tokens-container-2" class="container"></div>
+            <div id="remaining-bramble-tokens-container-3" class="container"></div>
+            </div>
+        </div>
+        `, `board`);
+
+        [1,2,3].forEach(type => brambleIds[type].forEach(id =>
+                dojo.place(`<div id="bramble${id}" class="bramble-type-token" data-type="${type}"><div class="land-number">5</div></div>`, `remaining-bramble-tokens-container-${type}`)
+        ));
+    }
     
     setPoints(playerId: number, points: number) {
         // TODO
@@ -61,9 +82,12 @@ class Board {
         Array.from(document.getElementsByClassName('area')).forEach((area: HTMLDivElement) => area.classList.toggle('selectable', possibleAreas.includes(Number(area.dataset.position))));
     }
     
-    public setBrambleType(areaPosition: number, type: number) {
+    public setBrambleType(areaPosition: number, type: number, id: number) {
         const areaDiv = document.getElementById(`area${areaPosition}`);
         areaDiv.dataset.type = ''+type;
+        // TODO slide with id
+        const brambleDiv = document.getElementById(`bramble${id}`);
+        brambleDiv?.parentElement?.removeChild(brambleDiv);
     }
 
     public setBuilding(areaPosition: number, building: Building | null) {

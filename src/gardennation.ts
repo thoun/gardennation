@@ -57,7 +57,7 @@ class GardenNation implements GardenNationGame {
 
         this.createPlayerPanels(gamedatas);
         const players = Object.values(gamedatas.players);
-        this.board = new Board(this, players, gamedatas.territories, gamedatas.map, gamedatas.torticranePosition);
+        this.board = new Board(this, players, gamedatas);
         this.createPlayerTables(gamedatas);
 
         if (gamedatas.endTurn) {
@@ -626,7 +626,7 @@ class GardenNation implements GardenNationGame {
     }
 
     notif_setBrambleType(notif: Notif<NotifSetBrambleTypeArgs>) {
-        this.board.setBrambleType(notif.args.areaPosition, notif.args.type);
+        this.board.setBrambleType(notif.args.areaPosition, notif.args.type, notif.args.brambleId);
     }
 
     notif_setBuilding(notif: Notif<NotifSetBuildingArgs>) {
