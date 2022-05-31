@@ -218,6 +218,12 @@ trait ActionTrait {
 
         $this->gamestate->nextState('changeTerritory');
     }
+    
+    public function skipTurn() {
+        self::checkAction('skipTurn');
+
+        $this->gamestate->nextState('chooseNextPlayer');
+    }
 
     public function chooseNextPlayer(int $playerId) {
         self::checkAction('chooseNextPlayer');

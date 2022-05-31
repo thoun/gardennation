@@ -33,6 +33,7 @@ trait ArgsTrait {
             'canChangeTerritory' => $canChangeTerritory,
             'canAbandonBuilding' => $canAbandonBuilding,
             'canUsePloy' => $canUsePloy,
+            'canSkipTurn' => $remainingFloors == 0,
         ];
     }
    

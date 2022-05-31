@@ -122,6 +122,14 @@
       self::ajaxResponse();
     }
 
+    public function skipTurn() {
+      self::setAjaxMode();
+
+      $this->game->skipTurn();
+
+      self::ajaxResponse();
+    }
+
     public function chooseNextPlayer() {
       self::setAjaxMode();
 

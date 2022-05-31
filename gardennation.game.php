@@ -134,6 +134,13 @@ class GardenNation extends Table {
         // building floors
         $this->setupBuildingFloors(array_keys($players));
 
+        // cards
+        $this->initCommonProjects();
+		$this->initSecretMissions();
+        
+        $this->setInitialCommonProjects();
+        $this->setInitialSecretMissions(array_keys($players));
+
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
 

@@ -215,6 +215,9 @@ class GardenNation implements GardenNationGame {
                     document.getElementById(`chooseConstructBuilding-button`).classList.toggle('disabled', !chooseActionArgs.canConstructBuilding);
                     document.getElementById(`chooseAbandonBuilding-button`).classList.toggle('disabled', !chooseActionArgs.canAbandonBuilding);
                     document.getElementById(`chooseUsePloyToken-button`).classList.toggle('disabled', !chooseActionArgs.canUsePloy);
+                    if (chooseActionArgs.canSkipTurn) {
+                        (this as any).addActionButton(`skipTurn-button`, _("Skip turn"), () => this.skipTurn(), null, null, 'red');
+                    }
                     break;
                 case 'constructBuilding':
                     (this as any).addActionButton(`cancelConstructBuilding-button`, _("Cancel"), () => this.cancelConstructBuilding(), null, null, 'gray');
@@ -543,6 +546,14 @@ class GardenNation implements GardenNationGame {
         this.takeAction('changeTerritory', {
             territoryNumber
         });
+    }
+
+    public skipTurn() {
+        if (!(this as any).checkAction('skipTurn')) {
+            return;
+        }
+
+        this.takeAction('skipTurn');
     }
 
     public chooseNextPlayer(playerId: number) {

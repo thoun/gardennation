@@ -70,6 +70,7 @@ interface EnteringChooseActionArgs {
     canAbandonBuilding: boolean;
     canUsePloy: boolean;
     canChangeTerritory: number | null;
+    canSkipTurn: boolean;
 }
 
 interface EnteringSelectAreaPositionArgs {

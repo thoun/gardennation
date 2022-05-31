@@ -87,13 +87,13 @@ trait UtilTrait {
         return array_map(fn($dbResult) => new GardenNationPlayer($dbResult), array_values($dbResults));
     }
 
-    function incPlayerScore(int $playerId, int $amount) {
+    function incPlayerScore(int $playerId, int $amount, $message = '', $args = []) {
         $this->DbQuery("UPDATE player SET `player_score` = `player_score` + $amount WHERE player_id = $playerId");
             
-        $this->notifyAllPlayers('score', '', [
+        $this->notifyAllPlayers('score', $message, [
             'playerId' => $playerId,
             'newScore' => $this->getPlayer($playerId)->score,
-        ]);
+        ] + $args);
     }
 
     function incPlayerInhabitants(int $playerId, int $amount) {
@@ -386,5 +386,25 @@ trait UtilTrait {
             'player_name' => $this->getPlayerName($playerId),
             'type' => $type,
         ]);
+    }
+
+    function initCommonProjects() {
+        // TODO
+    }
+
+    function initSecretMissions() {
+        // TODO
+    }
+    
+    function setInitialCommonProjects() {
+        for ($i = 1; $i <= 4; $i++) {
+            $this->commonProjects->pickCardForLocation('deck', 'table', $i);
+        }
+    }
+    
+    function setInitialSecretMissions(array $playersIds) {
+        foreach ($playersIds as $playerId) {
+            $this->secretMissions->pickCards(2, 'deck', $playerId);
+        }
     }
 }

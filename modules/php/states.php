@@ -1,5 +1,7 @@
 <?php
 
+require_once(__DIR__.'/objects/secret-mission.php');
+
 trait StateTrait {
 
 //////////////////////////////////////////////////////////////////////////////
@@ -58,8 +60,20 @@ trait StateTrait {
         $this->gamestate->nextState($lastRound ? 'endScore' : 'newRound');
     }
 
+    function revealAndScoreSecretMission(int $playerId, SecretMission $secretMission, array $buildings) {
+        // TODO
+    }
+
     function stEndScore() {
         $players = $this->getPlayers();
+        $buildings = $this->getBuildings();
+
+        foreach($players as $player) {
+            $secretMissions = []; /*,  TODO*/
+            foreach($secretMissions as $secretMission) {
+                $this->revealAndScoreSecretMission($player->id,  $secretMission, $buildings);
+            }
+        }
 
         foreach($players as $player) {
             foreach($this->END_INHABITANTS_POINTS as $min => $points) {
@@ -70,8 +84,12 @@ trait StateTrait {
                     break;
                 }
             }
-            // TODO notif
-            $this->incPlayerScore($player->id, $inhabitantsScore);
+            
+            $this->incPlayerScore($player->id, $inhabitantsScore, clienttranslate('${player_name} gains ${points} victory points for having ${inhabitants} inhabitants'), [
+                'player_name' => $player->name,
+                'points' => $inhabitantsScore,
+                'inhabitants' => $player->inhabitants,
+            ]);
         }
 
         /* TODO

@@ -445,6 +445,9 @@ var GardenNation = /** @class */ (function () {
                     document.getElementById("chooseConstructBuilding-button").classList.toggle('disabled', !chooseActionArgs_1.canConstructBuilding);
                     document.getElementById("chooseAbandonBuilding-button").classList.toggle('disabled', !chooseActionArgs_1.canAbandonBuilding);
                     document.getElementById("chooseUsePloyToken-button").classList.toggle('disabled', !chooseActionArgs_1.canUsePloy);
+                    if (chooseActionArgs_1.canSkipTurn) {
+                        this.addActionButton("skipTurn-button", _("Skip turn"), function () { return _this.skipTurn(); }, null, null, 'red');
+                    }
                     break;
                 case 'constructBuilding':
                     this.addActionButton("cancelConstructBuilding-button", _("Cancel"), function () { return _this.cancelConstructBuilding(); }, null, null, 'gray');
@@ -707,6 +710,12 @@ var GardenNation = /** @class */ (function () {
         this.takeAction('changeTerritory', {
             territoryNumber: territoryNumber
         });
+    };
+    GardenNation.prototype.skipTurn = function () {
+        if (!this.checkAction('skipTurn')) {
+            return;
+        }
+        this.takeAction('skipTurn');
     };
     GardenNation.prototype.chooseNextPlayer = function (playerId) {
         if (!this.checkAction('chooseNextPlayer')) {
