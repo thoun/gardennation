@@ -175,6 +175,13 @@ class GardenNation extends Table {
             $player['usedPloy'] = json_decode($player['usedPloy']);
 
             $player['buildingFloors'] = $this->getAvailableBuildings($playerId);
+
+            $secretMissions = $this->getSecretMissionsFromDb($this->secretMissions->getCardsInLocation('hand', $playerId));
+            $player['secretMissions'] = $currentPlayerId == $playerId ? $secretMissions : array_map(function($secretMission) {
+                $secretMissionIdOnly = new stdClass();
+                $secretMissionIdOnly->id = $secretMission->id;
+                return $secretMissionIdOnly;
+            }, $secretMissions);
         }
 
         $result['territories'] = $this->getTerritories();

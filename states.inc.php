@@ -87,6 +87,7 @@ $playerActionsGameStates = [
             "chooseAbandonBuilding",
             "changeTerritory",
             "chooseUsePloyToken",
+            "skipTurn",
         ],
         "transitions" => [
             "constructBuilding" => ST_PLAYER_CONSTRUCT_BUILDING,
@@ -288,7 +289,7 @@ $gameGameStates = [
         "action" => "stEndScore",
         "updateGameProgression" => true,
         "transitions" => [
-            "endGame" => ST_END_GAME,
+            "endGame" => ST_PLAYER_CHOOSE_ACTION/* TODO ST_END_GAME*/,
         ],
     ],
 ];

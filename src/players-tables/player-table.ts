@@ -13,6 +13,11 @@ class PlayerTable {
             <div id="player-table-${this.playerId}-score-board" class="player-score-board" data-color="${player.color}">
                 <div id="player-table-${this.playerId}-meeple-marker" class="meeple-marker" data-color="${player.color}"></div>
             </div>
+            <div id="player-table-${this.playerId}-secret-missions-wrapper" class="player-secret-missions-wrapper">
+                <div class="title">${_('Secret missions')}</div>
+                <div id="player-table-${this.playerId}-secret-missions" class="player-secret-missions">
+                </div>
+            </div>
         </div>`;
 
         dojo.place(html, 'playerstables');
@@ -24,6 +29,8 @@ class PlayerTable {
         });
     
         this.setInhabitants(player.inhabitants);
+
+        this.setSecretMissions(player.secretMissions);
     }
 
     private getPointsCoordinates(points: number) {
@@ -47,5 +54,11 @@ class PlayerTable {
 
     public setPloyTokenUsed(type: number) {
         // TODO
+    }
+
+    public setSecretMissions(secretMissions: SecretMission[]) {
+        secretMissions.forEach(secretMission => 
+            this.game.secretMissionCards.createMoveOrUpdateCard(secretMission, `player-table-${this.playerId}-secret-missions`)
+        );
     }
 }

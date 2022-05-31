@@ -60,24 +60,83 @@ trait StateTrait {
         $this->gamestate->nextState($lastRound ? 'endScore' : 'newRound');
     }
 
-    function revealAndScoreSecretMission(int $playerId, SecretMission $secretMission, array $buildings) {
-        // TODO
+    function revealAndScoreSecretMission(int $playerId, SecretMission $secretMission, array $map, array $playerBuildings) {
+        $playerName = $this->getPlayerName($playerId);
+
+        $this->notifyAllPlayers('revealSecretMission', clienttranslate('${player_name} reveals secret mission ${cardName}'), [
+            'playerId' => $playerId,
+            'player_name' => $playerName,
+            'cardName' => $secretMission->name,
+            'secretMission' => $secretMission,
+            'i18n' => [ 'cardName' ],
+        ]);
+        
+        $secretMissionScore = 0;
+
+        switch ($secretMission->type) {
+            case 1:
+                foreach ($playerBuildings as $building) {
+                    if ($building->floors >= 2 && $map[$building->areaPosition][0] == $secretMission->subType) {
+                        $secretMissionScore += 3;
+                    }
+                }
+                break;
+            case 2:
+                foreach ($playerBuildings as $building) {
+                    if ($map[$building->areaPosition][0] == $secretMission->subType) {
+                        $secretMissionScore += $building->floors;
+                    }
+                }
+                break;
+            case 3:
+                foreach ([1, 2, 3, 4, 5, 6, 7] as $territory) {
+                    $minFloors = $secretMission->subType == 2 ? 4 : 3;
+                    $points = $secretMission->subType == 2 ? 11 : 7;
+                    if ($this->array_some($playerBuildings, fn($building) => floor($building->areaPosition / 10) == $territory && $building->floors >= $minFloors)) {
+                        $secretMissionScore += $points;
+                    }
+                }
+                break;
+            case 4:
+                $dominated = 0;
+                foreach ($secretMission->territories as $territory) {
+                    $playersIds = $this->getTerritoryControlPlayersIds($territory);
+                    if (count($playersIds) == 1 && $playersIds[0] == $playerId) {
+                        $dominated++;
+                    }
+                }
+                if ($dominated == 2) {
+                    $secretMissionScore = 12;
+                } else if ($dominated == 1) {
+                    $secretMissionScore = 4;
+                }
+                break;
+        }
+        
+        $this->incPlayerScore($playerId, $secretMissionScore, clienttranslate('${player_name} gains ${points} victory points with secret mission ${cardName}'), [
+            'player_name' => $playerName,
+            'points' => $secretMissionScore,
+            'cardName' => $secretMission->name,
+            'i18n' => [ 'cardName' ],
+        ]);
     }
 
     function stEndScore() {
         $players = $this->getPlayers();
-        $buildings = $this->getBuildings();
+        $map = $this->getMap();
+        $buildings = $this->getTerritoryBuildings();
 
         foreach($players as $player) {
-            $secretMissions = []; /*,  TODO*/
+            $playerBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId == $player->id && !$building->roof));
+            $secretMissions = $this->getSecretMissionsFromDb($this->secretMissions->getCardsInLocation('hand', $player->id));
             foreach($secretMissions as $secretMission) {
-                $this->revealAndScoreSecretMission($player->id,  $secretMission, $buildings);
+                $this->revealAndScoreSecretMission($player->id,  $secretMission, $map, $playerBuildings);
             }
         }
 
         foreach($players as $player) {
+            $inhabitantsScore = $this->END_INHABITANTS_POINTS[1];
             foreach($this->END_INHABITANTS_POINTS as $min => $points) {
-                $inhabitantsScore = $this->END_INHABITANTS_POINTS[1];
                 if ($player->inhabitants >= $min) {
                     $inhabitantsScore = $points;
                 } else {
@@ -92,25 +151,7 @@ trait StateTrait {
             ]);
         }
 
-        /* TODO
-        The game ends when a player places their last floor, even if they
-retrieve another one before the end of their turn. The players finish
-the current round (Player Actions + Territory Control).
-The players then move forward on the score track according to the
-victory points (VP) they earn from:
-• their secret missions;
-*/
-        /* TODO $playersIds = $this->getPlayersIds();
-        $map = $this->getMap();
-        foreach ($playersIds as $playerId) {
-            if (!$this->isEliminated($playerId)) {
-                $scoreSheets = $this->notifUpdateScoreSheet($playerId, true);
-                $score = $scoreSheets->validated->total;
-                $this->DbQuery("UPDATE player SET `player_score` = $score WHERE `player_id` = $playerId");
-            }
-
-            $personalObjective = intval($this->getUniqueValueFromDB("SELECT player_personal_objective FROM `player` where `player_id` = $playerId"));
-
+        /*
             $personalObjectiveLetters = array_map(fn($code) => chr($code), $this->getPersonalObjectiveLetters($playerId));
             $this->notifyAllPlayers('revealPersonalObjective', clienttranslate('${player_name} personal objective was ${objectiveLetters}'), [
                 'playerId' => $playerId,

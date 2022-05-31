@@ -389,6 +389,110 @@
 #playerstables .player-table .player-score-board .meeple-marker.color-blind[data-player-no="4"]::after {
   content: "◆";
 }
+#playerstables .player-table .player-secret-missions-wrapper {
+  display: inline-block;
+}
+#playerstables .player-table .player-secret-missions-wrapper .title {
+  text-align: center;
+}
+
+.card {
+  display: inline-block;
+  position: relative;
+  width: 149px;
+  height: 208px;
+  margin: 5px;
+  border-radius: 10px;
+  font-family: "garden-nation-title";
+  color: #fed698;
+  text-align: center;
+}
+.card[data-side="1"] .card-sides {
+  transform: rotateY(180deg);
+}
+.card .card-sides {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+}
+.card .card-sides .card-side {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform-style: preserve-3d;
+  -webkit-backface-visibility: hidden;
+  /* Safari */
+  backface-visibility: hidden;
+  transform-origin: center center;
+}
+.card .card-sides .card-side.front > * {
+  pointer-events: none;
+  user-select: none;
+}
+.card .card-sides .card-side.back {
+  transform: rotateY(180deg);
+}
+.card.secret-mission .card-side {
+  background-image: url("img/secret-missions.jpg");
+  background-size: auto 100%;
+}
+.card.secret-mission .card-side .name {
+  position: absolute;
+  width: 100%;
+  top: 138px;
+  font-size: 80%;
+}
+.card[data-type="1"][data-sub-type="1"] .front {
+  background-position: 6.6666666667%;
+}
+.card[data-type="1"][data-sub-type="2"] .front {
+  background-position: 13.3333333333%;
+}
+.card[data-type="1"][data-sub-type="3"] .front {
+  background-position: 20%;
+}
+.card[data-type="2"][data-sub-type="1"] .front {
+  background-position: 26.6666666667%;
+}
+.card[data-type="2"][data-sub-type="2"] .front {
+  background-position: 33.3333333333%;
+}
+.card[data-type="2"][data-sub-type="3"] .front {
+  background-position: 40%;
+}
+.card[data-type="3"][data-sub-type="1"] .front {
+  background-position: 46.6666666667%;
+}
+.card[data-type="3"][data-sub-type="2"] .front {
+  background-position: 53.3333333333%;
+}
+.card[data-type="4"][data-sub-type="1"] .front {
+  background-position: 60%;
+}
+.card[data-type="4"][data-sub-type="2"] .front {
+  background-position: 66.6666666667%;
+}
+.card[data-type="4"][data-sub-type="3"] .front {
+  background-position: 73.3333333333%;
+}
+.card[data-type="4"][data-sub-type="4"] .front {
+  background-position: 80%;
+}
+.card[data-type="4"][data-sub-type="5"] .front {
+  background-position: 86.6666666667%;
+}
+.card[data-type="4"][data-sub-type="6"] .front {
+  background-position: 93.3333333333%;
+}
+.card[data-type="4"][data-sub-type="7"] .front {
+  background-position: 100%;
+}
 
 .player-board {
   background-color: #fed698;

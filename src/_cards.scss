@@ -1,0 +1,92 @@
+.card {
+    display: inline-block;
+    position: relative;
+    width: 149px;
+    height: 208px;
+    margin: 5px;
+    border-radius: 10px;
+    font-family: 'garden-nation-title';
+    color: #fed698;
+    text-align: center;
+
+    &[data-side="1"] {
+        .card-sides { 
+            transform: rotateY(180deg);
+        }
+    }
+
+    .card-sides {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        transform-style: preserve-3d;
+        transition: transform 0.5s;
+
+        .card-side {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            transform-style: preserve-3d;      
+            -webkit-backface-visibility: hidden; /* Safari */
+            backface-visibility: hidden;
+            transform-origin: center center;
+
+            &.front {
+                &>* {
+                    pointer-events: none;
+                    user-select: none;
+                }
+            } 
+            
+            &.back {
+                transform: rotateY(180deg);
+            }
+        }
+    }
+
+    &.secret-mission {
+        .card-side {
+            background-image: url('img/secret-missions.jpg');
+            background-size: auto 100%;
+
+            .name {
+                position: absolute;
+                width: 100%;
+                top: 138px;
+                font-size: 80%;
+            }
+        }
+    }    
+
+    @for $type from 1 through 2 {
+        @for $subType from 1 through 3 {
+            &[data-type="#{$type}"][data-sub-type="#{$subType}"] { 
+                .front {
+                    background-position: #{(($type - 1) * 3 + $subType) * 100% / 15};
+                }
+            }
+        }
+    }
+    @for $type from 3 through 3 {
+        @for $subType from 1 through 2 {
+            &[data-type="#{$type}"][data-sub-type="#{$subType}"] { 
+                .front {
+                    background-position: #{(6 + $subType) * 100% / 15};
+                }
+            }
+        }
+    }
+    @for $type from 4 through 4 {
+        @for $subType from 1 through 7 {
+            &[data-type="#{$type}"][data-sub-type="#{$subType}"] { 
+                .front {
+                    background-position: #{(8 + $subType) * 100% / 15};
+                }
+            }
+        }
+    }
+}

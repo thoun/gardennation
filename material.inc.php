@@ -21,7 +21,7 @@
 
 
 $this->BUILDING_FLOORS = [
-  2 => 20,
+  2 => 2/*TODO 0*/,
   3 => 17,
   4 => 14,
 ];
@@ -103,3 +103,17 @@ $this->END_INHABITANTS_POINTS = [
   35 => 9,
   38 => 10,
 ];
+
+$this->SECRET_MISSIONS = [
+  new SecretMissionCard(2, 1, 1, clienttranslate("Market")),
+  new SecretMissionCard(2, 1, 2, clienttranslate("Sculpture")),
+  new SecretMissionCard(2, 1, 3, clienttranslate("Watchtower")),
+  new SecretMissionCard(2, 2, 1, clienttranslate("Post Office")),
+  new SecretMissionCard(2, 2, 2, clienttranslate("Cabaret")),
+  new SecretMissionCard(2, 2, 3, clienttranslate("Barracks")),
+  new SecretMissionCard(3, 3, 1, clienttranslate("Belfry")),
+  new SecretMissionCard(2, 3, 2, clienttranslate("Observatory")),
+];
+for ($i = 1; $i <= 7; $i++) {
+  $this->SECRET_MISSIONS[] = new SecretMissionCard(1, 4, $i, clienttranslate("Territory Control"), [$i, ($i + 1) % 6  + 1]);
+}

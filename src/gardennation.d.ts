@@ -27,12 +27,23 @@ interface AreaSpot {
     building: Building;
 }
 
+
+
+interface SecretMission {
+    id: number;
+    type: number;
+    subType: number;
+    name: string;
+    territories?: number[];
+}
+
 interface GardenNationPlayer extends Player {
     playerNo: number;
     inhabitants: number;
     turnTrack: number;
     buildingFloors: BuildingFloor[];
     usedPloy: number[];
+    secretMissions: SecretMission[];
 }
 
 /**
@@ -60,9 +71,12 @@ interface GardenNationGamedatas {
 }
 
 interface GardenNationGame extends Game {
-    onAreaClick(position: number): void;    
+    secretMissionCards: SecretMissionCards;
+    
+    onAreaClick(position: number): void;
     getPlayerId(): number;
     getPlayerColor(playerId: number): string;
+    setTooltip(id: string, html: string): void;
 }
 
 interface EnteringChooseActionArgs {
@@ -134,4 +148,9 @@ interface NotifTerritoryControlArgs {
 interface NotifPloyTokenUsedArgs {
     playerId: number;
     type: number;
+}
+
+interface NotifRevealSecretMissionArgs {
+    playerId: number;
+    secretMission: SecretMission;
 }

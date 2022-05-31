@@ -48,7 +48,7 @@ trait ActionTrait {
         if ($area[0] == 0) {
             $this->setGameStateValue(BRAMBLE_CHOICE_AREA, $areaPosition);
             $this->gamestate->nextState('chooseTypeOfLand');
-            return;
+            return true;
         }
     
         $this->incPlayerInhabitants($playerId, -($cost * ($forced ? 2 : 1)));
@@ -71,6 +71,8 @@ trait ActionTrait {
                 'player_name' => $this->getPlayerName($playerId),
             ]);
         }
+
+        return false;
 
         /*$allPlacedRoutes = $this->getPlacedRoutes();
         $playerPlacedRoutes = array_filter($allPlacedRoutes, fn($placedRoute) => $placedRoute->playerId === $playerId);
@@ -124,11 +126,12 @@ trait ActionTrait {
     public function constructBuilding(int $areaPosition) {
         self::checkAction('constructBuilding');
 
-        $this->applyConstructBuildingFloor($areaPosition, false);
+        if (!$this->applyConstructBuildingFloor($areaPosition, false)) {
+            // not redirected to area choice
+            $this->moveTorticrane($areaPosition);
 
-        $this->moveTorticrane($areaPosition);
-
-        $this->gamestate->nextState('endAction');
+            $this->gamestate->nextState('endAction');
+        }
     }
     
     public function cancelConstructBuilding() {

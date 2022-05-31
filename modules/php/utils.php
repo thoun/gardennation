@@ -116,6 +116,18 @@ trait UtilTrait {
         return array_map(fn($dbCard) => $this->getBuildingFloorFromDb($dbCard), array_values($dbCards));
     }
 
+    function getSecretMissionFromDb(array $dbCard) {
+        if (!$dbCard || !array_key_exists('id', $dbCard)) {
+            throw new \Error('card doesn\'t exists '.json_encode($dbCard));
+        }
+        $secretMissionCard = $this->array_find($this->SECRET_MISSIONS, fn($secretMission) => $secretMission->type == intval($dbCard['type']) && $secretMission->subType == intval($dbCard['type_arg']));
+        return new SecretMission($dbCard, $secretMissionCard);
+    }
+
+    function getSecretMissionsFromDb(array $dbCards) {
+        return array_map(fn($dbCard) => $this->getSecretMissionFromDb($dbCard), array_values($dbCards));
+    }
+
     function setupBuildingFloors(array $playersIds) {
         $count = $this->BUILDING_FLOORS[count($playersIds)];
 
@@ -202,10 +214,14 @@ trait UtilTrait {
         $this->gamestate->nextState('nextPlayer');
     }
 
+    function getTerritoryControlPlayersIds(int $territory) {
+        $playersIdsDb = $this->getCollectionFromDb("select player_id from (SELECT player_id, count(*) as `count` FROM `building_floor` where territory_number = $territory and player_id <> 0 GROUP BY player_id ORDER BY 2 DESC) tmp WHERE tmp.count = (select max(tmp2.count) from (SELECT player_id, count(*) as `count` FROM `building_floor` where territory_number = $territory and player_id <> 0 GROUP BY player_id ORDER BY 2 DESC) tmp2)");
+        return array_map(fn($playerIdDb) => intval($playerIdDb['player_id']), array_values($playersIdsDb));
+    }
+
     function scoreTerritoryControl() {
         for ($i=1; $i<=7; $i++) {
-            $playersIdsDb = $this->getCollectionFromDb("select player_id from (SELECT player_id, count(*) as `count` FROM `building_floor` where territory_number = $i and player_id <> 0 GROUP BY player_id ORDER BY 2 DESC) tmp WHERE tmp.count = (select max(tmp2.count) from (SELECT player_id, count(*) as `count` FROM `building_floor` where territory_number = $i and player_id <> 0 GROUP BY player_id ORDER BY 2 DESC) tmp2)");
-            $playersIds = array_map(fn($playerIdDb) => intval($playerIdDb['player_id']), array_values($playersIdsDb));
+            $playersIds = $this->getTerritoryControlPlayersIds($i);
             
             if (count($playersIds) > 0) {
                 $buildingsToHighlight = $this->getTerritoryBuildings($i);
@@ -393,7 +409,12 @@ trait UtilTrait {
     }
 
     function initSecretMissions() {
-        // TODO
+        $cards = [];
+        foreach ($this->SECRET_MISSIONS as $secretMissionCard) {
+            $cards[] = [ 'type' => $secretMissionCard->type , 'type_arg' => $secretMissionCard->subType, 'nbr' => $secretMissionCard->nbr ];
+        }
+        $this->secretMissions->createCards($cards, 'deck');
+        $this->secretMissions->shuffle('deck');
     }
     
     function setInitialCommonProjects() {

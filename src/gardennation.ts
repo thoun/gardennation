@@ -18,6 +18,9 @@ const isDebug = window.location.host == 'studio.boardgamearena.com';
 const log = isDebug ? console.log.bind(window.console) : function () { };
 
 class GardenNation implements GardenNationGame {
+    public zoom: number = 1;
+    public secretMissionCards: SecretMissionCards;
+
     private gamedatas: GardenNationGamedatas;
     
     private board: Board;
@@ -25,8 +28,8 @@ class GardenNation implements GardenNationGame {
     private inhabitantCounters: Counter[] = [];
     private buildingFloorCounters: Counter[] = [];
     private ployTokenCounters: Counter[] = [];
-
-    public zoom: number = 1;
+    
+    private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
     constructor() {    
         const zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
@@ -55,6 +58,7 @@ class GardenNation implements GardenNationGame {
 
         log('gamedatas', gamedatas);
 
+        this.secretMissionCards = new SecretMissionCards(this);
         this.createPlayerPanels(gamedatas);
         const players = Object.values(gamedatas.players);
         this.board = new Board(this, players, gamedatas);
@@ -119,7 +123,7 @@ class GardenNation implements GardenNationGame {
 
     private onEnteringSelectAreaPosition(args: EnteringSelectAreaPositionArgs) {
         if ((this as any).isCurrentPlayerActive()) {
-            this.board.activatePossibleAreas(args.possiblePositions, arg.selectedPosition);
+            this.board.activatePossibleAreas(args.possiblePositions, args.selectedPosition);
         }
     }
 
@@ -361,6 +365,10 @@ class GardenNation implements GardenNationGame {
                 document.getElementById('full-table').dataset.highContrastPoints = '' + prefValue;
                 break;*/
         }
+    }
+
+    public setTooltip(id: string, html: string) {
+        (this as any).addTooltipHtml(id, html, this.TOOLTIP_DELAY);
     }
 
     public getPlayerId(): number {
@@ -715,6 +723,7 @@ class GardenNation implements GardenNationGame {
             ['ployTokenUsed', 1],
             ['lastTurn', 1],
             ['territoryControl', SCORE_MS],
+            ['revealSecretMission', SCORE_MS],
         ];
 
         notifs.forEach((notif) => {
@@ -756,6 +765,10 @@ class GardenNation implements GardenNationGame {
         this.getPlayerTable(notif.args.playerId)?.setPloyTokenUsed(notif.args.type);
     }
 
+    notif_revealSecretMission(notif: Notif<NotifRevealSecretMissionArgs>) {
+        this.getPlayerTable(notif.args.playerId).setSecretMissions([notif.args.secretMission]);
+    }
+
     notif_lastTurn() {
         dojo.place(`<div id="last-round">
             ${_("This is the last round of the game!")}
@@ -782,6 +795,10 @@ class GardenNation implements GardenNationGame {
                         }
                     });
                     args.playersNames = namesConcat;
+                }
+
+                if (args.cardName && args.cardName[0] != '<') {
+                    args.cardName = `<strong>${_(args.cardName)}</strong>`;
                 }
                 /*
                 for (const property in args) {

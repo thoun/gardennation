@@ -107,6 +107,101 @@ function formatTextIcons(rawText) {
         .replace(/\[symbol(\d)\]/ig, '<span class="icon symbol$1"></span>')
         .replace(/\[die:(\d):(\d)\]/ig, '<span class="die-icon" data-color="$1" data-face="$2"></span>');
 }
+var SecretMissionCards = /** @class */ (function () {
+    function SecretMissionCards(game) {
+        this.game = game;
+    }
+    // gameui.secretMissionCards.debugSeeAllCards()
+    SecretMissionCards.prototype.debugSeeAllCards = function () {
+        var _this = this;
+        var html = "<div id=\"all-secret-mission-cards\">";
+        html += "</div>";
+        dojo.place(html, 'full-table', 'before');
+        [1, 2].forEach(function (type) {
+            return [1, 2, 3].forEach(function (subType) {
+                var card = {
+                    id: 10 * type + subType,
+                    side: 0,
+                    type: type,
+                    subType: subType,
+                    name: '[name]'
+                };
+                _this.createMoveOrUpdateCard(card, "all-secret-mission-cards");
+            });
+        });
+        [1, 2].forEach(function (subType) {
+            var card = {
+                id: 10 * 3 + subType,
+                side: 0,
+                type: 3,
+                subType: subType,
+                name: '[name]'
+            };
+            _this.createMoveOrUpdateCard(card, "all-secret-mission-cards");
+        });
+        [1, 2, 3, 4, 5, 6, 7].forEach(function (subType) {
+            var card = {
+                id: 10 * 4 + subType,
+                side: 0,
+                type: 4,
+                subType: subType,
+                name: '[name]'
+            };
+            _this.createMoveOrUpdateCard(card, "all-secret-mission-cards");
+        });
+    };
+    SecretMissionCards.prototype.createMoveOrUpdateCard = function (card, destinationId, init, from) {
+        if (init === void 0) { init = false; }
+        if (from === void 0) { from = null; }
+        var existingDiv = document.getElementById("secret-mission-".concat(card.id));
+        var side = (card.type ? 0 : 1);
+        if (existingDiv) {
+            this.game.removeTooltip("secret-mission-".concat(card.id));
+            var oldType = Number(existingDiv.dataset.type);
+            if (init) {
+                document.getElementById(destinationId).appendChild(existingDiv);
+            }
+            else {
+                slideToObjectAndAttach(this.game, existingDiv, destinationId);
+            }
+            existingDiv.dataset.side = '' + side;
+            if (!oldType && card.type) {
+                this.setVisibleInformations(existingDiv, card);
+            }
+            this.game.setTooltip(existingDiv.id, this.getTooltip(card.type, card.subType));
+        }
+        else {
+            var div = document.createElement('div');
+            div.id = "secret-mission-".concat(card.id);
+            div.classList.add('card', 'secret-mission');
+            div.dataset.side = '' + side;
+            div.dataset.type = '' + card.type;
+            div.dataset.subType = '' + card.subType;
+            div.innerHTML = "\n                <div class=\"card-sides\">\n                    <div class=\"card-side front\">\n                        <div id=\"".concat(div.id, "-name\" class=\"name\"></div>\n                    </div>\n                    <div class=\"card-side back\">\n                    </div>\n                </div>\n            ");
+            document.getElementById(destinationId).appendChild(div);
+            if (from) {
+                var fromCardId = document.getElementById(from).children[0].id;
+                slideFromObject(this.game, div, fromCardId);
+            }
+            if (card.type) {
+                this.setVisibleInformations(div, card);
+            }
+            this.game.setTooltip(div.id, this.getTooltip(card.type, card.subType));
+        }
+    };
+    SecretMissionCards.prototype.setVisibleInformations = function (div, card) {
+        document.getElementById("".concat(div.id, "-name")).innerHTML = _(card.name);
+        div.dataset.type = '' + card.type;
+        div.dataset.subType = '' + card.subType;
+    };
+    SecretMissionCards.prototype.getTooltip = function (type, subType) {
+        if (!type) {
+            return _('Secret mission');
+        }
+        return 'TODO';
+    };
+    return SecretMissionCards;
+}());
 var POINT_CASE_SIZE = 47.24;
 var Board = /** @class */ (function () {
     function Board(game, players, gamedatas) {
@@ -229,7 +324,7 @@ var PlayerTable = /** @class */ (function () {
         var _this = this;
         this.game = game;
         this.playerId = Number(player.id);
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-meeple-marker\" class=\"meeple-marker\" data-color=\"").concat(player.color, "\"></div>\n            </div>\n        </div>");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-meeple-marker\" class=\"meeple-marker\" data-color=\"").concat(player.color, "\"></div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-secret-missions-wrapper\" class=\"player-secret-missions-wrapper\">\n                <div class=\"title\">").concat(_('Secret missions'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-secret-missions\" class=\"player-secret-missions\">\n                </div>\n            </div>\n        </div>");
         dojo.place(html, 'playerstables');
         [0, 1, 2].forEach(function (type) {
             for (var i = 0; i < player.usedPloy[type]; i++) {
@@ -237,6 +332,7 @@ var PlayerTable = /** @class */ (function () {
             }
         });
         this.setInhabitants(player.inhabitants);
+        this.setSecretMissions(player.secretMissions);
     }
     PlayerTable.prototype.getPointsCoordinates = function (points) {
         var cases = Math.min(points, 40);
@@ -253,6 +349,12 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.setPloyTokenUsed = function (type) {
         // TODO
+    };
+    PlayerTable.prototype.setSecretMissions = function (secretMissions) {
+        var _this = this;
+        secretMissions.forEach(function (secretMission) {
+            return _this.game.secretMissionCards.createMoveOrUpdateCard(secretMission, "player-table-".concat(_this.playerId, "-secret-missions"));
+        });
     };
     return PlayerTable;
 }());
@@ -274,11 +376,12 @@ var isDebug = window.location.host == 'studio.boardgamearena.com';
 var log = isDebug ? console.log.bind(window.console) : function () { };
 var GardenNation = /** @class */ (function () {
     function GardenNation() {
+        this.zoom = 1;
         this.playersTables = [];
         this.inhabitantCounters = [];
         this.buildingFloorCounters = [];
         this.ployTokenCounters = [];
-        this.zoom = 1;
+        this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
         var zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
             this.zoom = Number(zoomStr);
@@ -300,6 +403,7 @@ var GardenNation = /** @class */ (function () {
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
+        this.secretMissionCards = new SecretMissionCards(this);
         this.createPlayerPanels(gamedatas);
         var players = Object.values(gamedatas.players);
         this.board = new Board(this, players, gamedatas);
@@ -353,7 +457,7 @@ var GardenNation = /** @class */ (function () {
     };
     GardenNation.prototype.onEnteringSelectAreaPosition = function (args) {
         if (this.isCurrentPlayerActive()) {
-            this.board.activatePossibleAreas(args.possiblePositions, arg.selectedPosition);
+            this.board.activatePossibleAreas(args.possiblePositions, args.selectedPosition);
         }
     };
     GardenNation.prototype.onEnteringShowScore = function (fromReload) {
@@ -573,6 +677,9 @@ var GardenNation = /** @class */ (function () {
                 document.getElementById('full-table').dataset.highContrastPoints = '' + prefValue;
                 break;*/
         }
+    };
+    GardenNation.prototype.setTooltip = function (id, html) {
+        this.addTooltipHtml(id, html, this.TOOLTIP_DELAY);
     };
     GardenNation.prototype.getPlayerId = function () {
         return Number(this.player_id);
@@ -830,6 +937,7 @@ var GardenNation = /** @class */ (function () {
             ['ployTokenUsed', 1],
             ['lastTurn', 1],
             ['territoryControl', SCORE_MS],
+            ['revealSecretMission', SCORE_MS],
         ];
         notifs.forEach(function (notif) {
             dojo.subscribe(notif[0], _this, "notif_".concat(notif[0]));
@@ -862,6 +970,9 @@ var GardenNation = /** @class */ (function () {
         (_a = this.ployTokenCounters[notif.args.playerId]) === null || _a === void 0 ? void 0 : _a.incValue(-1);
         (_b = this.getPlayerTable(notif.args.playerId)) === null || _b === void 0 ? void 0 : _b.setPloyTokenUsed(notif.args.type);
     };
+    GardenNation.prototype.notif_revealSecretMission = function (notif) {
+        this.getPlayerTable(notif.args.playerId).setSecretMissions([notif.args.secretMission]);
+    };
     GardenNation.prototype.notif_lastTurn = function () {
         dojo.place("<div id=\"last-round\">\n            ".concat(_("This is the last round of the game!"), "\n        </div>"), 'page-title');
     };
@@ -888,6 +999,9 @@ var GardenNation = /** @class */ (function () {
                         }
                     });
                     args.playersNames = namesConcat_1;
+                }
+                if (args.cardName && args.cardName[0] != '<') {
+                    args.cardName = "<strong>".concat(_(args.cardName), "</strong>");
                 }
                 /*
                 for (const property in args) {
