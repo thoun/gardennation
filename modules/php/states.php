@@ -151,18 +151,6 @@ trait StateTrait {
             ]);
         }
 
-        /*
-            $personalObjectiveLetters = array_map(fn($code) => chr($code), $this->getPersonalObjectiveLetters($playerId));
-            $this->notifyAllPlayers('revealPersonalObjective', clienttranslate('${player_name} personal objective was ${objectiveLetters}'), [
-                'playerId' => $playerId,
-                'player_name' => self::getActivePlayerName(),
-                'objectiveLetters' => implode(' ', $personalObjectiveLetters),
-                'personalObjective' => $personalObjective,
-                'personalObjectiveLetters' => $personalObjectiveLetters,
-                'personalObjectivePositions' => $this->getPersonalObjectivePositions($personalObjective, $map),
-            ]);
-        }*/
-
         $this->gamestate->nextState('endGame');
     }
 }

@@ -21,7 +21,7 @@
 
 
 $this->BUILDING_FLOORS = [
-  2 => 2/*TODO 0*/,
+  2 => 20,
   3 => 17,
   4 => 14,
 ];
@@ -102,6 +102,30 @@ $this->END_INHABITANTS_POINTS = [
   32 => 8,
   35 => 9,
   38 => 10,
+];
+
+$this->COMMON_PROJECTS = [
+  new CommonProjectCard(1, 1, clienttranslate("Infirmary"), 1, 2),
+  new CommonProjectCard(1, 2, clienttranslate("Infirmary"), 1, 3),
+  new CommonProjectCard(1, 3, clienttranslate("Sacred Place"), 2, 1),
+  new CommonProjectCard(1, 4, clienttranslate("Sacred Place"), 2, 3),
+  new CommonProjectCard(1, 5, clienttranslate("Fortress"), 3, 1),
+  new CommonProjectCard(1, 6, clienttranslate("Fortress"), 3, 2),
+  new CommonProjectCard(2, 1, clienttranslate("Herbalist")),
+  new CommonProjectCard(2, 2, clienttranslate("House")),
+  new CommonProjectCard(2, 3, clienttranslate("Prison")),
+  new CommonProjectCard(3, 1, clienttranslate("Forge")),
+  new CommonProjectCard(3, 2, clienttranslate("Terraced Houses")),
+  new CommonProjectCard(3, 3, clienttranslate("Outpost")),
+  new CommonProjectCard(4, 1, clienttranslate("Windmill")),
+  new CommonProjectCard(4, 2, clienttranslate("Sanctuary")),
+  new CommonProjectCard(4, 3, clienttranslate("Bunker")),
+  new CommonProjectCard(5, 1, clienttranslate("Power Station")),
+  new CommonProjectCard(5, 2, clienttranslate("Apartments")),
+  new CommonProjectCard(5, 3, clienttranslate("Radio Tower")),
+  new CommonProjectCard(6, 1, clienttranslate("Water Reservoir")),
+  new CommonProjectCard(6, 2, clienttranslate("Temple")),
+  new CommonProjectCard(6, 3, clienttranslate("Air Base")),
 ];
 
 $this->SECRET_MISSIONS = [

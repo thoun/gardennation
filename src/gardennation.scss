@@ -88,3 +88,19 @@ html {
   font-size: 15px;
   font-weight: 100;
 }
+
+.common-project-wrapper {
+  top: 32px;
+  position: absolute;
+
+  &[data-number="0"] { 
+    left: 24px;
+    box-shadow: 3px 3px 0px 0px #333, 4px 4px 5px 5px black;
+  }
+
+  @for $i from 1 through 4 {
+    &[data-number="#{$i}"] { 
+      left: #{222 + ($i - 1) * 184}px;
+    }
+  }
+}

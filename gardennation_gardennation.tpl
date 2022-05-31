@@ -26,7 +26,6 @@
                     </div>
                 </div>
                 <div id="common-projects">
-                TODO common projects
                 </div>
             </div>
         </div>

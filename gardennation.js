@@ -107,6 +107,101 @@ function formatTextIcons(rawText) {
         .replace(/\[symbol(\d)\]/ig, '<span class="icon symbol$1"></span>')
         .replace(/\[die:(\d):(\d)\]/ig, '<span class="die-icon" data-color="$1" data-face="$2"></span>');
 }
+var CommonProjectsCards = /** @class */ (function () {
+    function CommonProjectsCards(game) {
+        this.game = game;
+    }
+    // gameui.secretMissionCards.debugSeeAllCards()
+    CommonProjectsCards.prototype.debugSeeAllCards = function () {
+        var _this = this;
+        var html = "<div id=\"all-common-project-cards\">";
+        html += "</div>";
+        dojo.place(html, 'full-table', 'before');
+        [1, 2].forEach(function (type) {
+            return [1, 2, 3].forEach(function (subType) {
+                var card = {
+                    id: 10 * type + subType,
+                    side: 0,
+                    type: type,
+                    subType: subType,
+                    name: '[name]'
+                };
+                _this.createMoveOrUpdateCard(card, "all-common-project-cards");
+            });
+        });
+        [1, 2].forEach(function (subType) {
+            var card = {
+                id: 10 * 3 + subType,
+                side: 0,
+                type: 3,
+                subType: subType,
+                name: '[name]'
+            };
+            _this.createMoveOrUpdateCard(card, "all-common-project-cards");
+        });
+        [1, 2, 3, 4, 5, 6, 7].forEach(function (subType) {
+            var card = {
+                id: 10 * 4 + subType,
+                side: 0,
+                type: 4,
+                subType: subType,
+                name: '[name]'
+            };
+            _this.createMoveOrUpdateCard(card, "all-common-project-cards");
+        });
+    };
+    CommonProjectsCards.prototype.createMoveOrUpdateCard = function (card, destinationId, init, from) {
+        if (init === void 0) { init = false; }
+        if (from === void 0) { from = null; }
+        var existingDiv = document.getElementById("common-project-".concat(card.id));
+        var side = (card.type ? 0 : 1);
+        if (existingDiv) {
+            this.game.removeTooltip("common-project-".concat(card.id));
+            var oldType = Number(existingDiv.dataset.type);
+            if (init) {
+                document.getElementById(destinationId).appendChild(existingDiv);
+            }
+            else {
+                slideToObjectAndAttach(this.game, existingDiv, destinationId);
+            }
+            existingDiv.dataset.side = '' + side;
+            if (!oldType && card.type) {
+                this.setVisibleInformations(existingDiv, card);
+            }
+            this.game.setTooltip(existingDiv.id, this.getTooltip(card.type, card.subType));
+        }
+        else {
+            var div = document.createElement('div');
+            div.id = "common-project-".concat(card.id);
+            div.classList.add('card', 'common-project');
+            div.dataset.side = '' + side;
+            div.dataset.type = '' + card.type;
+            div.dataset.subType = '' + card.subType;
+            div.innerHTML = "\n                <div class=\"card-sides\">\n                    <div class=\"card-side front\">\n                        <div id=\"".concat(div.id, "-name\" class=\"name\"></div>\n                    </div>\n                    <div class=\"card-side back\">\n                    </div>\n                </div>\n            ");
+            document.getElementById(destinationId).appendChild(div);
+            if (from) {
+                var fromCardId = document.getElementById(from).children[0].id;
+                slideFromObject(this.game, div, fromCardId);
+            }
+            if (card.type) {
+                this.setVisibleInformations(div, card);
+            }
+            this.game.setTooltip(div.id, this.getTooltip(card.type, card.subType));
+        }
+    };
+    CommonProjectsCards.prototype.setVisibleInformations = function (div, card) {
+        document.getElementById("".concat(div.id, "-name")).innerHTML = _(card.name);
+        div.dataset.type = '' + card.type;
+        div.dataset.subType = '' + card.subType;
+    };
+    CommonProjectsCards.prototype.getTooltip = function (type, subType) {
+        if (!type) {
+            return _('Common projects deck');
+        }
+        return 'TODO';
+    };
+    return CommonProjectsCards;
+}());
 var SecretMissionCards = /** @class */ (function () {
     function SecretMissionCards(game) {
         this.game = game;
@@ -324,7 +419,7 @@ var PlayerTable = /** @class */ (function () {
         var _this = this;
         this.game = game;
         this.playerId = Number(player.id);
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-meeple-marker\" class=\"meeple-marker\" data-color=\"").concat(player.color, "\"></div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-secret-missions-wrapper\" class=\"player-secret-missions-wrapper\">\n                <div class=\"title\">").concat(_('Secret missions'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-secret-missions\" class=\"player-secret-missions\">\n                </div>\n            </div>\n        </div>");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-meeple-marker\" class=\"meeple-marker\" data-color=\"").concat(player.color, "\"></div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-secret-missions-wrapper\" class=\"player-secret-missions-wrapper\">\n                <div class=\"title\">").concat(_('Secret missions'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-secret-missions\" class=\"player-secret-missions\">\n                </div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-common-projects-wrapper\" class=\"player-common-projects-wrapper\">\n                <div class=\"title\">").concat(_('Completed common projects'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-common-projects\" class=\"player-common-projects\">\n                </div>\n            </div>\n        </div>");
         dojo.place(html, 'playerstables');
         [0, 1, 2].forEach(function (type) {
             for (var i = 0; i < player.usedPloy[type]; i++) {
@@ -332,6 +427,7 @@ var PlayerTable = /** @class */ (function () {
             }
         });
         this.setInhabitants(player.inhabitants);
+        this.setCommonProjects(player.commonProjects);
         this.setSecretMissions(player.secretMissions);
     }
     PlayerTable.prototype.getPointsCoordinates = function (points) {
@@ -349,6 +445,12 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.setPloyTokenUsed = function (type) {
         // TODO
+    };
+    PlayerTable.prototype.setCommonProjects = function (commonProjects) {
+        var _this = this;
+        commonProjects.forEach(function (commonProject) {
+            return _this.game.commonProjectsCards.createMoveOrUpdateCard(commonProject, "player-table-".concat(_this.playerId, "-common-projects"));
+        });
     };
     PlayerTable.prototype.setSecretMissions = function (secretMissions) {
         var _this = this;
@@ -400,14 +502,21 @@ var GardenNation = /** @class */ (function () {
         "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
     */
     GardenNation.prototype.setup = function (gamedatas) {
+        var _this = this;
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
+        this.commonProjectsCards = new CommonProjectsCards(this);
         this.secretMissionCards = new SecretMissionCards(this);
         this.createPlayerPanels(gamedatas);
         var players = Object.values(gamedatas.players);
         this.board = new Board(this, players, gamedatas);
         this.createPlayerTables(gamedatas);
+        [0, 1, 2, 3, 4].forEach(function (number) {
+            dojo.place("\n            <div id=\"common-project-wrapper-".concat(number, "\" class=\"common-project-wrapper\" data-number=\"").concat(number, "\">\n            </div>\n            "), 'common-projects');
+        });
+        this.commonProjectsCards.createMoveOrUpdateCard({}, "common-project-wrapper-0");
+        gamedatas.commonProjects.forEach(function (commonProject) { return _this.commonProjectsCards.createMoveOrUpdateCard(commonProject, "common-project-wrapper-".concat(commonProject.locationArg)); });
         if (gamedatas.endTurn) {
             this.notif_lastTurn();
         }

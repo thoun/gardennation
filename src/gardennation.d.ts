@@ -1,11 +1,3 @@
-/*interface Card {
-    id: number;
-    type: number;
-    type_arg: number;
-    location: string;
-    location_arg: number;
-}*/
-
 interface BuildingFloor {
     id: number;
     playerId: number; // 0 for roof
@@ -27,7 +19,14 @@ interface AreaSpot {
     building: Building;
 }
 
-
+interface CommonProject {
+    id: number;
+    type: number;
+    subType: number;
+    location: string;
+    locationArg: number;
+    name: string;
+}
 
 interface SecretMission {
     id: number;
@@ -43,6 +42,7 @@ interface GardenNationPlayer extends Player {
     turnTrack: number;
     buildingFloors: BuildingFloor[];
     usedPloy: number[];
+    commonProjects: CommonProject[];
     secretMissions: SecretMission[];
 }
 
@@ -67,10 +67,12 @@ interface GardenNationGamedatas {
     map: { [position: number]: AreaSpot };
     brambleIds: number[][];
     torticranePosition: number;
+    commonProjects: CommonProject[];
     endTurn: boolean;
 }
 
 interface GardenNationGame extends Game {
+    commonProjectsCards: CommonProjectsCards;
     secretMissionCards: SecretMissionCards;
     
     onAreaClick(position: number): void;

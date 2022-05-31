@@ -116,6 +116,18 @@ trait UtilTrait {
         return array_map(fn($dbCard) => $this->getBuildingFloorFromDb($dbCard), array_values($dbCards));
     }
 
+    function getCommonProjectFromDb(array $dbCard) {
+        if (!$dbCard || !array_key_exists('id', $dbCard)) {
+            throw new \Error('card doesn\'t exists '.json_encode($dbCard));
+        }
+        $commonProjectCard = $this->array_find($this->COMMON_PROJECTS, fn($commonProject) => $commonProject->type == intval($dbCard['type']) && $commonProject->subType == intval($dbCard['type_arg']));
+        return new CommonProject($dbCard, $commonProjectCard);
+    }
+
+    function getCommonProjectsFromDb(array $dbCards) {
+        return array_map(fn($dbCard) => $this->getCommonProjectFromDb($dbCard), array_values($dbCards));
+    }
+
     function getSecretMissionFromDb(array $dbCard) {
         if (!$dbCard || !array_key_exists('id', $dbCard)) {
             throw new \Error('card doesn\'t exists '.json_encode($dbCard));
@@ -405,7 +417,12 @@ trait UtilTrait {
     }
 
     function initCommonProjects() {
-        // TODO
+        $cards = [];
+        foreach ($this->COMMON_PROJECTS as $commonProjectCard) {
+            $cards[] = [ 'type' => $commonProjectCard->type , 'type_arg' => $commonProjectCard->subType, 'nbr' => 1 ];
+        }
+        $this->commonProjects->createCards($cards, 'deck');
+        $this->commonProjects->shuffle('deck');
     }
 
     function initSecretMissions() {

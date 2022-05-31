@@ -19,6 +19,7 @@ const log = isDebug ? console.log.bind(window.console) : function () { };
 
 class GardenNation implements GardenNationGame {
     public zoom: number = 1;
+    public commonProjectsCards: CommonProjectsCards;
     public secretMissionCards: SecretMissionCards;
 
     private gamedatas: GardenNationGamedatas;
@@ -58,11 +59,21 @@ class GardenNation implements GardenNationGame {
 
         log('gamedatas', gamedatas);
 
+        this.commonProjectsCards = new CommonProjectsCards(this);
         this.secretMissionCards = new SecretMissionCards(this);
         this.createPlayerPanels(gamedatas);
         const players = Object.values(gamedatas.players);
         this.board = new Board(this, players, gamedatas);
         this.createPlayerTables(gamedatas);
+
+        [0, 1, 2, 3, 4].forEach(number => {
+            dojo.place(`
+            <div id="common-project-wrapper-${number}" class="common-project-wrapper" data-number="${number}">
+            </div>
+            `, 'common-projects');
+        });        
+        this.commonProjectsCards.createMoveOrUpdateCard({} as any, `common-project-wrapper-0`);
+        gamedatas.commonProjects.forEach(commonProject => this.commonProjectsCards.createMoveOrUpdateCard(commonProject, `common-project-wrapper-${commonProject.locationArg}`));
 
         if (gamedatas.endTurn) {
             this.notif_lastTurn();

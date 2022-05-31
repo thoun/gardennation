@@ -15,6 +15,7 @@
         "src/slide-utils.ts",
         "src/stock-utils.ts",
         "src/text-icons-formatter.ts",
+        "src/common-projects-cards.ts",
         "src/secret-missions-cards.ts",
         "src/board/board.ts",
         "src/players-tables/player-table.ts",

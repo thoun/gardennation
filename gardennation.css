@@ -404,7 +404,7 @@
   margin: 5px;
   border-radius: 10px;
   font-family: "garden-nation-title";
-  color: #fed698;
+  color: #ffeab9;
   text-align: center;
 }
 .card[data-side="1"] .card-sides {
@@ -437,6 +437,16 @@
 }
 .card .card-sides .card-side.back {
   transform: rotateY(180deg);
+}
+.card.common-project .card-side {
+  background-image: url("img/common-projects.jpg");
+  background-size: auto 100%;
+}
+.card.common-project .card-side .name {
+  position: absolute;
+  width: 100%;
+  top: 138px;
+  font-size: 80%;
 }
 .card.secret-mission .card-side {
   background-image: url("img/secret-missions.jpg");
@@ -616,4 +626,25 @@ html {
   font-family: "rustico-regular";
   font-size: 15px;
   font-weight: 100;
+}
+
+.common-project-wrapper {
+  top: 32px;
+  position: absolute;
+}
+.common-project-wrapper[data-number="0"] {
+  left: 24px;
+  box-shadow: 3px 3px 0px 0px #333, 4px 4px 5px 5px black;
+}
+.common-project-wrapper[data-number="1"] {
+  left: 222px;
+}
+.common-project-wrapper[data-number="2"] {
+  left: 406px;
+}
+.common-project-wrapper[data-number="3"] {
+  left: 590px;
+}
+.common-project-wrapper[data-number="4"] {
+  left: 774px;
 }

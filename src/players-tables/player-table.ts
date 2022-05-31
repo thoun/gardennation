@@ -18,6 +18,11 @@ class PlayerTable {
                 <div id="player-table-${this.playerId}-secret-missions" class="player-secret-missions">
                 </div>
             </div>
+            <div id="player-table-${this.playerId}-common-projects-wrapper" class="player-common-projects-wrapper">
+                <div class="title">${_('Completed common projects')}</div>
+                <div id="player-table-${this.playerId}-common-projects" class="player-common-projects">
+                </div>
+            </div>
         </div>`;
 
         dojo.place(html, 'playerstables');
@@ -30,6 +35,7 @@ class PlayerTable {
     
         this.setInhabitants(player.inhabitants);
 
+        this.setCommonProjects(player.commonProjects);
         this.setSecretMissions(player.secretMissions);
     }
 
@@ -54,6 +60,12 @@ class PlayerTable {
 
     public setPloyTokenUsed(type: number) {
         // TODO
+    }
+
+    public setCommonProjects(commonProjects: CommonProject[]) {
+        commonProjects.forEach(commonProject => 
+            this.game.commonProjectsCards.createMoveOrUpdateCard(commonProject, `player-table-${this.playerId}-common-projects`)
+        );
     }
 
     public setSecretMissions(secretMissions: SecretMission[]) {

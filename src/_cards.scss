@@ -6,7 +6,7 @@
     margin: 5px;
     border-radius: 10px;
     font-family: 'garden-nation-title';
-    color: #fed698;
+    color: #ffeab9;
     text-align: center;
 
     &[data-side="1"] {
@@ -47,6 +47,20 @@
             }
         }
     }
+
+    &.common-project {
+        .card-side {
+            background-image: url('img/common-projects.jpg');
+            background-size: auto 100%;
+
+            .name {
+                position: absolute;
+                width: 100%;
+                top: 138px;
+                font-size: 80%;
+            }
+        }
+    } 
 
     &.secret-mission {
         .card-side {

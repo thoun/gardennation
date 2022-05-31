@@ -176,6 +176,8 @@ class GardenNation extends Table {
 
             $player['buildingFloors'] = $this->getAvailableBuildings($playerId);
 
+            $player['commonProjects'] = $this->getCommonProjectsFromDb($this->commonProjects->getCardsInLocation('hand', $playerId));
+
             $secretMissions = $this->getSecretMissionsFromDb($this->secretMissions->getCardsInLocation('hand', $playerId));
             $player['secretMissions'] = $currentPlayerId == $playerId ? $secretMissions : array_map(function($secretMission) {
                 $secretMissionIdOnly = new stdClass();
@@ -208,6 +210,8 @@ class GardenNation extends Table {
         $result['brambleIds'] = $brambleIds;
         
         $result['torticranePosition'] = $this->getGameStateValue(TORTICRANE_POSITION);
+
+        $result['commonProjects'] = $this->getCommonProjectsFromDb($this->commonProjects->getCardsInLocation('table', null, 'location_arg'));
 
         $isEndScore = intval($this->gamestate->state_id()) >= ST_END_SCORE;
         if (!$isEndScore) {
