@@ -1,13 +1,24 @@
-class CommonProjectsCards {
+class CommonProjectCards {
     constructor(private game: GardenNationGame) {}  
 
-    // gameui.secretMissionCards.debugSeeAllCards()
+    // gameui.commonProjectCards.debugSeeAllCards()
     private debugSeeAllCards() {
         let html = `<div id="all-common-project-cards">`;
         html += `</div>`;
         dojo.place(html, 'full-table', 'before');
 
-        [1, 2].forEach(type => 
+        [1, 2, 3, 4, 5, 6].forEach(subType => {
+            const card = {
+                id: 10+subType,
+                side: 0,
+                type: 1,
+                subType,
+                name: '[name]'
+            } as any as CommonProject;
+            this.createMoveOrUpdateCard(card, `all-common-project-cards`);
+        });
+
+        [2, 3, 4, 5, 6].forEach(type => 
             [1, 2, 3].forEach(subType => {
                 const card = {
                     id: 10*type+subType,
@@ -15,35 +26,13 @@ class CommonProjectsCards {
                     type,
                     subType,
                     name: '[name]'
-                } as SecretMission;
+                } as any as CommonProject;
                 this.createMoveOrUpdateCard(card, `all-common-project-cards`);
             })
         );
-
-        [1, 2].forEach(subType => {
-            const card = {
-                id: 10*3+subType,
-                side: 0,
-                type: 3,
-                subType,
-                name: '[name]'
-            } as SecretMission;
-            this.createMoveOrUpdateCard(card, `all-common-project-cards`);
-        });
-
-        [1, 2, 3, 4, 5, 6, 7].forEach(subType => {
-            const card = {
-                id: 10*4+subType,
-                side: 0,
-                type: 4,
-                subType,
-                name: '[name]'
-            } as SecretMission;
-            this.createMoveOrUpdateCard(card, `all-common-project-cards`);
-        });
     }
 
-    public createMoveOrUpdateCard(card: SecretMission, destinationId: string, init: boolean = false, from: string = null) {
+    public createMoveOrUpdateCard(card: CommonProject, destinationId: string, init: boolean = false, from: string = null) {
         const existingDiv = document.getElementById(`common-project-${card.id}`);
         const side = (card.type ? 0 : 1)
         if (existingDiv) {
@@ -78,6 +67,7 @@ class CommonProjectsCards {
                 </div>
             `;
             document.getElementById(destinationId).appendChild(div);
+            div.addEventListener('click', () => this.game.onCommonProjectClick(card));
 
             if (from) {
                 const fromCardId = document.getElementById(from).children[0].id;
@@ -91,7 +81,7 @@ class CommonProjectsCards {
         }
     }
 
-    private setVisibleInformations(div: HTMLElement, card: SecretMission) {
+    private setVisibleInformations(div: HTMLElement, card: CommonProject) {
         document.getElementById(`${div.id}-name`).innerHTML = _(card.name);
         div.dataset.type = ''+card.type;
         div.dataset.subType = ''+card.subType;

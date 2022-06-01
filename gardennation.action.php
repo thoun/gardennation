@@ -214,6 +214,16 @@
       self::ajaxResponse();
     }
 
+    public function chooseCompletedCommonProject() {
+      self::setAjaxMode();
+
+      $id = self::getArg("id", AT_posint, true);
+
+      $this->game->chooseCompletedCommonProject($id);
+
+      self::ajaxResponse();
+    }
+
   }
   
 

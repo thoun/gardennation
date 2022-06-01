@@ -72,13 +72,14 @@ interface GardenNationGamedatas {
 }
 
 interface GardenNationGame extends Game {
-    commonProjectsCards: CommonProjectsCards;
+    commonProjectCards: CommonProjectCards;
     secretMissionCards: SecretMissionCards;
     
     onAreaClick(position: number): void;
     getPlayerId(): number;
     getPlayerColor(playerId: number): string;
     setTooltip(id: string, html: string): void;
+    onCommonProjectClick(card: CommonProject): void;
 }
 
 interface EnteringChooseActionArgs {
@@ -96,6 +97,10 @@ interface EnteringSelectAreaPositionArgs {
 
 interface EnteringChooseTypeOfLandArgs {
     possibleTypes: number[];
+}
+
+interface EnteringChooseCompletedCommonProjectArgs extends EnteringSelectAreaPositionArgs {
+    completedCommonProjects: CommonProject[];
 }
 
 interface EnteringChooseNextPlayerArgs {
@@ -150,6 +155,11 @@ interface NotifTerritoryControlArgs {
 interface NotifPloyTokenUsedArgs {
     playerId: number;
     type: number;
+}
+
+interface NotifTakeCommonProjectArgs {
+    playerId: number;
+    commonProject: CommonProject;
 }
 
 interface NotifRevealSecretMissionArgs {

@@ -110,6 +110,7 @@ $playerActionsGameStates = [
         ],
         "transitions" => [
             "chooseTypeOfLand" => ST_PLAYER_CHOOSE_TYPE_OF_LAND,
+            "chooseCompletedCommonProject" => ST_PLAYER_CHOOSE_COMPLETED_COMMON_PROJECT,
             "endAction" => ST_END_ACTION,
             "cancel" => ST_PLAYER_CHOOSE_ACTION,
         ]
@@ -126,8 +127,24 @@ $playerActionsGameStates = [
             "cancelChooseTypeOfLand",
         ],
         "transitions" => [
+            "chooseCompletedCommonProject" => ST_PLAYER_CHOOSE_COMPLETED_COMMON_PROJECT,
             "endAction" => ST_END_ACTION,
             "cancel" => ST_PLAYER_CONSTRUCT_BUILDING,
+        ]
+    ],
+
+    ST_PLAYER_CHOOSE_COMPLETED_COMMON_PROJECT => [
+        "name" => "chooseCompletedCommonProject",
+        "description" => clienttranslate('${actplayer} must choose the common project to complete'),
+        "descriptionmyturn" => clienttranslate('${you} must choose the common project to complete'),
+        "type" => "activeplayer",
+        "args" => "argChooseCompletedCommonProject",
+        "possibleactions" => [ 
+            "chooseCompletedCommonProject",
+        ],
+        "transitions" => [
+            "endAction" => ST_END_ACTION,
+            "endRound" => ST_END_ROUND,
         ]
     ],
 

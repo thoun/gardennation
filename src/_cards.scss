@@ -47,6 +47,16 @@
             }
         }
     }
+    
+
+    &.selectable {
+        cursor: pointer;
+        box-shadow: 0 0 8px 8px white;
+
+        .card-side {
+            box-shadow: unset;
+        }
+    }
 
     &.common-project {
         .card-side {
@@ -60,7 +70,26 @@
                 font-size: 80%;
             }
         }
-    } 
+    }    
+
+    @for $type from 1 through 1 {
+        @for $subType from 1 through 6 {
+            &.common-project[data-type="#{$type}"][data-sub-type="#{$subType}"] { 
+                .front {
+                    background-position-x: #{$subType * 100% / 21};
+                }
+            }
+        }
+    }
+    @for $type from 2 through 6 {
+        @for $subType from 1 through 3 {
+            &.common-project[data-type="#{$type}"][data-sub-type="#{$subType}"] { 
+                .front {
+                    background-position-x: #{($type * 3 + $subType) * 100% / 21};
+                }
+            }
+        }
+    }
 
     &.secret-mission {
         .card-side {
@@ -78,27 +107,27 @@
 
     @for $type from 1 through 2 {
         @for $subType from 1 through 3 {
-            &[data-type="#{$type}"][data-sub-type="#{$subType}"] { 
+            &.secret-mission[data-type="#{$type}"][data-sub-type="#{$subType}"] { 
                 .front {
-                    background-position: #{(($type - 1) * 3 + $subType) * 100% / 15};
+                    background-position-x: #{(($type - 1) * 3 + $subType) * 100% / 15};
                 }
             }
         }
     }
     @for $type from 3 through 3 {
         @for $subType from 1 through 2 {
-            &[data-type="#{$type}"][data-sub-type="#{$subType}"] { 
+            &.secret-mission[data-type="#{$type}"][data-sub-type="#{$subType}"] { 
                 .front {
-                    background-position: #{(6 + $subType) * 100% / 15};
+                    background-position-x: #{(6 + $subType) * 100% / 15};
                 }
             }
         }
     }
     @for $type from 4 through 4 {
         @for $subType from 1 through 7 {
-            &[data-type="#{$type}"][data-sub-type="#{$subType}"] { 
+            &.secret-mission[data-type="#{$type}"][data-sub-type="#{$subType}"] { 
                 .front {
-                    background-position: #{(8 + $subType) * 100% / 15};
+                    background-position-x: #{(8 + $subType) * 100% / 15};
                 }
             }
         }

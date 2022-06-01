@@ -122,7 +122,7 @@ class Board {
         this.movePoints();
     }
     
-    public activatePossibleAreas(possibleAreas: number[], selectedPosition: number) {
+    public activatePossibleAreas(possibleAreas: number[], selectedPosition?: number) {
         Array.from(document.getElementsByClassName('area')).forEach((area: HTMLDivElement) => {
             area.classList.toggle('selectable', possibleAreas.includes(Number(area.dataset.position)))
             area.classList.toggle('selected', selectedPosition == Number(area.dataset.position))
@@ -145,7 +145,7 @@ class Board {
             }
             building.buildingFloors.forEach((floor, index) => {
                 if (!document.getElementById(`building-floor-${floor.id}`)) {
-                    dojo.place(`<div id="building-floor-${floor.id}" class="building-floor" data-color="${this.game.getPlayerColor(floor.playerId)}" style="z-index: ${index}"></div>`, `building${areaPosition}`);
+                    dojo.place(`<div id="building-floor-${floor.id}" class="building-floor" data-color="${floor.playerId ? this.game.getPlayerColor(floor.playerId): 0}" style="z-index: ${index}"></div>`, `building${areaPosition}`);
                 }
             });
         } else {

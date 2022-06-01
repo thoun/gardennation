@@ -65,7 +65,7 @@ trait ActionTrait {
         ];
         $this->placeBuildingFloor($playerId, floor($areaPosition / 10), $areaPosition % 10, $message, $args);
 
-        if (!boolval($this->getGameStateValue(LAST_ROUND)) && count($this->getAvailableBuildings($playerId)) == 0) {
+        if (!boolval($this->getGameStateValue(LAST_ROUND)) && count($this->getAvailableBuildingFloors($playerId)) == 0) {
             $this->setGameStateValue(LAST_ROUND, 1);
             
             self::notifyAllPlayers('lastTurn', clienttranslate('${player_name} played its last floor, starting last round!'), [
@@ -131,6 +131,18 @@ trait ActionTrait {
         if (!$this->applyConstructBuildingFloor($areaPosition, false)) {
             // not redirected to area choice
             $this->moveTorticrane($areaPosition);
+        
+            // check objectives if there is at least 1 remaining roof
+            if (count($this->getAvailableBuildingFloors(0)) > 0) {
+                $playerId = intval($this->getActivePlayerId());
+                
+                if ($this->checkCompletedCommonProjects($playerId, $areaPosition)) {
+                    // redirected to choose common project
+                    $this->setGameStateValue(SELECTED_AREA_POSITION, $areaPosition);
+                    $this->gamestate->nextState('chooseCompletedCommonProject');
+                    return;
+                }
+            }
 
             $this->gamestate->nextState('endAction');
         }
@@ -297,7 +309,7 @@ trait ActionTrait {
     public function chooseRoofToTransfer(int $areaPosition) {
         self::checkAction('chooseRoofToTransfer');
         
-        $this->setGameStateValue(ROOF_AREA_POSITION, $areaPosition);
+        $this->setGameStateValue(SELECTED_AREA_POSITION, $areaPosition);
 
         $this->gamestate->nextState('chooseRoofDestination');
     }
@@ -307,17 +319,11 @@ trait ActionTrait {
         
         $playerId = intval($this->getActivePlayerId());
         
-        $originBuilding = $this->getBuildingByAreaPosition($this->getGameStateValue(ROOF_AREA_POSITION));
-        $this->removeRoof($originBuilding);
-        
-        $building = $this->getBuildingByAreaPosition($areaPosition);
-        $this->addRoof($building);
+        $fromBuilding = $this->getBuildingByAreaPosition($this->getGameStateValue(SELECTED_AREA_POSITION));
+        $toBuilding = $this->getBuildingByAreaPosition($areaPosition);
+        $this->moveRoof($playerId, $fromBuilding, $toBuilding);
 
         $this->setPloyTokenUsed($this->getActivePlayerId(), 2);
-
-        $this->notifyAllPlayers('log', clienttranslate('${player_name} moved a roof to another building'), [
-            'player_name' => $this->getPlayerName($playerId),
-        ]);
 
         $this->setGameStateValue(PLOY_USED, 1);
         $this->gamestate->nextState('endPloy');
@@ -355,5 +361,23 @@ trait ActionTrait {
         self::checkAction('cancelBuildingInvasion');
 
         $this->gamestate->nextState('cancel');
+    }
+
+    public function chooseCompletedCommonProject($id) {
+        self::checkAction('chooseCompletedCommonProject');
+        
+        $playerId = intval($this->getActivePlayerId());
+    
+        $areaPosition = intval($this->getGameStateValue(SELECTED_AREA_POSITION));
+        $completedCommonProjects = $this->getCompletedCommonProjects($playerId, $areaPosition);
+    
+        $commonProject = $this->array_find($completedCommonProjects, fn($completedCommonProject) => $completedCommonProject->id == $id);
+        if ($commonProject == null) {
+            throw new BgaUserException("Invalid common project");
+        }
+
+        $this->takeCompletedCommonProject($commonProject, $playerId, $areaPosition);
+
+        $this->gamestate->nextState('endAction');
     }
 }

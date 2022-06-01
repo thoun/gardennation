@@ -107,17 +107,27 @@ function formatTextIcons(rawText) {
         .replace(/\[symbol(\d)\]/ig, '<span class="icon symbol$1"></span>')
         .replace(/\[die:(\d):(\d)\]/ig, '<span class="die-icon" data-color="$1" data-face="$2"></span>');
 }
-var CommonProjectsCards = /** @class */ (function () {
-    function CommonProjectsCards(game) {
+var CommonProjectCards = /** @class */ (function () {
+    function CommonProjectCards(game) {
         this.game = game;
     }
-    // gameui.secretMissionCards.debugSeeAllCards()
-    CommonProjectsCards.prototype.debugSeeAllCards = function () {
+    // gameui.commonProjectCards.debugSeeAllCards()
+    CommonProjectCards.prototype.debugSeeAllCards = function () {
         var _this = this;
         var html = "<div id=\"all-common-project-cards\">";
         html += "</div>";
         dojo.place(html, 'full-table', 'before');
-        [1, 2].forEach(function (type) {
+        [1, 2, 3, 4, 5, 6].forEach(function (subType) {
+            var card = {
+                id: 10 + subType,
+                side: 0,
+                type: 1,
+                subType: subType,
+                name: '[name]'
+            };
+            _this.createMoveOrUpdateCard(card, "all-common-project-cards");
+        });
+        [2, 3, 4, 5, 6].forEach(function (type) {
             return [1, 2, 3].forEach(function (subType) {
                 var card = {
                     id: 10 * type + subType,
@@ -129,28 +139,9 @@ var CommonProjectsCards = /** @class */ (function () {
                 _this.createMoveOrUpdateCard(card, "all-common-project-cards");
             });
         });
-        [1, 2].forEach(function (subType) {
-            var card = {
-                id: 10 * 3 + subType,
-                side: 0,
-                type: 3,
-                subType: subType,
-                name: '[name]'
-            };
-            _this.createMoveOrUpdateCard(card, "all-common-project-cards");
-        });
-        [1, 2, 3, 4, 5, 6, 7].forEach(function (subType) {
-            var card = {
-                id: 10 * 4 + subType,
-                side: 0,
-                type: 4,
-                subType: subType,
-                name: '[name]'
-            };
-            _this.createMoveOrUpdateCard(card, "all-common-project-cards");
-        });
     };
-    CommonProjectsCards.prototype.createMoveOrUpdateCard = function (card, destinationId, init, from) {
+    CommonProjectCards.prototype.createMoveOrUpdateCard = function (card, destinationId, init, from) {
+        var _this = this;
         if (init === void 0) { init = false; }
         if (from === void 0) { from = null; }
         var existingDiv = document.getElementById("common-project-".concat(card.id));
@@ -179,6 +170,7 @@ var CommonProjectsCards = /** @class */ (function () {
             div.dataset.subType = '' + card.subType;
             div.innerHTML = "\n                <div class=\"card-sides\">\n                    <div class=\"card-side front\">\n                        <div id=\"".concat(div.id, "-name\" class=\"name\"></div>\n                    </div>\n                    <div class=\"card-side back\">\n                    </div>\n                </div>\n            ");
             document.getElementById(destinationId).appendChild(div);
+            div.addEventListener('click', function () { return _this.game.onCommonProjectClick(card); });
             if (from) {
                 var fromCardId = document.getElementById(from).children[0].id;
                 slideFromObject(this.game, div, fromCardId);
@@ -189,18 +181,18 @@ var CommonProjectsCards = /** @class */ (function () {
             this.game.setTooltip(div.id, this.getTooltip(card.type, card.subType));
         }
     };
-    CommonProjectsCards.prototype.setVisibleInformations = function (div, card) {
+    CommonProjectCards.prototype.setVisibleInformations = function (div, card) {
         document.getElementById("".concat(div.id, "-name")).innerHTML = _(card.name);
         div.dataset.type = '' + card.type;
         div.dataset.subType = '' + card.subType;
     };
-    CommonProjectsCards.prototype.getTooltip = function (type, subType) {
+    CommonProjectCards.prototype.getTooltip = function (type, subType) {
         if (!type) {
             return _('Common projects deck');
         }
         return 'TODO';
     };
-    return CommonProjectsCards;
+    return CommonProjectCards;
 }());
 var SecretMissionCards = /** @class */ (function () {
     function SecretMissionCards(game) {
@@ -401,7 +393,7 @@ var Board = /** @class */ (function () {
             }
             building.buildingFloors.forEach(function (floor, index) {
                 if (!document.getElementById("building-floor-".concat(floor.id))) {
-                    dojo.place("<div id=\"building-floor-".concat(floor.id, "\" class=\"building-floor\" data-color=\"").concat(_this.game.getPlayerColor(floor.playerId), "\" style=\"z-index: ").concat(index, "\"></div>"), "building".concat(areaPosition));
+                    dojo.place("<div id=\"building-floor-".concat(floor.id, "\" class=\"building-floor\" data-color=\"").concat(floor.playerId ? _this.game.getPlayerColor(floor.playerId) : 0, "\" style=\"z-index: ").concat(index, "\"></div>"), "building".concat(areaPosition));
                 }
             });
         }
@@ -449,7 +441,7 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.setCommonProjects = function (commonProjects) {
         var _this = this;
         commonProjects.forEach(function (commonProject) {
-            return _this.game.commonProjectsCards.createMoveOrUpdateCard(commonProject, "player-table-".concat(_this.playerId, "-common-projects"));
+            return _this.game.commonProjectCards.createMoveOrUpdateCard(commonProject, "player-table-".concat(_this.playerId, "-common-projects"));
         });
     };
     PlayerTable.prototype.setSecretMissions = function (secretMissions) {
@@ -506,7 +498,7 @@ var GardenNation = /** @class */ (function () {
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
-        this.commonProjectsCards = new CommonProjectsCards(this);
+        this.commonProjectCards = new CommonProjectCards(this);
         this.secretMissionCards = new SecretMissionCards(this);
         this.createPlayerPanels(gamedatas);
         var players = Object.values(gamedatas.players);
@@ -515,8 +507,8 @@ var GardenNation = /** @class */ (function () {
         [0, 1, 2, 3, 4].forEach(function (number) {
             dojo.place("\n            <div id=\"common-project-wrapper-".concat(number, "\" class=\"common-project-wrapper\" data-number=\"").concat(number, "\">\n            </div>\n            "), 'common-projects');
         });
-        this.commonProjectsCards.createMoveOrUpdateCard({}, "common-project-wrapper-0");
-        gamedatas.commonProjects.forEach(function (commonProject) { return _this.commonProjectsCards.createMoveOrUpdateCard(commonProject, "common-project-wrapper-".concat(commonProject.locationArg)); });
+        this.commonProjectCards.createMoveOrUpdateCard({}, "common-project-wrapper-0");
+        gamedatas.commonProjects.forEach(function (commonProject) { return _this.commonProjectCards.createMoveOrUpdateCard(commonProject, "common-project-wrapper-".concat(commonProject.locationArg)); });
         if (gamedatas.endTurn) {
             this.notif_lastTurn();
         }
@@ -551,6 +543,9 @@ var GardenNation = /** @class */ (function () {
             case 'chooseRoofDestination':
                 this.onEnteringSelectAreaPosition(args.args);
                 break;
+            case 'chooseCompletedCommonProject':
+                this.onEnteringChooseCompletedCommonProject(args.args);
+                break;
             case 'endRound':
                 Array.from(document.querySelectorAll(".building.highlight")).forEach(function (elem) { return elem.classList.remove('highlight'); });
             case 'endScore':
@@ -569,58 +564,18 @@ var GardenNation = /** @class */ (function () {
             this.board.activatePossibleAreas(args.possiblePositions, args.selectedPosition);
         }
     };
+    GardenNation.prototype.onEnteringChooseCompletedCommonProject = function (args) {
+        if (this.isCurrentPlayerActive()) {
+            this.board.activatePossibleAreas([], args.selectedPosition);
+            args.completedCommonProjects.forEach(function (commonProject) { return document.getElementById("common-project-".concat(commonProject.id)).classList.add('selectable'); });
+        }
+    };
     GardenNation.prototype.onEnteringShowScore = function (fromReload) {
         if (fromReload === void 0) { fromReload = false; }
         var lastTurnBar = document.getElementById('last-round');
         if (lastTurnBar) {
             lastTurnBar.style.display = 'none';
         }
-        /*document.getElementById('score').style.display = 'flex';
-
-        const headers = document.getElementById('scoretr');
-        if (!headers.childElementCount) {
-            dojo.place(`
-                <th></th>
-                <th id="th-before-end-score" class="before-end-score">${_("Score at last day")}</th>
-                <th id="th-cards-score" class="cards-score">${_("Adventurer and companions")}</th>
-                <th id="th-board-score" class="board-score">${_("Journey board")}</th>
-                <th id="th-fireflies-score" class="fireflies-score">${_("Fireflies")}</th>
-                <th id="th-footprints-score" class="footprints-score">${_("Footprint tokens")}</th>
-                <th id="th-after-end-score" class="after-end-score">${_("Final score")}</th>
-            `, headers);
-        }
-
-        const players = Object.values(this.gamedatas.players);
-        if (players.length == 1) {
-            players.push(this.gamedatas.tom);
-        }
-
-        players.forEach(player => {
-            //if we are a reload of end state, we display values, else we wait for notifications
-            const playerScore = fromReload ? (player as any) : null;
-
-            const firefliesScore = fromReload && Number(player.id) > 0 ? (this.fireflyCounters[player.id].getValue() >= this.companionCounters[player.id].getValue() ? 10 : 0) : undefined;
-            const footprintsScore = fromReload ? this.footprintCounters[player.id].getValue() : undefined;
-
-            dojo.place(`<tr id="score${player.id}">
-                <td class="player-name" style="color: #${player.color}">${Number(player.id) == 0 ? 'Tom' : player.name}</td>
-                <td id="before-end-score${player.id}" class="score-number before-end-score">${playerScore?.scoreBeforeEnd !== undefined ? playerScore.scoreBeforeEnd : ''}</td>
-                <td id="cards-score${player.id}" class="score-number cards-score">${playerScore?.scoreCards !== undefined ? playerScore.scoreCards : ''}</td>
-                <td id="board-score${player.id}" class="score-number board-score">${playerScore?.scoreBoard !== undefined ? playerScore.scoreBoard : ''}</td>
-                <td id="fireflies-score${player.id}" class="score-number fireflies-score">${firefliesScore !== undefined ? firefliesScore : ''}</td>
-                <td id="footprints-score${player.id}" class="score-number footprints-score">${footprintsScore !== undefined ? footprintsScore : ''}</td>
-                <td id="after-end-score${player.id}" class="score-number after-end-score total">${playerScore?.scoreAfterEnd !== undefined ? playerScore.scoreAfterEnd : ''}</td>
-            </tr>`, 'score-table-body');
-        });
-
-        (this as any).addTooltipHtmlToClass('before-end-score', _("Score before the final count."));
-        (this as any).addTooltipHtmlToClass('cards-score', _("Total number of bursts of light on adventurer and companions."));
-        (this as any).addTooltipHtmlToClass('board-score', this.gamedatas.side == 1 ?
-            _("Number of bursts of light indicated on the village where encampment is situated.") :
-            _("Number of bursts of light indicated on the islands on which players have placed their boats."));
-        (this as any).addTooltipHtmlToClass('fireflies-score', _("Total number of fireflies in player possession, represented on companions and tokens. If there is many or more fireflies than companions, player score an additional 10 bursts of light."));
-        (this as any).addTooltipHtmlToClass('footprints-score', _("1 burst of light per footprint in player possession."));
-        */
     };
     // onLeavingState: this method is called each time we are leaving a game state.
     //                 You can use this method to perform some user interface changes at this moment.
@@ -635,10 +590,19 @@ var GardenNation = /** @class */ (function () {
             case 'chooseRoofDestination':
                 this.onLeavingSelectAreaPosition();
                 break;
+            case 'chooseCompletedCommonProject':
+                this.onLeavingChooseCompletedCommonProject();
+                break;
         }
     };
     GardenNation.prototype.onLeavingSelectAreaPosition = function () {
         this.board.activatePossibleAreas([], null);
+    };
+    GardenNation.prototype.onLeavingChooseCompletedCommonProject = function () {
+        if (this.isCurrentPlayerActive()) {
+            this.board.activatePossibleAreas([], null);
+            document.querySelectorAll('.common-project.selectable').forEach(function (elem) { return elem.classList.remove('selectable'); });
+        }
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
     //                        action status bar (ie: the HTML links in the status bar).
@@ -859,6 +823,16 @@ var GardenNation = /** @class */ (function () {
                 break;
         }
     };
+    GardenNation.prototype.onCommonProjectClick = function (card) {
+        switch (this.gamedatas.gamestate.name) {
+            case 'chooseCompletedCommonProject':
+                var args = this.gamedatas.gamestate.args;
+                if (args.completedCommonProjects.some(function (cp) { return cp.id === card.id; })) {
+                    this.chooseCompletedCommonProject(card.id);
+                }
+                break;
+        }
+    };
     GardenNation.prototype.chooseConstructBuilding = function () {
         if (!this.checkAction('chooseConstructBuilding')) {
             return;
@@ -993,6 +967,14 @@ var GardenNation = /** @class */ (function () {
             areaPosition: areaPosition
         });
     };
+    GardenNation.prototype.chooseCompletedCommonProject = function (id) {
+        if (!this.checkAction('chooseCompletedCommonProject')) {
+            return;
+        }
+        this.takeAction('chooseCompletedCommonProject', {
+            id: id
+        });
+    };
     GardenNation.prototype.takeAction = function (action, data) {
         data = data || {};
         data.lock = true;
@@ -1040,6 +1022,8 @@ var GardenNation = /** @class */ (function () {
             ['moveTorticrane', ANIMATION_MS],
             ['setPlayerOrder', ANIMATION_MS],
             ['setBuilding', ANIMATION_MS],
+            ['takeCommonProject', ANIMATION_MS],
+            ['newCommonProject', ANIMATION_MS],
             ['score', 1],
             ['inhabitant', 1],
             ['setBrambleType', 1],
@@ -1078,6 +1062,17 @@ var GardenNation = /** @class */ (function () {
         var _a, _b;
         (_a = this.ployTokenCounters[notif.args.playerId]) === null || _a === void 0 ? void 0 : _a.incValue(-1);
         (_b = this.getPlayerTable(notif.args.playerId)) === null || _b === void 0 ? void 0 : _b.setPloyTokenUsed(notif.args.type);
+    };
+    GardenNation.prototype.notif_takeCommonProject = function (notif) {
+        this.getPlayerTable(notif.args.playerId).setCommonProjects([notif.args.commonProject]);
+    };
+    GardenNation.prototype.notif_newCommonProject = function (notif) {
+        // we first create a backflipped card
+        this.commonProjectCards.createMoveOrUpdateCard({
+            id: notif.args.commonProject.id
+        }, "common-project-wrapper-0");
+        // then we reveal it
+        this.commonProjectCards.createMoveOrUpdateCard(notif.args.commonProject, "common-project-wrapper-".concat(notif.args.commonProject.locationArg));
     };
     GardenNation.prototype.notif_revealSecretMission = function (notif) {
         this.getPlayerTable(notif.args.playerId).setSecretMissions([notif.args.secretMission]);

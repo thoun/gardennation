@@ -15,7 +15,7 @@ trait ArgsTrait {
     function argChooseAction() {
         $playerId = intval($this->getActivePlayerId());
 
-        $remainingFloors = count($this->getAvailableBuildings($playerId));
+        $remainingFloors = count($this->getAvailableBuildingFloors($playerId));
         $canConstructBuilding = $remainingFloors > 0 && count($this->argConstructBuilding()['possiblePositions']) > 0;
         $canAbandonBuilding = count($this->argAbandonBuilding()['possiblePositions']) > 0;
         $canUsePloy = $this->canUsePloy($playerId);
@@ -92,6 +92,18 @@ trait ArgsTrait {
         ];
     }
 
+    function argChooseCompletedCommonProject() {
+        $playerId = intval($this->getActivePlayerId());
+
+        $areaPosition = intval($this->getGameStateValue(SELECTED_AREA_POSITION));
+        $completedCommonProjects = $this->getCompletedCommonProjects($playerId, $areaPosition);
+
+        return [
+            'selectedPosition' => $areaPosition,
+            'completedCommonProjects' => $completedCommonProjects,
+        ];
+    }
+
     function argChooseNextPlayer() {
         $players = $this->getPlayers();
         $playersAtOrderZero = array_values(array_filter($players, fn($player) => $player->turnTrack == 0));
@@ -153,7 +165,7 @@ trait ArgsTrait {
 
         return [
             'possiblePositions' => array_map(fn($building) => $building->areaPosition, $possibleBuildings),
-            'selectedPosition' => intval($this->getGameStateValue(ROOF_AREA_POSITION)),
+            'selectedPosition' => intval($this->getGameStateValue(SELECTED_AREA_POSITION)),
         ];
     }
     
@@ -162,7 +174,7 @@ trait ArgsTrait {
         $player = $this->getPlayer($playerId);
         $buildings = $this->getTerritoryBuildings();
 
-        $remainingBuildingFloors = $this->getAvailableBuildings($playerId);
+        $remainingBuildingFloors = $this->getAvailableBuildingFloors($playerId);
         $possibleBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId != $playerId && $this->getBuildingCost($building) < $player->inhabitants && $remainingBuildingFloors >= $building->floors));
 
         return [

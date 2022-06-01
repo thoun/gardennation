@@ -356,13 +356,13 @@ trait UtilTrait {
         return $territoryBuildings;
     }
 
-    function getAvailableBuildings(int $playerId) {
+    function getAvailableBuildingFloors(int $playerId) {
         $buildingFloorsDb = $this->getCollectionFromDb("SELECT * FROM `building_floor` WHERE player_id = $playerId AND `territory_number` is null");
         return array_values(array_map(fn($buildingFloorDb) => new BuildingFloor($buildingFloorDb), $buildingFloorsDb));
     }
 
     function placeBuildingFloor(int $playerId, int $territoryNumber, int $areaPosition, $message = '', $args = []) {
-        $buildingFloorId = $this->getAvailableBuildings($playerId)[0]->id;
+        $buildingFloorId = $this->getAvailableBuildingFloors($playerId)[0]->id;
 
         $this->DbQuery("UPDATE `building_floor` SET `territory_number` = $territoryNumber, `area_position` = $areaPosition WHERE `id` = $buildingFloorId");
         
@@ -394,12 +394,24 @@ trait UtilTrait {
         return $cost * 2;
     }
 
-    function removeRoof(Building $building) {
+    function moveRoof(int $playerId, Building $from, Building $to) {
         // TODO
+
+        
+        $this->notifyAllPlayers('log', clienttranslate('${player_name} moved a roof to another building'), [
+            'player_name' => $this->getPlayerName($playerId),
+        ]);
     }
 
-    function addRoof(Building $building) {
-        // TODO
+    function addRoof(int $playerId, Building $building, CommonProject $commonProject) {
+        $areaPosition = $building->areaPosition;
+        $message = clienttranslate('${player_name} adds a roof to a building with common project ${cardName}');
+        $args = [
+            'player_name' => $this->getPlayerName($playerId),
+            'cardName' => $commonProject->name,
+            'i18n' => [ 'cardName' ],
+        ];
+        $this->placeBuildingFloor(0, floor($areaPosition / 10), $areaPosition % 10, $message, $args);
     }
     
     function setPloyTokenUsed(int $playerId, int $type) {
@@ -444,5 +456,123 @@ trait UtilTrait {
         foreach ($playersIds as $playerId) {
             $this->secretMissions->pickCards(2, 'deck', $playerId);
         }
+    }
+
+    function getAdjacentAreas(array $map, int $areaPosition) {
+        $territoryNumber = floor($areaPosition / 10);
+        $areaNumber = $areaPosition % 10;
+        if ($areaNumber % 10 == 0) {
+            return array_values(array_filter(array_keys($map), fn($key) => $key != $areaPosition && floor($key / 10) == $territoryNumber));
+        } else {
+            // TODO add adjacent from other territories
+            $adjacentCenter = $territoryNumber * 10;
+            $before = $areaNumber == 1 ? $territoryNumber * 10 + 6 : $areaPosition - 1;
+            $after = $areaNumber == 6 ? $territoryNumber * 10 + 1 : $areaPosition + 1;
+            return [$before, $after, $adjacentCenter];
+        }
+        
+    }
+
+    function isCommonProjectCompleted(CommonProject $commonProject, int $playerId, array $territories, array $map, Building $building) {
+        switch ($commonProject->type) {
+            case 1:
+                if ($building->floors < 2 || $map[$building->areaPosition][0] != $commonProject->primaryColor) {
+                    return false;
+                }
+                $adjacentAreas = $this->getAdjacentAreas($map, $building->areaPosition);
+                return $this->array_some($adjacentAreas, fn($adjacentArea) => $map[$adjacentArea][0] == $commonProject->secondaryColor && $this->getBuildingByAreaPosition($adjacentArea) == null);
+            case 2:
+            case 5:
+                $minLevel = $commonProject->type == 5 ? 3 : 2;
+                if ($building->floors < $minLevel || $map[$building->areaPosition][0] != $commonProject->subType) {
+                    return false;
+                }
+                $territoryIndex = $this->array_find_index($territories, fn($territory) => $territory[0] == floor($building->areaPosition / 10));
+                return $commonProject->type == 5 ? $territoryIndex == 0 : $territoryIndex != 0;
+            case 3:
+            case 4:
+                $minLevel = $commonProject->type == 4 ? 2 : 1;
+                if ($building->floors < $minLevel || $map[$building->areaPosition][0] != $commonProject->subType) {
+                    return false;
+                }
+                $adjacentAreas = $this->getAdjacentAreas($map, $building->areaPosition);
+                return $this->array_some($adjacentAreas, function($adjacentArea) use ($map, $playerId, $commonProject) {
+                    if ($map[$adjacentArea][0] != $commonProject->subType) {
+                        return false;
+                    }
+                    $adjacentBuilding = $this->getBuildingByAreaPosition($adjacentArea);
+                    return $adjacentBuilding != null && !$adjacentBuilding->roof && $adjacentBuilding->playerId == $playerId && $adjacentBuilding->floors >= 1;
+                });
+            case 6:
+                if ($building->floors < 2 || $map[$building->areaPosition][0] != $commonProject->subType) {
+                    return false;
+                }
+                $otherColors = array_values(array_filter([1, 2, 3], fn($key) => $key != $commonProject->subType));                
+                $adjacentAreas = $this->getAdjacentAreas($map, $building->areaPosition);
+                return $this->array_every($otherColors, fn($otherColor) => $this->array_some($adjacentAreas, function($adjacentArea) use ($map, $playerId, $otherColor) {
+                    if ($map[$adjacentArea][0] != $otherColor) {
+                        return false;
+                    }
+                    $adjacentBuilding = $this->getBuildingByAreaPosition($adjacentArea);
+                    return $adjacentBuilding != null && !$adjacentBuilding->roof && $adjacentBuilding->playerId == $playerId && $adjacentBuilding->floors >= 1;
+                }));
+        }
+        
+        return false;
+    }
+
+    function getCompletedCommonProjects(int $playerId, int $areaPosition) {
+        $territories = $this->getTerritories();
+        $map = $this->getMap();
+        $building = $this->getBuildingByAreaPosition($areaPosition);
+
+        $commonProjects = $this->getCommonProjectsFromDb($this->commonProjects->getCardsInLocation('table', null, 'location_arg'));
+        return array_values(array_filter($commonProjects, fn($commonProject) => $this->isCommonProjectCompleted($commonProject, $playerId, $territories, $map, $building)));
+    }
+
+    function checkCompletedCommonProjects(int $playerId, int $areaPosition) {
+        $completedCommonProjects = $this->getCompletedCommonProjects($playerId, $areaPosition);
+
+        if (count($completedCommonProjects) > 0) {
+            if (count($completedCommonProjects) > 1) {
+                return true;
+            }
+            
+            $this->takeCompletedCommonProject($completedCommonProjects[0], $playerId, $areaPosition);
+        }
+
+        return false;
+    }
+
+    function takeCompletedCommonProject(CommonProject $commonProject, int $playerId, int $areaPosition) {
+        $building = $this->getBuildingByAreaPosition($areaPosition);
+
+        $playerName = $this->getPlayerName($playerId);
+
+        $this->commonProjects->moveCard($commonProject->id, 'hand', $playerId);
+        $this->notifyAllPlayers('takeCommonProject', clienttranslate('${player_name} completes common project ${cardName}'), [
+            'playerId' => $playerId,
+            'player_name' => $playerName,
+            'cardName' => $commonProject->name,
+            'commonProject' => $commonProject,
+            'i18n' => [ 'cardName' ],
+        ]);
+
+        $this->addRoof($playerId, $building, $commonProject);
+
+        $this->incPlayerScore($playerId, $commonProject->points, clienttranslate('${player_name} gains ${points} victory points with common project ${cardName}'), [
+            'player_name' => $playerName,
+            'points' => $commonProject->points,
+            'cardName' => $commonProject->name,
+            'i18n' => [ 'cardName' ],
+        ]);
+
+        $newCommonProject = $this->getCommonProjectFromDb($this->commonProjects->pickCardForLocation('deck', 'table', $commonProject->locationArg));
+
+        $this->notifyAllPlayers('newCommonProject', clienttranslate('A new common project is revealed: ${cardName}'), [
+            'cardName' => $newCommonProject->name,
+            'commonProject' => $newCommonProject,
+            'i18n' => [ 'cardName' ],
+        ]);
     }
 }

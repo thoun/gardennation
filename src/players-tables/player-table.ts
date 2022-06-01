@@ -64,7 +64,7 @@ class PlayerTable {
 
     public setCommonProjects(commonProjects: CommonProject[]) {
         commonProjects.forEach(commonProject => 
-            this.game.commonProjectsCards.createMoveOrUpdateCard(commonProject, `player-table-${this.playerId}-common-projects`)
+            this.game.commonProjectCards.createMoveOrUpdateCard(commonProject, `player-table-${this.playerId}-common-projects`)
         );
     }
 

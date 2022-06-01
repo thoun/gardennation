@@ -48,7 +48,7 @@ class GardenNation extends Table {
             PLOY_USED => 12,
             TORTICRANE_POSITION => 13,
             BRAMBLE_CHOICE_AREA => 14,
-            ROOF_AREA_POSITION => 15,
+            SELECTED_AREA_POSITION => 15,
         ]);
 		
         $this->commonProjects = $this->getNew("module.common.deck");
@@ -174,7 +174,7 @@ class GardenNation extends Table {
             $player['turnTrack'] = intval($player['turnTrack']);
             $player['usedPloy'] = json_decode($player['usedPloy']);
 
-            $player['buildingFloors'] = $this->getAvailableBuildings($playerId);
+            $player['buildingFloors'] = $this->getAvailableBuildingFloors($playerId);
 
             $player['commonProjects'] = $this->getCommonProjectsFromDb($this->commonProjects->getCardsInLocation('hand', $playerId));
 

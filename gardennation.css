@@ -438,6 +438,13 @@
 .card .card-sides .card-side.back {
   transform: rotateY(180deg);
 }
+.card.selectable {
+  cursor: pointer;
+  box-shadow: 0 0 8px 8px white;
+}
+.card.selectable .card-side {
+  box-shadow: unset;
+}
 .card.common-project .card-side {
   background-image: url("img/common-projects.jpg");
   background-size: auto 100%;
@@ -447,6 +454,69 @@
   width: 100%;
   top: 138px;
   font-size: 80%;
+}
+.card.common-project[data-type="1"][data-sub-type="1"] .front {
+  background-position-x: 4.7619047619%;
+}
+.card.common-project[data-type="1"][data-sub-type="2"] .front {
+  background-position-x: 9.5238095238%;
+}
+.card.common-project[data-type="1"][data-sub-type="3"] .front {
+  background-position-x: 14.2857142857%;
+}
+.card.common-project[data-type="1"][data-sub-type="4"] .front {
+  background-position-x: 19.0476190476%;
+}
+.card.common-project[data-type="1"][data-sub-type="5"] .front {
+  background-position-x: 23.8095238095%;
+}
+.card.common-project[data-type="1"][data-sub-type="6"] .front {
+  background-position-x: 28.5714285714%;
+}
+.card.common-project[data-type="2"][data-sub-type="1"] .front {
+  background-position-x: 33.3333333333%;
+}
+.card.common-project[data-type="2"][data-sub-type="2"] .front {
+  background-position-x: 38.0952380952%;
+}
+.card.common-project[data-type="2"][data-sub-type="3"] .front {
+  background-position-x: 42.8571428571%;
+}
+.card.common-project[data-type="3"][data-sub-type="1"] .front {
+  background-position-x: 47.619047619%;
+}
+.card.common-project[data-type="3"][data-sub-type="2"] .front {
+  background-position-x: 52.380952381%;
+}
+.card.common-project[data-type="3"][data-sub-type="3"] .front {
+  background-position-x: 57.1428571429%;
+}
+.card.common-project[data-type="4"][data-sub-type="1"] .front {
+  background-position-x: 61.9047619048%;
+}
+.card.common-project[data-type="4"][data-sub-type="2"] .front {
+  background-position-x: 66.6666666667%;
+}
+.card.common-project[data-type="4"][data-sub-type="3"] .front {
+  background-position-x: 71.4285714286%;
+}
+.card.common-project[data-type="5"][data-sub-type="1"] .front {
+  background-position-x: 76.1904761905%;
+}
+.card.common-project[data-type="5"][data-sub-type="2"] .front {
+  background-position-x: 80.9523809524%;
+}
+.card.common-project[data-type="5"][data-sub-type="3"] .front {
+  background-position-x: 85.7142857143%;
+}
+.card.common-project[data-type="6"][data-sub-type="1"] .front {
+  background-position-x: 90.4761904762%;
+}
+.card.common-project[data-type="6"][data-sub-type="2"] .front {
+  background-position-x: 95.2380952381%;
+}
+.card.common-project[data-type="6"][data-sub-type="3"] .front {
+  background-position-x: 100%;
 }
 .card.secret-mission .card-side {
   background-image: url("img/secret-missions.jpg");
@@ -458,50 +528,50 @@
   top: 138px;
   font-size: 80%;
 }
-.card[data-type="1"][data-sub-type="1"] .front {
-  background-position: 6.6666666667%;
+.card.secret-mission[data-type="1"][data-sub-type="1"] .front {
+  background-position-x: 6.6666666667%;
 }
-.card[data-type="1"][data-sub-type="2"] .front {
-  background-position: 13.3333333333%;
+.card.secret-mission[data-type="1"][data-sub-type="2"] .front {
+  background-position-x: 13.3333333333%;
 }
-.card[data-type="1"][data-sub-type="3"] .front {
-  background-position: 20%;
+.card.secret-mission[data-type="1"][data-sub-type="3"] .front {
+  background-position-x: 20%;
 }
-.card[data-type="2"][data-sub-type="1"] .front {
-  background-position: 26.6666666667%;
+.card.secret-mission[data-type="2"][data-sub-type="1"] .front {
+  background-position-x: 26.6666666667%;
 }
-.card[data-type="2"][data-sub-type="2"] .front {
-  background-position: 33.3333333333%;
+.card.secret-mission[data-type="2"][data-sub-type="2"] .front {
+  background-position-x: 33.3333333333%;
 }
-.card[data-type="2"][data-sub-type="3"] .front {
-  background-position: 40%;
+.card.secret-mission[data-type="2"][data-sub-type="3"] .front {
+  background-position-x: 40%;
 }
-.card[data-type="3"][data-sub-type="1"] .front {
-  background-position: 46.6666666667%;
+.card.secret-mission[data-type="3"][data-sub-type="1"] .front {
+  background-position-x: 46.6666666667%;
 }
-.card[data-type="3"][data-sub-type="2"] .front {
-  background-position: 53.3333333333%;
+.card.secret-mission[data-type="3"][data-sub-type="2"] .front {
+  background-position-x: 53.3333333333%;
 }
-.card[data-type="4"][data-sub-type="1"] .front {
-  background-position: 60%;
+.card.secret-mission[data-type="4"][data-sub-type="1"] .front {
+  background-position-x: 60%;
 }
-.card[data-type="4"][data-sub-type="2"] .front {
-  background-position: 66.6666666667%;
+.card.secret-mission[data-type="4"][data-sub-type="2"] .front {
+  background-position-x: 66.6666666667%;
 }
-.card[data-type="4"][data-sub-type="3"] .front {
-  background-position: 73.3333333333%;
+.card.secret-mission[data-type="4"][data-sub-type="3"] .front {
+  background-position-x: 73.3333333333%;
 }
-.card[data-type="4"][data-sub-type="4"] .front {
-  background-position: 80%;
+.card.secret-mission[data-type="4"][data-sub-type="4"] .front {
+  background-position-x: 80%;
 }
-.card[data-type="4"][data-sub-type="5"] .front {
-  background-position: 86.6666666667%;
+.card.secret-mission[data-type="4"][data-sub-type="5"] .front {
+  background-position-x: 86.6666666667%;
 }
-.card[data-type="4"][data-sub-type="6"] .front {
-  background-position: 93.3333333333%;
+.card.secret-mission[data-type="4"][data-sub-type="6"] .front {
+  background-position-x: 93.3333333333%;
 }
-.card[data-type="4"][data-sub-type="7"] .front {
-  background-position: 100%;
+.card.secret-mission[data-type="4"][data-sub-type="7"] .front {
+  background-position-x: 100%;
 }
 
 .player-board {

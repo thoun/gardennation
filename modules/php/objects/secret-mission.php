@@ -8,7 +8,7 @@ class SecretMissionCard {
     public /*array|null*/ $territories;
   
   
-    public function __construct(int $nbr, int $type, $subType, string $name, /*array|null*/ $territories = null) {
+    public function __construct(int $nbr, int $type, int $subType, string $name, /*array|null*/ $territories = null) {
         $this->nbr = $nbr;
         $this->type = $type;
         $this->subType = $subType;

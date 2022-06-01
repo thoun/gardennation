@@ -3,14 +3,16 @@
 class CommonProjectCard {
     public int $type;
     public int $subType;
+    public int $points;
     public string $name;
     public /*int|null*/ $primaryColor;
     public /*int|null*/ $secondaryColor;
   
   
-    public function __construct(int $type, $subType, string $name, /*int|null*/ $primaryColor = null, /*int|null*/ $secondaryColor = null) {
+    public function __construct(int $type, int $subType, int $points, string $name, /*int|null*/ $primaryColor = null, /*int|null*/ $secondaryColor = null) {
         $this->type = $type;
         $this->subType = $subType;
+        $this->points = $points;
         $this->name = $name;
         $this->primaryColor = $primaryColor;
         $this->secondaryColor = $secondaryColor;
@@ -29,6 +31,7 @@ class CommonProject extends CommonProjectCard {
         $this->locationArg = intval($dbObject['location_arg']);
 
         $secretMissionCard = $COMMON_PROJECT;
+        $this->points = $secretMissionCard->points;
         $this->name = $secretMissionCard->name;
         $this->primaryColor = $secretMissionCard->primaryColor;
         $this->secondaryColor = $secretMissionCard->secondaryColor;
