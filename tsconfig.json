@@ -13,7 +13,6 @@
         "src/stock.d.ts",
         "src/gardennation.d.ts",
         "src/slide-utils.ts",
-        "src/stock-utils.ts",
         "src/text-icons-formatter.ts",
         "src/common-projects-cards.ts",
         "src/secret-missions-cards.ts",

@@ -49,7 +49,7 @@ trait ArgsTrait {
                 $cost = $area[1] + ($building == null ? 0 : $building->floors);
 
                 if ($cost < $player->inhabitants) {
-                    $possiblePositions[] = $position;
+                    $possiblePositions[$position] = -$cost;
                 }
             }
         }
@@ -67,8 +67,9 @@ trait ArgsTrait {
 
         $possiblePositions = [];
         foreach ($territoryPositions as $areaPosition => $area) { 
-            if ($this->array_find($territoryBuildings, fn($building) => $building->areaPosition == $areaPosition && $building->playerId == $playerId) !== null) {
-                $possiblePositions[] = $areaPosition;
+            $existingBuilding = $this->array_find($territoryBuildings, fn($building) => $building->areaPosition == $areaPosition && $building->playerId == $playerId);
+            if ($existingBuilding !== null) {
+                $possiblePositions[$areaPosition] = $this->getBuildingCost($existingBuilding);
             }
         }
     
@@ -79,7 +80,7 @@ trait ArgsTrait {
 
     function argChooseTypeOfLand() {
         $areaPosition = intval($this->getGameStateValue(SELECTED_AREA_POSITION));
-        
+
         $brambleAreasDb = $this->getCollectionFromDb("SELECT `type`, count(*) as `count` FROM `bramble_area` WHERE `position` IS NULL GROUP BY `type`");
         $possibleTypes = [];
         foreach([1, 2, 3] as $type) {
@@ -179,9 +180,14 @@ trait ArgsTrait {
 
         $remainingBuildingFloors = $this->getAvailableBuildingFloors($playerId);
         $possibleBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId != $playerId && $this->getBuildingCost($building) < $player->inhabitants && $remainingBuildingFloors >= $building->floors));
+        $possiblePositions = [];
+
+        foreach ($possibleBuildings as $building) {
+            $possiblePositions[$building->areaPosition] = -$this->getBuildingCost($building);
+        }
 
         return [
-            'possiblePositions' => array_map(fn($building) => $building->areaPosition, $possibleBuildings),
+            'possiblePositions' => $possiblePositions,
         ];
     }
     

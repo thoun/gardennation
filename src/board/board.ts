@@ -123,6 +123,18 @@ class Board {
         this.movePoints();
     }
     
+    public activatePossibleAreasWithCost(possibleAreas: {[position: number]: number /* cost */}) {
+        const playerColor = this.game.getPlayerColor(this.game.getPlayerId());
+        Array.from(document.getElementsByClassName('area')).forEach((area: HTMLDivElement) => {
+            const selectable = Object.keys(possibleAreas).includes(area.dataset.position);
+            area.classList.toggle('selectable', selectable);
+            if (selectable) {
+                const cost = possibleAreas[area.dataset.position];
+                dojo.place(`<div class="cost-tag"><span>${cost > 0 ? '+'+cost : cost }</span> <div class="icon inhabitant" data-color="${playerColor}"></div></div>`, area);
+            }
+        });
+    }
+    
     public activatePossibleAreas(possibleAreas: number[], selectedPosition?: number) {
         Array.from(document.getElementsByClassName('area')).forEach((area: HTMLDivElement) => {
             area.classList.toggle('selectable', possibleAreas.includes(Number(area.dataset.position)))

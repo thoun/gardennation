@@ -193,9 +193,39 @@ $area-spacing: 106px;
             &.selectable {
                 cursor: pointer;
                 border-color: red;
+
+                .bramble-type-token {
+                    box-shadow: none;
+                }
+
+                .cost-tag {
+                    position: absolute;
+                    bottom: 4px;
+                    right: -10px;
+                    background: white;
+                    color: black;
+                    border: 1px solid black;
+                    display: flex;
+                    align-items: center;
+                    z-index: 15;
+
+                    span {
+                        padding: 2px;
+                    }
+
+                    .icon {
+                        width: 16px;
+                        height: 16px;
+                        margin-left: -2px;
+                    }
+                }
             }
             &.selected {
                 border-color: blue;
+
+                .bramble-type-token {
+                    box-shadow: none;
+                }
             }
 
             &[data-type="0"] {

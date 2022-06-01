@@ -6,10 +6,19 @@
 
     .player-table {
         position: relative;
+        font-family: 'garden-nation-title';
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 15px;
+
+        .title {
+          text-align: center;
+          font-size: 120%;
+        }
 
         .player-name {
             position: absolute;
-            font-family: 'garden-nation-title';
             font-size: 130%;
             padding: 5px;
             width: 265px;
@@ -18,6 +27,7 @@
         .player-score-board {
             width: 626px;
             height: 302px;
+            margin: 5px;
 
             @each $playerColor in $playerColors {
                 &[data-color="#{$playerColor}"] { 
@@ -111,10 +121,6 @@
 
         .player-secret-missions-wrapper {
           display: inline-block;
-
-          .title {
-            text-align: center;
-          }
         }
     }
 }

@@ -91,6 +91,11 @@ interface EnteringChooseActionArgs {
     canSkipTurn: boolean;
 }
 
+interface EnteringSelectAreaPositionWithCostArgs {
+    possiblePositions: {[position: number]: number /* cost */};
+    selectedPosition?: number;
+}
+
 interface EnteringSelectAreaPositionArgs {
     possiblePositions: number[];
     selectedPosition?: number;

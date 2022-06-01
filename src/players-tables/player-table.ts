@@ -9,8 +9,8 @@ class PlayerTable {
 
         let html = `
         <div id="player-table-${this.playerId}" class="player-table whiteblock">
-            <div id="player-table-${this.playerId}-name" class="player-name" style="color: #${player.color};">${player.name}</div>
             <div id="player-table-${this.playerId}-score-board" class="player-score-board" data-color="${player.color}">
+                <div id="player-table-${this.playerId}-name" class="player-name" style="color: #${player.color};">${player.name}</div>
                 <div id="player-table-${this.playerId}-meeple-marker" class="meeple-marker" data-color="${player.color}"></div>
             </div>
             <div id="player-table-${this.playerId}-secret-missions-wrapper" class="player-secret-missions-wrapper">
@@ -19,7 +19,7 @@ class PlayerTable {
                 </div>
             </div>
             <div id="player-table-${this.playerId}-common-projects-wrapper" class="player-common-projects-wrapper">
-                <div class="title">${_('Completed common projects')}</div>
+                <div id="player-table-${this.playerId}-common-projects-title" class="title ${player.commonProjects.length ? '' : 'hidden'}">${_('Completed common projects')}</div>
                 <div id="player-table-${this.playerId}-common-projects" class="player-common-projects">
                 </div>
             </div>
@@ -76,6 +76,10 @@ class PlayerTable {
     }
 
     public setCommonProjects(commonProjects: CommonProject[]) {
+        if (commonProjects.length) {
+            document.getElementById(`player-table-${this.playerId}-common-projects-title`).classList.remove('hidden');
+        }
+
         commonProjects.forEach(commonProject => 
             this.game.commonProjectCards.createMoveOrUpdateCard(commonProject, `player-table-${this.playerId}-common-projects`)
         );

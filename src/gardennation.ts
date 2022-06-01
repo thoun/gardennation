@@ -115,6 +115,8 @@ class GardenNation implements GardenNationGame {
             case 'constructBuilding':
             case 'abandonBuilding':
             case 'buildingInvasion':
+                this.onEnteringSelectAreaPositionWithCost(args.args);
+                break;
             case 'chooseRoofToTransfer':
             case 'chooseRoofDestination':
                 this.onEnteringSelectAreaPosition(args.args);
@@ -137,6 +139,12 @@ class GardenNation implements GardenNationGame {
                     lastTurnBar.style.display = 'none';
                 }
                 break;
+        }
+    }
+
+    private onEnteringSelectAreaPositionWithCost(args: EnteringSelectAreaPositionWithCostArgs) {
+        if ((this as any).isCurrentPlayerActive()) {
+            this.board.activatePossibleAreasWithCost(args.possiblePositions);
         }
     }
 
@@ -189,6 +197,7 @@ class GardenNation implements GardenNationGame {
     }
 
     private onLeavingSelectAreaPosition() {
+        document.querySelectorAll('.cost-tag').forEach(elem => elem.parentElement.removeChild(elem));
         this.board.activatePossibleAreas([], null);
     }
 
@@ -286,14 +295,8 @@ class GardenNation implements GardenNationGame {
         const div = document.getElementById('full-table');
         div.style.transform = zoom === 1 ? '' : `scale(${zoom})`;
         div.style.marginRight = `${ZOOM_LEVELS_MARGIN[newIndex]}%`;
-        this.tableHeightChange();
+        // TODO ? this.tableHeightChange();
         document.getElementById('board').classList.toggle('hd', this.zoom > 1);
-
-        const stocks = this.playersTables.map(pt => pt.companionsStock);
-        /*if (this.adventurersStock) {
-            stocks.push(this.adventurersStock);
-        }*/
-        stocks.forEach(stock => stock.updateDisplay());
 
         document.getElementById('zoom-wrapper').style.height = `${div.getBoundingClientRect().height}px`;
 
@@ -691,22 +694,22 @@ class GardenNation implements GardenNationGame {
                 <h2>${_('The Sketals')}</h2>
                 <table><tr>
                 <td><div id="companion44" class="companion"></div></td>
-                    <td>${getCompanionTooltip(44)}</td>
+                    <td>${this.commonProjectCards.getTooltip(1, 1)}</td>
                 </tr></table>
                 <h2>Xar’gok</h2>
                 <table><tr>
                     <td><div id="companion10" class="companion"></div></td>
-                    <td>${getCompanionTooltip(10)}</td>
+                    <td>${this.commonProjectCards.getTooltip(1, 1)}</td>
                 </tr></table>
                 <h2>${_('Kaar and the curse of the black die')}</h2>
                 <table><tr>
                     <td><div id="companion20" class="companion"></div></td>
-                    <td>${getCompanionTooltip(20)}</td>
+                    <td>${this.commonProjectCards.getTooltip(1, 1)}</td>
                 </tr></table>
                 <h2>Cromaug</h2>
                 <table><tr>
                     <td><div id="companion41" class="companion"></div></td>
-                    <td>${getCompanionTooltip(41)}</td>
+                    <td>${this.commonProjectCards.getTooltip(1, 1)}</td>
                 </tr></table>
             </div>
         </div>`;

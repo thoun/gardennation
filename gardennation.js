@@ -41,66 +41,6 @@ function slideFromObject(game, object, fromId) {
         }, 600);
     }
 }
-/*declare const board: HTMLDivElement;*/
-var CARD_WIDTH = 129;
-var CARD_HEIGHT = 240;
-function setupAdventurersCards(adventurerStock) {
-    var cardsurl = "".concat(g_gamethemeurl, "img/adventurers.png");
-    for (var i = 0; i <= 7; i++) {
-        adventurerStock.addItemType(i, i, cardsurl, i);
-    }
-}
-function setupCompanionCards(companionsStock) {
-    companionsStock.image_items_per_row = 10;
-    var cardsurl = "".concat(g_gamethemeurl, "img/companions.png");
-    for (var subType = 1; subType <= 46; subType++) {
-        companionsStock.addItemType(subType, 0, cardsurl, subType + (subType > 23 ? 1 : 0));
-    }
-    companionsStock.addItemType(1001, 0, cardsurl, 0);
-    companionsStock.addItemType(1002, 0, cardsurl, 24);
-}
-function setupSpellCards(spellsStock) {
-    var cardsurl = "".concat(g_gamethemeurl, "img/spells.png");
-    for (var type = 1; type <= 7; type++) {
-        spellsStock.addItemType(type, type, cardsurl, type);
-    }
-    spellsStock.addItemType(0, 0, cardsurl, 0);
-}
-function setupSoloTileCards(soloTilesStock) {
-    var cardsurl = "".concat(g_gamethemeurl, "img/solo-tiles.png");
-    for (var type = 1; type <= 8; type++) {
-        soloTilesStock.addItemType(type, type, cardsurl, type - 1);
-    }
-    soloTilesStock.addItemType(0, 0, cardsurl, 0);
-}
-function setupAdventurerCard(game, cardDiv, type) {
-    var adventurer = game.gamedatas.ADVENTURERS[type];
-    var tooltip = 'TODO';
-    game.addTooltipHtml(cardDiv.id, "<h3>".concat(adventurer.name, "</h3>").concat(tooltip || ''));
-}
-function moveToAnotherStock(sourceStock, destinationStock, uniqueId, cardId) {
-    if (sourceStock === destinationStock) {
-        return;
-    }
-    var sourceStockItemId = "".concat(sourceStock.container_div.id, "_item_").concat(cardId);
-    if (document.getElementById(sourceStockItemId)) {
-        destinationStock.addToStockWithId(uniqueId, cardId, sourceStockItemId);
-        sourceStock.removeFromStockById(cardId);
-    }
-    else {
-        console.warn("".concat(sourceStockItemId, " not found in "), sourceStock);
-        destinationStock.addToStockWithId(uniqueId, cardId, sourceStock.container_div.id);
-    }
-    var destinationDiv = document.getElementById("".concat(destinationStock.container_div.id, "_item_").concat(cardId));
-    destinationDiv.style.zIndex = '10';
-    setTimeout(function () { return destinationDiv.style.zIndex = 'unset'; }, 1000);
-}
-function addToStockWithId(destinationStock, uniqueId, cardId, from) {
-    destinationStock.addToStockWithId(uniqueId, cardId, from);
-    var destinationDiv = document.getElementById("".concat(destinationStock.container_div.id, "_item_").concat(cardId));
-    destinationDiv.style.zIndex = '10';
-    setTimeout(function () { return destinationDiv.style.zIndex = 'unset'; }, 1000);
-}
 function formatTextIcons(rawText) {
     return rawText
         .replace(/\[reroll\]/ig, '<span class="icon reroll"></span>')
@@ -374,6 +314,17 @@ var Board = /** @class */ (function () {
         this.points.set(playerId, points);
         this.movePoints();
     };
+    Board.prototype.activatePossibleAreasWithCost = function (possibleAreas) {
+        var playerColor = this.game.getPlayerColor(this.game.getPlayerId());
+        Array.from(document.getElementsByClassName('area')).forEach(function (area) {
+            var selectable = Object.keys(possibleAreas).includes(area.dataset.position);
+            area.classList.toggle('selectable', selectable);
+            if (selectable) {
+                var cost = possibleAreas[area.dataset.position];
+                dojo.place("<div class=\"cost-tag\"><span>".concat(cost > 0 ? '+' + cost : cost, "</span> <div class=\"icon inhabitant\" data-color=\"").concat(playerColor, "\"></div></div>"), area);
+            }
+        });
+    };
     Board.prototype.activatePossibleAreas = function (possibleAreas, selectedPosition) {
         Array.from(document.getElementsByClassName('area')).forEach(function (area) {
             area.classList.toggle('selectable', possibleAreas.includes(Number(area.dataset.position)));
@@ -422,7 +373,7 @@ var PlayerTable = /** @class */ (function () {
         var _this = this;
         this.game = game;
         this.playerId = Number(player.id);
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-meeple-marker\" class=\"meeple-marker\" data-color=\"").concat(player.color, "\"></div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-secret-missions-wrapper\" class=\"player-secret-missions-wrapper\">\n                <div class=\"title\">").concat(_('Secret missions'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-secret-missions\" class=\"player-secret-missions\">\n                </div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-common-projects-wrapper\" class=\"player-common-projects-wrapper\">\n                <div class=\"title\">").concat(_('Completed common projects'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-common-projects\" class=\"player-common-projects\">\n                </div>\n            </div>\n        </div>");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n                <div id=\"player-table-").concat(this.playerId, "-meeple-marker\" class=\"meeple-marker\" data-color=\"").concat(player.color, "\"></div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-secret-missions-wrapper\" class=\"player-secret-missions-wrapper\">\n                <div class=\"title\">").concat(_('Secret missions'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-secret-missions\" class=\"player-secret-missions\">\n                </div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-common-projects-wrapper\" class=\"player-common-projects-wrapper\">\n                <div id=\"player-table-").concat(this.playerId, "-common-projects-title\" class=\"title ").concat(player.commonProjects.length ? '' : 'hidden', "\">").concat(_('Completed common projects'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-common-projects\" class=\"player-common-projects\">\n                </div>\n            </div>\n        </div>");
         dojo.place(html, 'playerstables');
         [0, 1, 2, 3].forEach(function (type) {
             var html = "\n            <div id=\"player-table-".concat(_this.playerId, "-ploy-tokens-container-").concat(type, "\" class=\"ploy-tokens-container\" data-type=\"").concat(type, "\">");
@@ -462,6 +413,9 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.setCommonProjects = function (commonProjects) {
         var _this = this;
+        if (commonProjects.length) {
+            document.getElementById("player-table-".concat(this.playerId, "-common-projects-title")).classList.remove('hidden');
+        }
         commonProjects.forEach(function (commonProject) {
             return _this.game.commonProjectCards.createMoveOrUpdateCard(commonProject, "player-table-".concat(_this.playerId, "-common-projects"));
         });
@@ -562,6 +516,8 @@ var GardenNation = /** @class */ (function () {
             case 'constructBuilding':
             case 'abandonBuilding':
             case 'buildingInvasion':
+                this.onEnteringSelectAreaPositionWithCost(args.args);
+                break;
             case 'chooseRoofToTransfer':
             case 'chooseRoofDestination':
                 this.onEnteringSelectAreaPosition(args.args);
@@ -583,6 +539,11 @@ var GardenNation = /** @class */ (function () {
                     lastTurnBar.style.display = 'none';
                 }
                 break;
+        }
+    };
+    GardenNation.prototype.onEnteringSelectAreaPositionWithCost = function (args) {
+        if (this.isCurrentPlayerActive()) {
+            this.board.activatePossibleAreasWithCost(args.possiblePositions);
         }
     };
     GardenNation.prototype.onEnteringSelectAreaPosition = function (args) {
@@ -628,6 +589,7 @@ var GardenNation = /** @class */ (function () {
         }
     };
     GardenNation.prototype.onLeavingSelectAreaPosition = function () {
+        document.querySelectorAll('.cost-tag').forEach(function (elem) { return elem.parentElement.removeChild(elem); });
         this.board.activatePossibleAreas([], null);
     };
     GardenNation.prototype.onLeavingChooseCompletedCommonProject = function () {
@@ -719,13 +681,8 @@ var GardenNation = /** @class */ (function () {
         var div = document.getElementById('full-table');
         div.style.transform = zoom === 1 ? '' : "scale(".concat(zoom, ")");
         div.style.marginRight = "".concat(ZOOM_LEVELS_MARGIN[newIndex], "%");
-        this.tableHeightChange();
+        // TODO ? this.tableHeightChange();
         document.getElementById('board').classList.toggle('hd', this.zoom > 1);
-        var stocks = this.playersTables.map(function (pt) { return pt.companionsStock; });
-        /*if (this.adventurersStock) {
-            stocks.push(this.adventurersStock);
-        }*/
-        stocks.forEach(function (stock) { return stock.updateDisplay(); });
         document.getElementById('zoom-wrapper').style.height = "".concat(div.getBoundingClientRect().height, "px");
         var fullBoardWrapperDiv = document.getElementById('full-board-wrapper');
         fullBoardWrapperDiv.style.display = fullBoardWrapperDiv.clientWidth < 916 * zoom ? 'block' : 'flex';
@@ -1031,7 +988,7 @@ var GardenNation = /** @class */ (function () {
         var helpDialog = new ebg.popindialog();
         helpDialog.create('gardennationHelpDialog');
         helpDialog.setTitle(_("Cards help"));
-        var html = "<div id=\"help-popin\">\n            <h1>".concat(_("Specific companions"), "</h1>\n            <div id=\"help-companions\" class=\"help-section\">\n                <h2>").concat(_('The Sketals'), "</h2>\n                <table><tr>\n                <td><div id=\"companion44\" class=\"companion\"></div></td>\n                    <td>").concat(getCompanionTooltip(44), "</td>\n                </tr></table>\n                <h2>Xar\u2019gok</h2>\n                <table><tr>\n                    <td><div id=\"companion10\" class=\"companion\"></div></td>\n                    <td>").concat(getCompanionTooltip(10), "</td>\n                </tr></table>\n                <h2>").concat(_('Kaar and the curse of the black die'), "</h2>\n                <table><tr>\n                    <td><div id=\"companion20\" class=\"companion\"></div></td>\n                    <td>").concat(getCompanionTooltip(20), "</td>\n                </tr></table>\n                <h2>Cromaug</h2>\n                <table><tr>\n                    <td><div id=\"companion41\" class=\"companion\"></div></td>\n                    <td>").concat(getCompanionTooltip(41), "</td>\n                </tr></table>\n            </div>\n        </div>");
+        var html = "<div id=\"help-popin\">\n            <h1>".concat(_("Specific companions"), "</h1>\n            <div id=\"help-companions\" class=\"help-section\">\n                <h2>").concat(_('The Sketals'), "</h2>\n                <table><tr>\n                <td><div id=\"companion44\" class=\"companion\"></div></td>\n                    <td>").concat(this.commonProjectCards.getTooltip(1, 1), "</td>\n                </tr></table>\n                <h2>Xar\u2019gok</h2>\n                <table><tr>\n                    <td><div id=\"companion10\" class=\"companion\"></div></td>\n                    <td>").concat(this.commonProjectCards.getTooltip(1, 1), "</td>\n                </tr></table>\n                <h2>").concat(_('Kaar and the curse of the black die'), "</h2>\n                <table><tr>\n                    <td><div id=\"companion20\" class=\"companion\"></div></td>\n                    <td>").concat(this.commonProjectCards.getTooltip(1, 1), "</td>\n                </tr></table>\n                <h2>Cromaug</h2>\n                <table><tr>\n                    <td><div id=\"companion41\" class=\"companion\"></div></td>\n                    <td>").concat(this.commonProjectCards.getTooltip(1, 1), "</td>\n                </tr></table>\n            </div>\n        </div>");
         // Show the dialog
         helpDialog.setContent(html);
         helpDialog.show();

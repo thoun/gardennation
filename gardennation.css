@@ -182,8 +182,33 @@
   cursor: pointer;
   border-color: red;
 }
+#board .territory .area.selectable .bramble-type-token {
+  box-shadow: none;
+}
+#board .territory .area.selectable .cost-tag {
+  position: absolute;
+  bottom: 4px;
+  right: -10px;
+  background: white;
+  color: black;
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  z-index: 15;
+}
+#board .territory .area.selectable .cost-tag span {
+  padding: 2px;
+}
+#board .territory .area.selectable .cost-tag .icon {
+  width: 16px;
+  height: 16px;
+  margin-left: -2px;
+}
 #board .territory .area.selected {
   border-color: blue;
+}
+#board .territory .area.selected .bramble-type-token {
+  box-shadow: none;
 }
 #board .territory .area[data-type="0"] .land-number {
   display: none;
@@ -287,10 +312,18 @@
 }
 #playerstables .player-table {
   position: relative;
+  font-family: "garden-nation-title";
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 15px;
+}
+#playerstables .player-table .title {
+  text-align: center;
+  font-size: 120%;
 }
 #playerstables .player-table .player-name {
   position: absolute;
-  font-family: "garden-nation-title";
   font-size: 130%;
   padding: 5px;
   width: 265px;
@@ -298,6 +331,7 @@
 #playerstables .player-table .player-score-board {
   width: 626px;
   height: 302px;
+  margin: 5px;
 }
 #playerstables .player-table .player-score-board[data-color=fcaf26] {
   background: url("img/player-board-fcaf26.png");
@@ -394,9 +428,6 @@
 }
 #playerstables .player-table .player-secret-missions-wrapper {
   display: inline-block;
-}
-#playerstables .player-table .player-secret-missions-wrapper .title {
-  text-align: center;
 }
 
 .card {
@@ -592,29 +623,6 @@
 }
 .player-board .counters .icon {
   margin-right: 5px;
-  background-image: url("img/panelboard-icons.png");
-  background-size: auto 300%;
-}
-.player-board .counters .icon[data-color=fcaf26] {
-  background-position-x: 0%;
-}
-.player-board .counters .icon[data-color=ab3b2a] {
-  background-position-x: 33.3333333333%;
-}
-.player-board .counters .icon[data-color="5f8637"] {
-  background-position-x: 66.6666666667%;
-}
-.player-board .counters .icon[data-color="456e96"] {
-  background-position-x: 100%;
-}
-.player-board .counters .icon.inhabitant {
-  background-position-y: 0%;
-}
-.player-board .counters .icon.building-floor-counter {
-  background-position-y: 50%;
-}
-.player-board .counters .icon.ploy-token {
-  background-position-y: 100%;
 }
 
 .roundedbox_topleft, .roundedbox_topmain, .roundedbox_topright, .roundedbox_main, .roundedbox_bottomleft, .roundedbox_bottommain, .roundedbox_bottomright {
@@ -666,8 +674,29 @@ html {
   position: relative;
   width: 32px;
   height: 32px;
-  background-image: url("img/icons.png");
-  background-size: auto 100%;
+  background-image: url("img/panelboard-icons.png");
+  background-size: auto 300%;
+}
+.icon[data-color=fcaf26] {
+  background-position-x: 0%;
+}
+.icon[data-color=ab3b2a] {
+  background-position-x: 33.3333333333%;
+}
+.icon[data-color="5f8637"] {
+  background-position-x: 66.6666666667%;
+}
+.icon[data-color="456e96"] {
+  background-position-x: 100%;
+}
+.icon.inhabitant {
+  background-position-y: 0%;
+}
+.icon.building-floor-counter {
+  background-position-y: 50%;
+}
+.icon.ploy-token {
+  background-position-y: 100%;
 }
 
 .button-bramble-type, .bramble-type-token {
