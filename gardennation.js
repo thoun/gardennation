@@ -1099,7 +1099,7 @@ var GardenNation = /** @class */ (function () {
         helpDialog.setContent(html);
         helpDialog.show();
         ['a', 'b'].forEach(function (line, lineIndex) {
-            return [2, 1, 3].forEach(function (subType) { return _this.commonProjectCards.createMoveOrUpdateCard({ id: 1000 + 1 * 10 + subType + lineIndex * 3, type: 1, subType: subType + lineIndex * 3 }, "help-common-projects-1-row-".concat(line)); });
+            return [2, 1, 3].forEach(function (subType) { return _this.commonProjectCards.createMoveOrUpdateCard({ id: 1000 + 1 * 10 + subType + lineIndex * 3, type: 1, subType: subType * 2 + lineIndex - 1 }, "help-common-projects-1-row-".concat(line)); });
         });
         [2, 3, 4, 5, 6].forEach(function (type) {
             return [2, 1, 3].forEach(function (subType) { return _this.commonProjectCards.createMoveOrUpdateCard({ id: 1000 + type * 10 + subType, type: type, subType: subType }, "help-common-projects-".concat(type)); });
@@ -1110,7 +1110,6 @@ var GardenNation = /** @class */ (function () {
         [[3, 1], [3, 2], [4, 1]].forEach(function (typeAndSubType) {
             return _this.secretMissionCards.createMoveOrUpdateCard({ id: 1000 + typeAndSubType[0] * 10 + typeAndSubType[1], type: typeAndSubType[0], subType: typeAndSubType[1] }, "help-secret-missions-".concat(typeAndSubType[0], "-").concat(typeAndSubType[1]));
         });
-        ;
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications

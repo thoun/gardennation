@@ -760,7 +760,7 @@ class GardenNation implements GardenNationGame {
         helpDialog.show();
         
         ['a', 'b'].forEach((line, lineIndex) => 
-            [2, 1, 3].forEach(subType => this.commonProjectCards.createMoveOrUpdateCard({id: 1000 + 1 * 10 + subType + lineIndex * 3, type: 1, subType: subType + lineIndex * 3} as any, `help-common-projects-1-row-${line}`))
+            [2, 1, 3].forEach(subType => this.commonProjectCards.createMoveOrUpdateCard({id: 1000 + 1 * 10 + subType + lineIndex * 3, type: 1, subType: subType * 2 + lineIndex - 1} as any, `help-common-projects-1-row-${line}`))
          );
         [2, 3, 4, 5, 6].forEach(type => 
            [2, 1, 3].forEach(subType => this.commonProjectCards.createMoveOrUpdateCard({id: 1000 + type * 10 + subType, type, subType } as any, `help-common-projects-${type}`))
@@ -770,7 +770,7 @@ class GardenNation implements GardenNationGame {
             [2, 1, 3].forEach(subType => this.secretMissionCards.createMoveOrUpdateCard({id: 1000 + type * 10 + subType, type, subType } as any, `help-secret-missions-${type}`))
          );
         [[3, 1], [3, 2], [4, 1]].forEach(typeAndSubType => 
-            this.secretMissionCards.createMoveOrUpdateCard({id: 1000 + typeAndSubType[0] * 10 + typeAndSubType[1], type: typeAndSubType[0], subType: typeAndSubType[1] } as any, `help-secret-missions-${typeAndSubType[0]}-${typeAndSubType[1]}`))
+            this.secretMissionCards.createMoveOrUpdateCard({id: 1000 + typeAndSubType[0] * 10 + typeAndSubType[1], type: typeAndSubType[0], subType: typeAndSubType[1] } as any, `help-secret-missions-${typeAndSubType[0]}-${typeAndSubType[1]}`)
         );
     }
 
