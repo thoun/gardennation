@@ -25,6 +25,45 @@
                 }
             } 
 
+            .ploy-tokens-container {
+              position: absolute;
+              top: 111px;
+
+              &[data-type="0"] {
+                left: 5px;
+                top: 50px;
+              }
+              &[data-type="1"] {
+                left: 68px;
+              }
+              &[data-type="2"] {
+                left: 123px;
+              }
+              &[data-type="3"] {
+                left: 14px;
+              }
+
+              .ploy-token {
+                display: inline-block;
+                width: 47px;
+                height: 47px;
+                background: url('img/ploy-tokens.png');
+                box-shadow: 1px 1px 3px 2px black;
+                border-radius: 50%;
+
+                @each $playerColor in $playerColors {
+                  $i: index($playerColors, $playerColor) - 1;
+                  &[data-color="#{$playerColor}"] { 
+                    background-position-x: #{$i * 100% / 3};
+                  }
+                }
+
+                &:not(:first-child) {
+                  margin-left: -40px;
+                }
+              }
+            }
+
             .meeple-marker {
               position: absolute;
               top: 0;

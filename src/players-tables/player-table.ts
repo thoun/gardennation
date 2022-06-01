@@ -27,9 +27,21 @@ class PlayerTable {
 
         dojo.place(html, 'playerstables');
 
-        [0,1,2].forEach(type => {
-            for (let i=0; i<player.usedPloy[type]; i++) {
-                this.setPloyTokenUsed(type + 1);
+        [0,1,2,3].forEach(type => {
+            let html = `
+            <div id="player-table-${this.playerId}-ploy-tokens-container-${type}" class="ploy-tokens-container" data-type="${type}">`;
+            if (type == 0) {
+                for (let i=0; i<4; i++) {
+                    html += `<div id="player-table-${this.playerId}-ploy-token${i}" class="ploy-token" data-color="${player.color}"></div>`;
+                }
+            }
+            html += `</div>
+            `;
+            dojo.place(html, `player-table-${this.playerId}-score-board`);
+        });
+        [1,2,3].forEach(type => {
+            for (let i=0; i<player.usedPloy[type - 1]; i++) {
+                this.setPloyTokenUsed(type);
             }
         });
     
@@ -59,7 +71,8 @@ class PlayerTable {
     }
 
     public setPloyTokenUsed(type: number) {
-        // TODO
+        const token = document.getElementById(`player-table-${this.playerId}-ploy-tokens-container-0`).lastElementChild as HTMLElement;
+        slideToObjectAndAttach(this.game, token, `player-table-${this.playerId}-ploy-tokens-container-${type}`);
     }
 
     public setCommonProjects(commonProjects: CommonProject[]) {

@@ -424,9 +424,19 @@ var PlayerTable = /** @class */ (function () {
         this.playerId = Number(player.id);
         var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-meeple-marker\" class=\"meeple-marker\" data-color=\"").concat(player.color, "\"></div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-secret-missions-wrapper\" class=\"player-secret-missions-wrapper\">\n                <div class=\"title\">").concat(_('Secret missions'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-secret-missions\" class=\"player-secret-missions\">\n                </div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-common-projects-wrapper\" class=\"player-common-projects-wrapper\">\n                <div class=\"title\">").concat(_('Completed common projects'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-common-projects\" class=\"player-common-projects\">\n                </div>\n            </div>\n        </div>");
         dojo.place(html, 'playerstables');
-        [0, 1, 2].forEach(function (type) {
-            for (var i = 0; i < player.usedPloy[type]; i++) {
-                _this.setPloyTokenUsed(type + 1);
+        [0, 1, 2, 3].forEach(function (type) {
+            var html = "\n            <div id=\"player-table-".concat(_this.playerId, "-ploy-tokens-container-").concat(type, "\" class=\"ploy-tokens-container\" data-type=\"").concat(type, "\">");
+            if (type == 0) {
+                for (var i = 0; i < 4; i++) {
+                    html += "<div id=\"player-table-".concat(_this.playerId, "-ploy-token").concat(i, "\" class=\"ploy-token\" data-color=\"").concat(player.color, "\"></div>");
+                }
+            }
+            html += "</div>\n            ";
+            dojo.place(html, "player-table-".concat(_this.playerId, "-score-board"));
+        });
+        [1, 2, 3].forEach(function (type) {
+            for (var i = 0; i < player.usedPloy[type - 1]; i++) {
+                _this.setPloyTokenUsed(type);
             }
         });
         this.setInhabitants(player.inhabitants);
@@ -447,7 +457,8 @@ var PlayerTable = /** @class */ (function () {
         markerDiv.style.transform = "translateX(".concat(left, "px) translateY(").concat(top, "px)");
     };
     PlayerTable.prototype.setPloyTokenUsed = function (type) {
-        // TODO
+        var token = document.getElementById("player-table-".concat(this.playerId, "-ploy-tokens-container-0")).lastElementChild;
+        slideToObjectAndAttach(this.game, token, "player-table-".concat(this.playerId, "-ploy-tokens-container-").concat(type));
     };
     PlayerTable.prototype.setCommonProjects = function (commonProjects) {
         var _this = this;

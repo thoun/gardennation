@@ -348,6 +348,46 @@
 #playerstables .player-table .player-score-board[data-color="456e96"] {
   background: url("img/player-board-456e96.png");
 }
+#playerstables .player-table .player-score-board .ploy-tokens-container {
+  position: absolute;
+  top: 111px;
+}
+#playerstables .player-table .player-score-board .ploy-tokens-container[data-type="0"] {
+  left: 5px;
+  top: 50px;
+}
+#playerstables .player-table .player-score-board .ploy-tokens-container[data-type="1"] {
+  left: 68px;
+}
+#playerstables .player-table .player-score-board .ploy-tokens-container[data-type="2"] {
+  left: 123px;
+}
+#playerstables .player-table .player-score-board .ploy-tokens-container[data-type="3"] {
+  left: 14px;
+}
+#playerstables .player-table .player-score-board .ploy-tokens-container .ploy-token {
+  display: inline-block;
+  width: 47px;
+  height: 47px;
+  background: url("img/ploy-tokens.png");
+  box-shadow: 1px 1px 3px 2px black;
+  border-radius: 50%;
+}
+#playerstables .player-table .player-score-board .ploy-tokens-container .ploy-token[data-color=fcaf26] {
+  background-position-x: 0%;
+}
+#playerstables .player-table .player-score-board .ploy-tokens-container .ploy-token[data-color=ab3b2a] {
+  background-position-x: 33.3333333333%;
+}
+#playerstables .player-table .player-score-board .ploy-tokens-container .ploy-token[data-color="5f8637"] {
+  background-position-x: 66.6666666667%;
+}
+#playerstables .player-table .player-score-board .ploy-tokens-container .ploy-token[data-color="456e96"] {
+  background-position-x: 100%;
+}
+#playerstables .player-table .player-score-board .ploy-tokens-container .ploy-token:not(:first-child) {
+  margin-left: -40px;
+}
 #playerstables .player-table .player-score-board .meeple-marker {
   position: absolute;
   top: 0;
