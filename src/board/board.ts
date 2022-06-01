@@ -50,13 +50,14 @@ class Board {
                 const mapPosition: AreaSpot = map[position];
                 const type = mapPosition.type;
                 const bramble = mapPosition.bramble;
+                const cost = mapPosition.cost;
                 let rotation = areaPosition;
                 if (areaPosition > 0) {
                     rotation = (areaPosition + territoryRotation - 1) % 6 + 1;
                 }
                 dojo.place(`
-                    <div id="area${position}" class="area" data-position="${position}" data-type="${type}" data-bramble="${bramble.toString()}" data-cost="${mapPosition[1]}" data-position="${areaPosition}" data-rotation="${rotation}">
-                        <div class="land-number">${mapPosition.cost}</div>
+                    <div id="area${position}" class="area" data-position="${position}" data-type="${type}" data-bramble="${bramble.toString()}" data-cost="${cost}" data-position="${areaPosition}" data-rotation="${rotation}">
+                        <div class="land-number">${cost}</div>
                     </div>
                 `, `territory${territoryPosition}`);
 
@@ -143,9 +144,17 @@ class Board {
             if (!buildingDiv) {
                 dojo.place(`<div id="building${areaPosition}" class="building"></div>`, `area${areaPosition}`);
             }
+            console.log(building);
             building.buildingFloors.forEach((floor, index) => {
-                if (!document.getElementById(`building-floor-${floor.id}`)) {
+                const buildingFloorDiv = document.getElementById(`building-floor-${floor.id}`);
+                if (!buildingFloorDiv) {
                     dojo.place(`<div id="building-floor-${floor.id}" class="building-floor" data-color="${floor.playerId ? this.game.getPlayerColor(floor.playerId): 0}" style="z-index: ${index}"></div>`, `building${areaPosition}`);
+                } else {
+                    const currentAreaDiv = buildingFloorDiv.closest('.area') as HTMLDivElement;
+                    if (!currentAreaDiv || currentAreaDiv.id != `area${areaPosition}`) {
+                        buildingFloorDiv.style.zIndex = '' + index;
+                        slideToObjectAndAttach(this.game, buildingFloorDiv, `building${areaPosition}`);
+                    }
                 }
             });
         } else {

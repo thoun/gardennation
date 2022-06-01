@@ -12,6 +12,7 @@ function slideToObjectAndAttach(game: Game, object: HTMLElement, destinationId: 
 
         const deltaX = destinationBR.left - originBR.left;
         const deltaY = destinationBR.top - originBR.top;
+        const previousZIndex = object.style.zIndex;
         
         object.style.zIndex = '10';
         object.style.transform = `translate(${-deltaX}px, ${-deltaY}px)`;
@@ -21,7 +22,7 @@ function slideToObjectAndAttach(game: Game, object: HTMLElement, destinationId: 
             object.style.transform = null;
         });
         setTimeout(() => {
-            object.style.zIndex = null;
+            object.style.zIndex = previousZIndex ?? null;
             object.style.transition = null;
         }, 600);
     }

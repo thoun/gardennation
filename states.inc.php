@@ -209,7 +209,7 @@ $playerActionsGameStates = [
             "cancelUsePloy",
         ],
         "transitions" => [
-            "chooseRoofDestination" => ST_PLAYER_CHOOSE_ACTION,
+            "chooseRoofDestination" => ST_PLAYER_CHOOSE_ROOF_DESTINATION,
             "cancel" => ST_PLAYER_USE_PLOY_TOKEN,
         ]
     ],

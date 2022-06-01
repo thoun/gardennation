@@ -395,11 +395,20 @@ trait UtilTrait {
     }
 
     function moveRoof(int $playerId, Building $from, Building $to) {
-        // TODO
+        $buildingFloorId = $this->array_find($from->buildingFloors, fn($buildingFloor) => $buildingFloor->playerId == 0)->id;
 
+
+        $territoryNumber = floor($to->areaPosition / 10);
+        $areaPosition = $to->areaPosition % 10;
+
+        $this->DbQuery("UPDATE `building_floor` SET `territory_number` = $territoryNumber, `area_position` = $areaPosition WHERE `id` = $buildingFloorId");
         
-        $this->notifyAllPlayers('log', clienttranslate('${player_name} moved a roof to another building'), [
+        $building = $this->getBuildingByAreaPosition($to->areaPosition);
+        
+        $this->notifyAllPlayers('setBuilding', clienttranslate('${player_name} moved a roof to another building'), [
             'player_name' => $this->getPlayerName($playerId),
+            'areaPosition' => $building->areaPosition,
+            'building' => $building,
         ]);
     }
 
