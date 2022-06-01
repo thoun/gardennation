@@ -297,7 +297,7 @@ class GardenNation implements GardenNationGame {
         const div = document.getElementById('full-table');
         div.style.transform = zoom === 1 ? '' : `scale(${zoom})`;
         div.style.marginRight = `${ZOOM_LEVELS_MARGIN[newIndex]}%`;
-        // TODO ? this.tableHeightChange();
+        // TODO zoom ? this.tableHeightChange();
         document.getElementById('board').classList.toggle('hd', this.zoom > 1);
 
         document.getElementById('zoom-wrapper').style.height = `${div.getBoundingClientRect().height}px`;

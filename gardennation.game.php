@@ -268,19 +268,35 @@ class GardenNation extends Table {
     	
         if ($state['type'] === "activeplayer") {
             switch ($statename) {
+                case 'chooseNextPlayer':
+                    $players = $this->getPlayers();
+                    $this->applyChooseNextPlayer($playerId);
+                    break;
                 default:
-                // TODO handle nextplayerchoice (use random)
+                    // be sure zombie player is not last on the turn track
+                    
+                    $players = $this->getPlayers();
+                    $maxOrder = max(array_map(fn($player) => $player->turnTrack, $players));
+                    if ($active_player == $this->array_find($players, fn($player) => $player->turnTrack == $maxOrder)->id) {
+                        $playersAtOrderZero = $this->argChooseNextPlayer()['possibleNextPlayers'];
+                        if (count($playersAtOrderZero) == 0) {
+                            $this->gamestate->jumpToState(ST_END_ROUND);
+                            break;
+                        }
+                        $order = $maxOrder + 1;
+                        $playerId = $playersAtOrderZero[bga_rand(0, count($playersAtOrderZero) - 1)];
+                        $this->DbQuery("UPDATE player SET `player_turn_track` = $order WHERE `player_id` = $playerId");
+
+                        $this->notifyAllPlayers('setPlayerOrder', clienttranslate('${player_name} is the next player'), [
+                            'playerId' => $playerId,
+                            'player_name' => $this->getPlayerName($playerId),
+                            'order' => $order,
+                        ]);
+                    }
+
                     $this->gamestate->jumpToState(ST_NEXT_PLAYER);
                 	break;
             }
-
-            return;
-        }
-
-        if ($state['type'] === "multipleactiveplayer") {
-            // Make sure player is in a non blocking status for role turn
-            $this->gamestate->setPlayerNonMultiactive($active_player, '');
-            
             return;
         }
 

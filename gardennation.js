@@ -772,7 +772,7 @@ var GardenNation = /** @class */ (function () {
         var div = document.getElementById('full-table');
         div.style.transform = zoom === 1 ? '' : "scale(".concat(zoom, ")");
         div.style.marginRight = "".concat(ZOOM_LEVELS_MARGIN[newIndex], "%");
-        // TODO ? this.tableHeightChange();
+        // TODO zoom ? this.tableHeightChange();
         document.getElementById('board').classList.toggle('hd', this.zoom > 1);
         document.getElementById('zoom-wrapper').style.height = "".concat(div.getBoundingClientRect().height, "px");
         var fullBoardWrapperDiv = document.getElementById('full-board-wrapper');
