@@ -117,6 +117,15 @@ html {
   &[data-number="0"] { 
     left: 24px;
     box-shadow: 3px 3px 0px 0px #333, 4px 4px 5px 5px black;
+    border-radius: 5px;
+
+    .card {
+      margin: 0;
+
+      .card-side {
+          box-shadow: unset;
+      }
+    }
   }
 
   @for $i from 1 through 4 {

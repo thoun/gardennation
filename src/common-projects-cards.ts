@@ -60,7 +60,7 @@ class CommonProjectCards {
             div.innerHTML = `
                 <div class="card-sides">
                     <div class="card-side front">
-                        <div id="${div.id}-name" class="name"></div>
+                        <div id="${div.id}-name" class="name">${card.type ? this.getTitle(card.type, card.subType) : ''}</div>
                     </div>
                     <div class="card-side back">
                     </div>
@@ -82,15 +82,70 @@ class CommonProjectCards {
     }
 
     private setVisibleInformations(div: HTMLElement, card: CommonProject) {
-        document.getElementById(`${div.id}-name`).innerHTML = _(card.name);
+        if (card.name) {
+            document.getElementById(`${div.id}-name`).innerHTML = _(card.name);
+        }
         div.dataset.type = ''+card.type;
         div.dataset.subType = ''+card.subType;
+    }
+
+    getTitle(type: number, subType: number) {
+        switch(type) {
+            case 1:
+                switch(subType) {
+                    case 1: return _('Infirmary');
+                    case 2: return _('Sacred Place');
+                    case 3: return _('Fortress');
+                }
+            case 2:
+                switch(subType) {
+                    case 1: return _('Herbalist');
+                    case 2: return _('House');
+                    case 3: return _('Prison');
+                }
+            case 3:
+                switch(subType) {
+                    case 1: return _('Forge');
+                    case 2: return _('Terraced Houses');
+                    case 3: return _('Outpost');
+                }
+            case 4:
+                switch(subType) {
+                    case 1: return _('Windmill');
+                    case 2: return _('Sanctuary');
+                    case 3: return _('Bunker');
+                }
+            case 5:
+                switch(subType) {
+                    case 1: return _('Power Station');
+                    case 2: return _('Apartments');
+                    case 3: return _('Radio Tower');
+                }
+            case 6:
+                switch(subType) {
+                    case 1: return _('Water Reservoir');
+                    case 2: return _('Temple');
+                    case 3: return _('Air Base');
+                }
+        }
+            
     }
 
     getTooltip(type: number, subType: number) {
         if (!type) {
             return _('Common projects deck');
         }
-        return 'TODO';
+        return `<h3 class="title">${this.getTitle(type, subType)}</h3><div>${this.getTooltipDescription(type)}</div>`;
+    }
+
+    getTooltipDescription(type: number) {
+        switch(type) {
+            case 1: return _('Construct a building with at least 2 floors on an area adjacent to an unoccupied area, respecting the indicated land types (1 copy each).');
+            case 2: return _('Construct a building with at least 2 floors on the indicated land type in one of the 6 outside territories (1 copy each).');
+            case 3: return _('Construct 2 buildings with at least 1 floor on 2 adjacent areas of the indicated land type (1 copy each).');
+            case 4: return _('Construct 2 buildings, 1 with at least 2 floors and 1 with at least 1 floor, on 2 adjacent areas, respecting the indicated land type (1 copy each).');
+            case 5: return _('Construct a building with at least 3 floors on the indicated land type in the central territory (1 copy each).');
+            case 6: return _('Construct 3 buildings, 1 with at least 2 floors adjacent to 2 buildings with at least 1 floor respecting the indicated land types (1 copy each).');
+        }
     }
 }

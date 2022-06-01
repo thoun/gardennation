@@ -25,6 +25,7 @@
         }
 
         .player-score-board {
+            position: relative;
             width: 626px;
             height: 302px;
             margin: 5px;
@@ -37,7 +38,7 @@
 
             .ploy-tokens-container {
               position: absolute;
-              top: 111px;
+              top: 113px;
 
               &[data-type="0"] {
                 left: 5px;

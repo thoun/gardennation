@@ -10,6 +10,8 @@ declare const board: HTMLDivElement;
 const ANIMATION_MS = 500;
 const SCORE_MS = 1500;
 
+const TITLE_COLOR = ['#6b7123', '#ba782e', '#ab3b2b'];
+
 const ZOOM_LEVELS = [0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1, 1.25, 1.5];
 const ZOOM_LEVELS_MARGIN = [-300, -166, -100, -60, -33, -14, 0, 20, 33.34];
 const LOCAL_STORAGE_ZOOM_KEY = 'GardenNation-zoom';
@@ -683,34 +685,72 @@ class GardenNation implements GardenNationGame {
         dojo.connect( $('gardennation-help-button'), 'onclick', this, () => this.showHelp());
     }
 
+    private getHelpTripleTitleHtml(titles: string[]) {
+        return titles.map((title, index) => `<span style="color: ${TITLE_COLOR[index]};">${title}</span>`).join(' | ');
+    }
+
     private showHelp() {
         const helpDialog = new ebg.popindialog();
-        helpDialog.create( 'gardennationHelpDialog' );
-        helpDialog.setTitle( _("Cards help") );
+        helpDialog.create('gardennationHelpDialog');
+        helpDialog.setTitle(_("Objectives in detail").toUpperCase());
         
-        var html = `<div id="help-popin">
-            <h1>${_("Specific companions")}</h1>
-            <div id="help-companions" class="help-section">
-                <h2>${_('The Sketals')}</h2>
-                <table><tr>
-                <td><div id="companion44" class="companion"></div></td>
-                    <td>${this.commonProjectCards.getTooltip(1, 1)}</td>
-                </tr></table>
-                <h2>Xar’gok</h2>
-                <table><tr>
-                    <td><div id="companion10" class="companion"></div></td>
-                    <td>${this.commonProjectCards.getTooltip(1, 1)}</td>
-                </tr></table>
-                <h2>${_('Kaar and the curse of the black die')}</h2>
-                <table><tr>
-                    <td><div id="companion20" class="companion"></div></td>
-                    <td>${this.commonProjectCards.getTooltip(1, 1)}</td>
-                </tr></table>
-                <h2>Cromaug</h2>
-                <table><tr>
-                    <td><div id="companion41" class="companion"></div></td>
-                    <td>${this.commonProjectCards.getTooltip(1, 1)}</td>
-                </tr></table>
+        let html = `<div id="help-popin">
+            <h1>${_("Common projects")}</h1>
+            <div id="help-common-projects" class="help-section">
+                <h2>${this.getHelpTripleTitleHtml([2, 1, 3].map(subType => this.commonProjectCards.getTitle(1, subType)))}</h2>
+                <table>
+                    <tr>
+                        <td id="help-common-projects-1">
+                            <div id="help-common-projects-1-row-a"></div>
+                            <div id="help-common-projects-1-row-b"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>${this.commonProjectCards.getTooltipDescription(1)}</td>
+                    </tr>
+                </table>`;                    
+
+        [2, 3, 4, 5, 6].forEach(type => 
+            html += `
+                <h2>${this.getHelpTripleTitleHtml([2, 1, 3].map(subType => this.commonProjectCards.getTitle(type, subType)))}</h2>
+                <table>
+                    <tr>
+                        <td id="help-common-projects-${type}"></td>
+                    </tr>
+                    <tr>
+                        <td>${this.commonProjectCards.getTooltipDescription(type)}</td>
+                    </tr>
+                </table>`
+        );
+
+        html += `
+        <h1>${_("Secret missions")}</h1>
+        <div id="help-secret-missions" class="help-section">`;            
+
+        [2, 1].forEach(type => 
+            html += `
+                <h2>${this.getHelpTripleTitleHtml([2, 1, 3].map(subType => this.secretMissionCards.getTitle(type, subType)))}</h2>
+                <table>
+                    <tr>
+                        <td id="help-secret-missions-${type}"></td>
+                    </tr>
+                    <tr>
+                        <td>${this.secretMissionCards.getTooltipDescription(type, 0)}</td>
+                    </tr>
+                </table>`
+        );   
+        [[3, 1], [3, 2], [4, 1]].forEach(typeAndSubType => 
+            html += `
+                <h2>${this.secretMissionCards.getTitle(typeAndSubType[0], typeAndSubType[1])}</h2>
+                <table>
+                    <tr>
+                        <td id="help-secret-missions-${typeAndSubType[0]}-${typeAndSubType[1]}"></td>
+                        <td>${this.secretMissionCards.getTooltipDescription(typeAndSubType[0], typeAndSubType[1])}</td>
+                    </tr>
+                </table>`
+        );
+
+        html += `     
             </div>
         </div>`;
         
@@ -718,6 +758,20 @@ class GardenNation implements GardenNationGame {
         helpDialog.setContent(html);
 
         helpDialog.show();
+        
+        ['a', 'b'].forEach((line, lineIndex) => 
+            [2, 1, 3].forEach(subType => this.commonProjectCards.createMoveOrUpdateCard({id: 1000 + 1 * 10 + subType + lineIndex * 3, type: 1, subType: subType + lineIndex * 3} as any, `help-common-projects-1-row-${line}`))
+         );
+        [2, 3, 4, 5, 6].forEach(type => 
+           [2, 1, 3].forEach(subType => this.commonProjectCards.createMoveOrUpdateCard({id: 1000 + type * 10 + subType, type, subType } as any, `help-common-projects-${type}`))
+        );
+        
+        [1, 2].forEach(type => 
+            [2, 1, 3].forEach(subType => this.secretMissionCards.createMoveOrUpdateCard({id: 1000 + type * 10 + subType, type, subType } as any, `help-secret-missions-${type}`))
+         );
+        [[3, 1], [3, 2], [4, 1]].forEach(typeAndSubType => 
+            this.secretMissionCards.createMoveOrUpdateCard({id: 1000 + typeAndSubType[0] * 10 + typeAndSubType[1], type: typeAndSubType[0], subType: typeAndSubType[1] } as any, `help-secret-missions-${typeAndSubType[0]}-${typeAndSubType[1]}`))
+        );
     }
 
     ///////////////////////////////////////////////////

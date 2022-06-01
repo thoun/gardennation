@@ -109,7 +109,7 @@ var CommonProjectCards = /** @class */ (function () {
             div.dataset.side = '' + side;
             div.dataset.type = '' + card.type;
             div.dataset.subType = '' + card.subType;
-            div.innerHTML = "\n                <div class=\"card-sides\">\n                    <div class=\"card-side front\">\n                        <div id=\"".concat(div.id, "-name\" class=\"name\"></div>\n                    </div>\n                    <div class=\"card-side back\">\n                    </div>\n                </div>\n            ");
+            div.innerHTML = "\n                <div class=\"card-sides\">\n                    <div class=\"card-side front\">\n                        <div id=\"".concat(div.id, "-name\" class=\"name\">").concat(card.type ? this.getTitle(card.type, card.subType) : '', "</div>\n                    </div>\n                    <div class=\"card-side back\">\n                    </div>\n                </div>\n            ");
             document.getElementById(destinationId).appendChild(div);
             div.addEventListener('click', function () { return _this.game.onCommonProjectClick(card); });
             if (from) {
@@ -123,15 +123,67 @@ var CommonProjectCards = /** @class */ (function () {
         }
     };
     CommonProjectCards.prototype.setVisibleInformations = function (div, card) {
-        document.getElementById("".concat(div.id, "-name")).innerHTML = _(card.name);
+        if (card.name) {
+            document.getElementById("".concat(div.id, "-name")).innerHTML = _(card.name);
+        }
         div.dataset.type = '' + card.type;
         div.dataset.subType = '' + card.subType;
+    };
+    CommonProjectCards.prototype.getTitle = function (type, subType) {
+        switch (type) {
+            case 1:
+                switch (subType) {
+                    case 1: return _('Infirmary');
+                    case 2: return _('Sacred Place');
+                    case 3: return _('Fortress');
+                }
+            case 2:
+                switch (subType) {
+                    case 1: return _('Herbalist');
+                    case 2: return _('House');
+                    case 3: return _('Prison');
+                }
+            case 3:
+                switch (subType) {
+                    case 1: return _('Forge');
+                    case 2: return _('Terraced Houses');
+                    case 3: return _('Outpost');
+                }
+            case 4:
+                switch (subType) {
+                    case 1: return _('Windmill');
+                    case 2: return _('Sanctuary');
+                    case 3: return _('Bunker');
+                }
+            case 5:
+                switch (subType) {
+                    case 1: return _('Power Station');
+                    case 2: return _('Apartments');
+                    case 3: return _('Radio Tower');
+                }
+            case 6:
+                switch (subType) {
+                    case 1: return _('Water Reservoir');
+                    case 2: return _('Temple');
+                    case 3: return _('Air Base');
+                }
+        }
     };
     CommonProjectCards.prototype.getTooltip = function (type, subType) {
         if (!type) {
             return _('Common projects deck');
         }
-        return 'TODO';
+        return "<h3 class=\"title\">".concat(this.getTitle(type, subType), "</h3><div>").concat(this.getTooltipDescription(type), "</div>");
+    };
+    CommonProjectCards.prototype.getTooltipDescription = function (type) {
+        switch (type) {
+            case 1: return _('Construct a building with at least 2 floors on an area adjacent to an unoccupied area, respecting the indicated land types (1 copy each).');
+            case 2: return _('Construct a building with at least 2 floors on the indicated land type in one of the 6 outside territories (1 copy each).');
+            case 3: return _('Construct 2 buildings with at least 1 floor on 2 adjacent areas of the indicated land type (1 copy each).');
+            case 4: return _('Construct 2 buildings, 1 with at least 2 floors and 1 with at least 1 floor, on 2 adjacent areas, respecting the indicated land type (1 copy each).');
+            case 5: return _('Construct a building with at least 3 floors on the indicated land type in the central territory (1 copy each).');
+            case 6: return _('Construct 3 buildings, 1 with at least 2 floors adjacent to 2 buildings with at least 1 floor respecting the indicated land types (1 copy each).');
+        }
     };
     return CommonProjectCards;
 }());
@@ -205,7 +257,7 @@ var SecretMissionCards = /** @class */ (function () {
             div.dataset.side = '' + side;
             div.dataset.type = '' + card.type;
             div.dataset.subType = '' + card.subType;
-            div.innerHTML = "\n                <div class=\"card-sides\">\n                    <div class=\"card-side front\">\n                        <div id=\"".concat(div.id, "-name\" class=\"name\"></div>\n                    </div>\n                    <div class=\"card-side back\">\n                    </div>\n                </div>\n            ");
+            div.innerHTML = "\n                <div class=\"card-sides\">\n                    <div class=\"card-side front\">\n                        <div id=\"".concat(div.id, "-name\" class=\"name\">").concat(card.type ? this.getTitle(card.type, card.subType) : '', "</div>\n                    </div>\n                    <div class=\"card-side back\">\n                    </div>\n                </div>\n            ");
             document.getElementById(destinationId).appendChild(div);
             if (from) {
                 var fromCardId = document.getElementById(from).children[0].id;
@@ -218,15 +270,53 @@ var SecretMissionCards = /** @class */ (function () {
         }
     };
     SecretMissionCards.prototype.setVisibleInformations = function (div, card) {
-        document.getElementById("".concat(div.id, "-name")).innerHTML = _(card.name);
+        if (card.name) {
+            document.getElementById("".concat(div.id, "-name")).innerHTML = _(card.name);
+        }
         div.dataset.type = '' + card.type;
         div.dataset.subType = '' + card.subType;
+    };
+    SecretMissionCards.prototype.getTitle = function (type, subType) {
+        switch (type) {
+            case 1:
+                switch (subType) {
+                    case 1: return _('Market');
+                    case 2: return _('Sculpture');
+                    case 3: return _('Watchtower');
+                }
+            case 2:
+                switch (subType) {
+                    case 1: return _('Post Office');
+                    case 2: return _('Cabaret');
+                    case 3: return _('Barracks');
+                }
+            case 3:
+                switch (subType) {
+                    case 1: return _('Belfry');
+                    case 2: return _('Observatory');
+                }
+            case 4:
+                return _('Territory Control');
+        }
     };
     SecretMissionCards.prototype.getTooltip = function (type, subType) {
         if (!type) {
             return _('Secret mission');
         }
-        return 'TODO';
+        return "<h3 class=\"title\">".concat(this.getTitle(type, subType), "</h3><div>").concat(this.getTooltipDescription(type, subType), "</div>");
+    };
+    SecretMissionCards.prototype.getTooltipDescription = function (type, subType) {
+        switch (type) {
+            case 1: return _('At the end of the game, each building the player has with at least 2 floors constructed on the indicated land type awards 3 VP (2 copies each).');
+            case 2: return _('At the end of the game, each floor the player has on the indicated type of land awards 1 VP. So, a player who has a building with 3 floors and a building with 2 floors constructed on the indicated land type earns 5 VP (2 copies each).');
+            case 3:
+                switch (subType) {
+                    case 1: return _('At the end of the game, each building the player has with at least 3 floors is worth 7 VP, regardless of the type of land. Only one belfry can be counted per territory (3 copies).');
+                    case 2: return _('At the end of the game, each building the player has with at least 4 floors awards 11 VP, regardless of the type of land. Only one observatory can be counted per territory (2 copies).');
+                }
+                ;
+            case 4: return _('At the end of the game, having the most floors in one of the two territories indicated awards the player 4 VP. Having the most floors in both territories awards 12 VP. The majority must not be shared. Buildings with roofs count for the calculation of majorities (7 different copies).');
+        }
     };
     return SecretMissionCards;
 }());
@@ -439,6 +529,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 var ANIMATION_MS = 500;
 var SCORE_MS = 1500;
+var TITLE_COLOR = ['#6b7123', '#ba782e', '#ab3b2b'];
 var ZOOM_LEVELS = [0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1, 1.25, 1.5];
 var ZOOM_LEVELS_MARGIN = [-300, -166, -100, -60, -33, -14, 0, 20, 33.34];
 var LOCAL_STORAGE_ZOOM_KEY = 'GardenNation-zoom';
@@ -984,14 +1075,42 @@ var GardenNation = /** @class */ (function () {
         dojo.place("<button id=\"gardennation-help-button\">?</button>", 'left-side');
         dojo.connect($('gardennation-help-button'), 'onclick', this, function () { return _this.showHelp(); });
     };
+    GardenNation.prototype.getHelpTripleTitleHtml = function (titles) {
+        return titles.map(function (title, index) { return "<span style=\"color: ".concat(TITLE_COLOR[index], ";\">").concat(title, "</span>"); }).join(' | ');
+    };
     GardenNation.prototype.showHelp = function () {
+        var _this = this;
         var helpDialog = new ebg.popindialog();
         helpDialog.create('gardennationHelpDialog');
-        helpDialog.setTitle(_("Cards help"));
-        var html = "<div id=\"help-popin\">\n            <h1>".concat(_("Specific companions"), "</h1>\n            <div id=\"help-companions\" class=\"help-section\">\n                <h2>").concat(_('The Sketals'), "</h2>\n                <table><tr>\n                <td><div id=\"companion44\" class=\"companion\"></div></td>\n                    <td>").concat(this.commonProjectCards.getTooltip(1, 1), "</td>\n                </tr></table>\n                <h2>Xar\u2019gok</h2>\n                <table><tr>\n                    <td><div id=\"companion10\" class=\"companion\"></div></td>\n                    <td>").concat(this.commonProjectCards.getTooltip(1, 1), "</td>\n                </tr></table>\n                <h2>").concat(_('Kaar and the curse of the black die'), "</h2>\n                <table><tr>\n                    <td><div id=\"companion20\" class=\"companion\"></div></td>\n                    <td>").concat(this.commonProjectCards.getTooltip(1, 1), "</td>\n                </tr></table>\n                <h2>Cromaug</h2>\n                <table><tr>\n                    <td><div id=\"companion41\" class=\"companion\"></div></td>\n                    <td>").concat(this.commonProjectCards.getTooltip(1, 1), "</td>\n                </tr></table>\n            </div>\n        </div>");
+        helpDialog.setTitle(_("Objectives in detail").toUpperCase());
+        var html = "<div id=\"help-popin\">\n            <h1>".concat(_("Common projects"), "</h1>\n            <div id=\"help-common-projects\" class=\"help-section\">\n                <h2>").concat(this.getHelpTripleTitleHtml([2, 1, 3].map(function (subType) { return _this.commonProjectCards.getTitle(1, subType); })), "</h2>\n                <table>\n                    <tr>\n                        <td id=\"help-common-projects-1\">\n                            <div id=\"help-common-projects-1-row-a\"></div>\n                            <div id=\"help-common-projects-1-row-b\"></div>\n                        </td>\n                    </tr>\n                    <tr>\n                        <td>").concat(this.commonProjectCards.getTooltipDescription(1), "</td>\n                    </tr>\n                </table>");
+        [2, 3, 4, 5, 6].forEach(function (type) {
+            return html += "\n                <h2>".concat(_this.getHelpTripleTitleHtml([2, 1, 3].map(function (subType) { return _this.commonProjectCards.getTitle(type, subType); })), "</h2>\n                <table>\n                    <tr>\n                        <td id=\"help-common-projects-").concat(type, "\"></td>\n                    </tr>\n                    <tr>\n                        <td>").concat(_this.commonProjectCards.getTooltipDescription(type), "</td>\n                    </tr>\n                </table>");
+        });
+        html += "\n        <h1>".concat(_("Secret missions"), "</h1>\n        <div id=\"help-secret-missions\" class=\"help-section\">");
+        [2, 1].forEach(function (type) {
+            return html += "\n                <h2>".concat(_this.getHelpTripleTitleHtml([2, 1, 3].map(function (subType) { return _this.secretMissionCards.getTitle(type, subType); })), "</h2>\n                <table>\n                    <tr>\n                        <td id=\"help-secret-missions-").concat(type, "\"></td>\n                    </tr>\n                    <tr>\n                        <td>").concat(_this.secretMissionCards.getTooltipDescription(type, 0), "</td>\n                    </tr>\n                </table>");
+        });
+        [[3, 1], [3, 2], [4, 1]].forEach(function (typeAndSubType) {
+            return html += "\n                <h2>".concat(_this.secretMissionCards.getTitle(typeAndSubType[0], typeAndSubType[1]), "</h2>\n                <table>\n                    <tr>\n                        <td id=\"help-secret-missions-").concat(typeAndSubType[0], "-").concat(typeAndSubType[1], "\"></td>\n                        <td>").concat(_this.secretMissionCards.getTooltipDescription(typeAndSubType[0], typeAndSubType[1]), "</td>\n                    </tr>\n                </table>");
+        });
+        html += "     \n            </div>\n        </div>";
         // Show the dialog
         helpDialog.setContent(html);
         helpDialog.show();
+        ['a', 'b'].forEach(function (line, lineIndex) {
+            return [2, 1, 3].forEach(function (subType) { return _this.commonProjectCards.createMoveOrUpdateCard({ id: 1000 + 1 * 10 + subType + lineIndex * 3, type: 1, subType: subType + lineIndex * 3 }, "help-common-projects-1-row-".concat(line)); });
+        });
+        [2, 3, 4, 5, 6].forEach(function (type) {
+            return [2, 1, 3].forEach(function (subType) { return _this.commonProjectCards.createMoveOrUpdateCard({ id: 1000 + type * 10 + subType, type: type, subType: subType }, "help-common-projects-".concat(type)); });
+        });
+        [1, 2].forEach(function (type) {
+            return [2, 1, 3].forEach(function (subType) { return _this.secretMissionCards.createMoveOrUpdateCard({ id: 1000 + type * 10 + subType, type: type, subType: subType }, "help-secret-missions-".concat(type)); });
+        });
+        [[3, 1], [3, 2], [4, 1]].forEach(function (typeAndSubType) {
+            return _this.secretMissionCards.createMoveOrUpdateCard({ id: 1000 + typeAndSubType[0] * 10 + typeAndSubType[1], type: typeAndSubType[0], subType: typeAndSubType[1] }, "help-secret-missions-".concat(typeAndSubType[0], "-").concat(typeAndSubType[1]));
+        });
+        ;
     };
     ///////////////////////////////////////////////////
     //// Reaction to cometD notifications
