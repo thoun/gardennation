@@ -75,6 +75,8 @@ class GardenNation implements GardenNationGame {
         this.commonProjectCards.createMoveOrUpdateCard({} as any, `common-project-wrapper-0`);
         gamedatas.commonProjects.forEach(commonProject => this.commonProjectCards.createMoveOrUpdateCard(commonProject, `common-project-wrapper-${commonProject.locationArg}`));
 
+        gamedatas.remainingRoofs.forEach(roof => dojo.place(`<div id="building-floor-${roof.id}" class="building-floor" data-color="0"></div>`, `remaining-roofs`));
+
         if (gamedatas.endTurn) {
             this.notif_lastTurn();
         }
@@ -390,7 +392,7 @@ class GardenNation implements GardenNationGame {
                     <span id="inhabitant-counter-${player.id}"></span>
                 </div>
                 <div id="building-floor-counter-wrapper-${player.id}" class="counter">
-                    <div class="icon building-floor" data-color="${player.color}"></div> 
+                    <div class="icon building-floor-counter" data-color="${player.color}"></div> 
                     <span id="building-floor-counter-${player.id}"></span>
                 </div>
                 <div id="ploy-token-counter-wrapper-${player.id}" class="counter">

@@ -26,6 +26,7 @@
                     </div>
                 </div>
                 <div id="common-projects">
+                    <div id="remaining-roofs"></div>
                 </div>
             </div>
         </div>

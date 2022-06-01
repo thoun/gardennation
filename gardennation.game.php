@@ -208,6 +208,8 @@ class GardenNation extends Table {
             $brambleIds[$type] = array_values(array_map(fn($brambleToken) => intval($brambleToken['id']), $brambleTokensDbForType));
         }
         $result['brambleIds'] = $brambleIds;
+
+        $result['remainingRoofs'] = $this->getAvailableBuildingFloors(0);
         
         $result['torticranePosition'] = $this->getGameStateValue(TORTICRANE_POSITION);
 

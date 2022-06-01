@@ -104,3 +104,36 @@ html {
     }
   }
 }
+
+.building-floor {
+  display: inline-block;
+  width: 72px;
+  height: 44px;
+  background: url('img/building-floor.png');
+
+  @each $playerColor in $playerColors {
+      $i: index($playerColors, $playerColor) - 1;
+      &[data-color="#{$playerColor}"] { 
+          background-position-x: #{$i * 100% / 3};
+      }
+  }
+
+  &[data-color="0"] { 
+      width: 75px;
+      height: 63px;
+      background: url('img/roof.png');
+      margin-left: -9px;
+  }
+}
+
+#remaining-roofs {
+  position: absolute;
+  position: absolute;
+  left: 976px;
+  top: 5px;
+  width: 200px;
+
+  .building-floor {
+    margin-left: -35px;
+  }
+}

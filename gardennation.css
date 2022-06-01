@@ -249,29 +249,6 @@
   display: flex;
   flex-direction: column-reverse;
 }
-#board .building .building-floor {
-  width: 72px;
-  height: 44px;
-  background: url("img/building-floor.png");
-}
-#board .building .building-floor[data-color=fcaf26] {
-  background-position-x: 0%;
-}
-#board .building .building-floor[data-color=ab3b2a] {
-  background-position-x: 33.3333333333%;
-}
-#board .building .building-floor[data-color="5f8637"] {
-  background-position-x: 66.6666666667%;
-}
-#board .building .building-floor[data-color="456e96"] {
-  background-position-x: 100%;
-}
-#board .building .building-floor[data-color="0"] {
-  width: 75px;
-  height: 63px;
-  background: url("img/roof.png");
-  margin-left: -9px;
-}
 #board .building .building-floor:not(:first-child) {
   margin-bottom: -12px;
 }
@@ -647,7 +624,7 @@
 .player-board .counters .icon.inhabitant {
   background-position-y: 0%;
 }
-.player-board .counters .icon.building-floor {
+.player-board .counters .icon.building-floor-counter {
   background-position-y: 50%;
 }
 .player-board .counters .icon.ploy-token {
@@ -757,4 +734,40 @@ html {
 }
 .common-project-wrapper[data-number="4"] {
   left: 774px;
+}
+
+.building-floor {
+  display: inline-block;
+  width: 72px;
+  height: 44px;
+  background: url("img/building-floor.png");
+}
+.building-floor[data-color=fcaf26] {
+  background-position-x: 0%;
+}
+.building-floor[data-color=ab3b2a] {
+  background-position-x: 33.3333333333%;
+}
+.building-floor[data-color="5f8637"] {
+  background-position-x: 66.6666666667%;
+}
+.building-floor[data-color="456e96"] {
+  background-position-x: 100%;
+}
+.building-floor[data-color="0"] {
+  width: 75px;
+  height: 63px;
+  background: url("img/roof.png");
+  margin-left: -9px;
+}
+
+#remaining-roofs {
+  position: absolute;
+  position: absolute;
+  left: 976px;
+  top: 5px;
+  width: 200px;
+}
+#remaining-roofs .building-floor {
+  margin-left: -35px;
 }

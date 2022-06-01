@@ -66,6 +66,7 @@ interface GardenNationGamedatas {
     territories: number[][]; // index 0 is the number of the territory, index 1 is the rotation
     map: { [position: number]: AreaSpot };
     brambleIds: number[][];
+    remainingRoofs: BuildingFloor[];
     torticranePosition: number;
     commonProjects: CommonProject[];
     endTurn: boolean;
