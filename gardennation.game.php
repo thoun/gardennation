@@ -166,7 +166,7 @@ class GardenNation extends Table {
         $sql = "SELECT player_id id, player_score score, player_no playerNo, player_inhabitants as inhabitants, player_turn_track as turnTrack, `player_used_ploy` as usedPloy FROM player ";
         $result['players'] = $this->getCollectionFromDb($sql);
   
-        // TODO: Gather all information about current game situation (visible by player $currentPlayerId).
+        // Gather all information about current game situation (visible by player $currentPlayerId).
         
         foreach($result['players'] as $playerId => &$player) {
             $player['playerNo'] = intval($player['playerNo']);

@@ -185,12 +185,6 @@ $area-spacing: 106px;
             @for $i from 1 through 3 {
                 &[data-type="#{$i}"] {
                     background-position: #{$i * 100% / 3};
-
-                    &[data-bramble="true"] {
-                        box-shadow: 1px 1px 3px 2px black;
-                        border-radius: 50%;
-                        z-index: 1;
-                    }
                 }
             }
 

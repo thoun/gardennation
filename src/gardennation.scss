@@ -69,6 +69,7 @@ html {
   background: url('img/land-tokens.png');
   background-size: auto 100%;
   border-radius: 50%;
+  box-shadow: 1px 1px 3px 2px black;
 
   @for $i from 1 through 3 {
       &[data-type="#{$i}"] { 

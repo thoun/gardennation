@@ -328,7 +328,10 @@ var Board = /** @class */ (function () {
                 if (areaPosition > 0) {
                     rotation = (areaPosition + territoryRotation - 1) % 6 + 1;
                 }
-                dojo.place("\n                    <div id=\"area".concat(position, "\" class=\"area\" data-position=\"").concat(position, "\" data-type=\"").concat(type, "\" data-bramble=\"").concat(bramble.toString(), "\" data-cost=\"").concat(cost, "\" data-position=\"").concat(areaPosition, "\" data-rotation=\"").concat(rotation, "\">\n                        <div class=\"land-number\">").concat(cost, "</div>\n                    </div>\n                "), "territory".concat(territoryPosition));
+                var html = "<div id=\"area".concat(position, "\" class=\"area\" data-position=\"").concat(position, "\" data-type=\"").concat(type, "\" data-cost=\"").concat(cost, "\" data-position=\"").concat(areaPosition, "\" data-rotation=\"").concat(rotation, "\">");
+                html += bramble && type ? "<div class=\"bramble-type-token\" data-type=\"2\"><div class=\"land-number\">".concat(cost, "</div></div>") : "<div class=\"land-number\">".concat(cost, "</div>");
+                html += "</div>";
+                dojo.place(html, "territory".concat(territoryPosition));
                 document.getElementById("area".concat(position)).addEventListener('click', function () { return _this.game.onAreaClick(position); });
                 if (mapPosition.building) {
                     _this.setBuilding(position, mapPosition.building);
@@ -378,12 +381,10 @@ var Board = /** @class */ (function () {
         });
     };
     Board.prototype.setBrambleType = function (areaPosition, type, id) {
-        var _a;
         var areaDiv = document.getElementById("area".concat(areaPosition));
         areaDiv.dataset.type = '' + type;
-        // TODO slide with id
         var brambleDiv = document.getElementById("bramble".concat(id));
-        (_a = brambleDiv === null || brambleDiv === void 0 ? void 0 : brambleDiv.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(brambleDiv);
+        slideToObjectAndAttach(this.game, brambleDiv, areaDiv.id);
     };
     Board.prototype.setBuilding = function (areaPosition, building) {
         var _this = this;

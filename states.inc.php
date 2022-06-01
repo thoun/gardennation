@@ -306,7 +306,7 @@ $gameGameStates = [
         "action" => "stEndScore",
         "updateGameProgression" => true,
         "transitions" => [
-            "endGame" => ST_PLAYER_CHOOSE_ACTION/* TODO ST_END_GAME*/,
+            "endGame" => ST_END_GAME,
         ],
     ],
 ];

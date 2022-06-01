@@ -55,11 +55,11 @@ class Board {
                 if (areaPosition > 0) {
                     rotation = (areaPosition + territoryRotation - 1) % 6 + 1;
                 }
-                dojo.place(`
-                    <div id="area${position}" class="area" data-position="${position}" data-type="${type}" data-bramble="${bramble.toString()}" data-cost="${cost}" data-position="${areaPosition}" data-rotation="${rotation}">
-                        <div class="land-number">${cost}</div>
-                    </div>
-                `, `territory${territoryPosition}`);
+
+                let html = `<div id="area${position}" class="area" data-position="${position}" data-type="${type}" data-cost="${cost}" data-position="${areaPosition}" data-rotation="${rotation}">`;
+                html += bramble && type ? `<div class="bramble-type-token" data-type="2"><div class="land-number">${cost}</div></div>` : `<div class="land-number">${cost}</div>`
+                html += `</div>`;
+                dojo.place(html, `territory${territoryPosition}`);
 
                 document.getElementById(`area${position}`).addEventListener('click', () => this.game.onAreaClick(position));
 
@@ -133,9 +133,8 @@ class Board {
     public setBrambleType(areaPosition: number, type: number, id: number) {
         const areaDiv = document.getElementById(`area${areaPosition}`);
         areaDiv.dataset.type = ''+type;
-        // TODO slide with id
         const brambleDiv = document.getElementById(`bramble${id}`);
-        brambleDiv?.parentElement?.removeChild(brambleDiv);
+        slideToObjectAndAttach(this.game, brambleDiv, areaDiv.id);
     }
 
     public setBuilding(areaPosition: number, building: Building | null) {
