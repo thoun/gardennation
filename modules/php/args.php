@@ -78,6 +78,8 @@ trait ArgsTrait {
     }
 
     function argChooseTypeOfLand() {
+        $areaPosition = intval($this->getGameStateValue(SELECTED_AREA_POSITION));
+        
         $brambleAreasDb = $this->getCollectionFromDb("SELECT `type`, count(*) as `count` FROM `bramble_area` WHERE `position` IS NULL GROUP BY `type`");
         $possibleTypes = [];
         foreach([1, 2, 3] as $type) {
@@ -88,6 +90,7 @@ trait ArgsTrait {
         }
     
         return [
+            'selectedPosition' => $areaPosition,
             'possibleTypes' => $possibleTypes,
         ];
     }

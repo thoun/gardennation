@@ -394,7 +394,6 @@ var Board = /** @class */ (function () {
             if (!buildingDiv) {
                 dojo.place("<div id=\"building".concat(areaPosition, "\" class=\"building\"></div>"), "area".concat(areaPosition));
             }
-            console.log(building);
             building.buildingFloors.forEach(function (floor, index) {
                 var buildingFloorDiv = document.getElementById("building-floor-".concat(floor.id));
                 if (!buildingFloorDiv) {
@@ -567,6 +566,9 @@ var GardenNation = /** @class */ (function () {
             case 'chooseRoofDestination':
                 this.onEnteringSelectAreaPosition(args.args);
                 break;
+            case 'chooseTypeOfLand':
+                this.onEnteringChooseTypeOfLand(args.args);
+                break;
             case 'chooseCompletedCommonProject':
                 this.onEnteringChooseCompletedCommonProject(args.args);
                 break;
@@ -586,6 +588,11 @@ var GardenNation = /** @class */ (function () {
     GardenNation.prototype.onEnteringSelectAreaPosition = function (args) {
         if (this.isCurrentPlayerActive()) {
             this.board.activatePossibleAreas(args.possiblePositions, args.selectedPosition);
+        }
+    };
+    GardenNation.prototype.onEnteringChooseTypeOfLand = function (args) {
+        if (this.isCurrentPlayerActive()) {
+            this.board.activatePossibleAreas([], args.selectedPosition);
         }
     };
     GardenNation.prototype.onEnteringChooseCompletedCommonProject = function (args) {
@@ -612,6 +619,7 @@ var GardenNation = /** @class */ (function () {
             case 'buildingInvasion':
             case 'chooseRoofToTransfer':
             case 'chooseRoofDestination':
+            case 'chooseTypeOfLand':
                 this.onLeavingSelectAreaPosition();
                 break;
             case 'chooseCompletedCommonProject':

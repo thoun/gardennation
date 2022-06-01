@@ -404,7 +404,7 @@ trait UtilTrait {
         $this->DbQuery("UPDATE `building_floor` SET `territory_number` = $territoryNumber, `area_position` = $areaPosition WHERE `id` = $buildingFloorId");
         
         $building = $this->getBuildingByAreaPosition($to->areaPosition);
-        
+
         $this->notifyAllPlayers('setBuilding', clienttranslate('${player_name} moved a roof to another building'), [
             'player_name' => $this->getPlayerName($playerId),
             'areaPosition' => $building->areaPosition,
@@ -467,17 +467,31 @@ trait UtilTrait {
         }
     }
 
-    function getAdjacentAreas(array $map, int $areaPosition) {
+    function getAdjacentAreas(array $territories, array $map, int $areaPosition) {
         $territoryNumber = floor($areaPosition / 10);
         $areaNumber = $areaPosition % 10;
         if ($areaNumber % 10 == 0) {
             return array_values(array_filter(array_keys($map), fn($key) => $key != $areaPosition && floor($key / 10) == $territoryNumber));
-        } else {
-            // TODO add adjacent from other territories
+        } else {            
             $adjacentCenter = $territoryNumber * 10;
             $before = $areaNumber == 1 ? $territoryNumber * 10 + 6 : $areaPosition - 1;
             $after = $areaNumber == 6 ? $territoryNumber * 10 + 1 : $areaPosition + 1;
-            return [$before, $after, $adjacentCenter];
+            $adjacentAreas = [$before, $after, $adjacentCenter];
+
+            $currentTerritoryIndex = $this->array_find_index($territories, fn($territory) => $territory[0] == $territoryNumber);
+            $currentTerritoryRotation = $territories[$currentTerritoryIndex][1];
+            $areaPositionUnrotated = ($areaNumber + $currentTerritoryRotation - 1) % 6 + 1;
+            
+            $mappingTerritoryUnrotated = $this->TERRITORY_AREA_INDEX_ADJACENT[$currentTerritoryIndex];
+            if (array_key_exists($areaPositionUnrotated, $mappingTerritoryUnrotated)) {
+                $mappingAreaUnrotated = $mappingTerritoryUnrotated[$areaPositionUnrotated];
+                $adjacentTerritoryIndex = $mappingAreaUnrotated[0];
+                $adjacentTerritoryRotation = $territories[$adjacentTerritoryIndex][1];
+                $adjacentAreaFromAdjacentTerritory = 10 * $territories[$adjacentTerritoryIndex][0] + ($mappingAreaUnrotated[1] - $adjacentTerritoryRotation - 1) % 6 + 1;
+                $adjacentAreas[] = $adjacentAreaFromAdjacentTerritory;
+            }
+
+            return $adjacentAreas;
         }
         
     }
@@ -488,7 +502,7 @@ trait UtilTrait {
                 if ($building->floors < 2 || $map[$building->areaPosition][0] != $commonProject->primaryColor) {
                     return false;
                 }
-                $adjacentAreas = $this->getAdjacentAreas($map, $building->areaPosition);
+                $adjacentAreas = $this->getAdjacentAreas($territories, $map, $building->areaPosition);
                 return $this->array_some($adjacentAreas, fn($adjacentArea) => $map[$adjacentArea][0] == $commonProject->secondaryColor && $this->getBuildingByAreaPosition($adjacentArea) == null);
             case 2:
             case 5:
@@ -504,7 +518,7 @@ trait UtilTrait {
                 if ($building->floors < $minLevel || $map[$building->areaPosition][0] != $commonProject->subType) {
                     return false;
                 }
-                $adjacentAreas = $this->getAdjacentAreas($map, $building->areaPosition);
+                $adjacentAreas = $this->getAdjacentAreas($territories, $map, $building->areaPosition);
                 return $this->array_some($adjacentAreas, function($adjacentArea) use ($map, $playerId, $commonProject) {
                     if ($map[$adjacentArea][0] != $commonProject->subType) {
                         return false;
@@ -517,7 +531,7 @@ trait UtilTrait {
                     return false;
                 }
                 $otherColors = array_values(array_filter([1, 2, 3], fn($key) => $key != $commonProject->subType));                
-                $adjacentAreas = $this->getAdjacentAreas($map, $building->areaPosition);
+                $adjacentAreas = $this->getAdjacentAreas($territories, $map, $building->areaPosition);
                 return $this->array_every($otherColors, fn($otherColor) => $this->array_some($adjacentAreas, function($adjacentArea) use ($map, $playerId, $otherColor) {
                     if ($map[$adjacentArea][0] != $otherColor) {
                         return false;

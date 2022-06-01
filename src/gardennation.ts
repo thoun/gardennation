@@ -119,6 +119,9 @@ class GardenNation implements GardenNationGame {
             case 'chooseRoofDestination':
                 this.onEnteringSelectAreaPosition(args.args);
                 break;
+            case 'chooseTypeOfLand':
+                this.onEnteringChooseTypeOfLand(args.args);
+                break;
             case 'chooseCompletedCommonProject':
                 this.onEnteringChooseCompletedCommonProject(args.args);
                 break;
@@ -140,6 +143,12 @@ class GardenNation implements GardenNationGame {
     private onEnteringSelectAreaPosition(args: EnteringSelectAreaPositionArgs) {
         if ((this as any).isCurrentPlayerActive()) {
             this.board.activatePossibleAreas(args.possiblePositions, args.selectedPosition);
+        }
+    }
+
+    private onEnteringChooseTypeOfLand(args: EnteringSelectAreaPositionArgs) {
+        if ((this as any).isCurrentPlayerActive()) {
+            this.board.activatePossibleAreas([], args.selectedPosition);
         }
     }
 
@@ -170,6 +179,7 @@ class GardenNation implements GardenNationGame {
             case 'buildingInvasion':
             case 'chooseRoofToTransfer':
             case 'chooseRoofDestination':
+            case 'chooseTypeOfLand':
                 this.onLeavingSelectAreaPosition();
                 break;
             case 'chooseCompletedCommonProject':

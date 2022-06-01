@@ -143,7 +143,6 @@ class Board {
             if (!buildingDiv) {
                 dojo.place(`<div id="building${areaPosition}" class="building"></div>`, `area${areaPosition}`);
             }
-            console.log(building);
             building.buildingFloors.forEach((floor, index) => {
                 const buildingFloorDiv = document.getElementById(`building-floor-${floor.id}`);
                 if (!buildingFloorDiv) {

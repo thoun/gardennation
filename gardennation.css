@@ -109,7 +109,7 @@
   position: absolute;
   width: 341.204px;
   height: 394px;
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  pointer-events: none;
 }
 #board .territory[data-position="0"] {
   left: 421.204px;
@@ -149,6 +149,7 @@
   border: 3px dashed transparent;
   background: url("img/land-tokens.png");
   background-size: auto 100%;
+  pointer-events: all;
 }
 #board .territory .area[data-rotation="1"] {
   transform: rotate(-120deg) translateX(106px) rotate(120deg);
@@ -699,6 +700,8 @@ html {
   font-family: "rustico-regular";
   font-size: 15px;
   font-weight: 100;
+  user-select: none;
+  pointer-events: none;
 }
 
 .common-project-wrapper {

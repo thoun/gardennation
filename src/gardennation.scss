@@ -88,6 +88,8 @@ html {
   font-family: 'rustico-regular';
   font-size: 15px;
   font-weight: 100;
+  user-select: none;
+  pointer-events: none;
 }
 
 .common-project-wrapper {

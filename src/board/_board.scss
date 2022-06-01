@@ -132,7 +132,8 @@ $area-spacing: 106px;
         width: $big-hex-width;
         height: $big-hex-height;
         //clip-path: polygon(40% 0%, 100% 25%, 100% 75%, 60% 100%, 0% 75%, 0% 25%);
-        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        //clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        pointer-events: none;
 
         &[data-position="0"] {
             left: $big-hex-x-offset + $big-hex-width;
@@ -175,6 +176,7 @@ $area-spacing: 106px;
             border: 3px dashed transparent;
             background: url('img/land-tokens.png');
             background-size: auto 100%;
+            pointer-events: all;
 
             @for $i from 1 through 6 {
                 &[data-rotation="#{$i}"] { 
