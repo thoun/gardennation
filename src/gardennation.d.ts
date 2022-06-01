@@ -81,6 +81,7 @@ interface GardenNationGame extends Game {
     getPlayerColor(playerId: number): string;
     setTooltip(id: string, html: string): void;
     onCommonProjectClick(card: CommonProject): void;
+    tableHeightChange();
 }
 
 interface EnteringChooseActionArgs {

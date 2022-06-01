@@ -37,7 +37,7 @@ html {
     margin: 5px -5px -5px;
     text-align: center;
     background-color: #9e1a27;
-    color: #fed698;
+    color: #ffeab9;
 }
 
 /* make space between buttons on touch devices */
@@ -50,6 +50,53 @@ html {
 
 .whiteblock {
   background: #FFFFFFAA;
+}
+
+#zoom-wrapper {
+  position: relative;
+
+  #zoom-controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    button {
+      width: 40px;
+      height: 40px;
+      background: url('img/zoom.svg');
+      background-size: auto 220%;
+
+      &:not(.disabled) {
+        cursor: pointer;
+      }
+
+      &.disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    }
+
+    #zoom-in {
+      background-position: 6% 94%;
+    }
+    #zoom-out {
+      background-position: 82% 94%;
+    }
+  }
+
+  #full-table {
+    transform-origin: left top;
+  }
+}
+
+#full-board-wrapper {
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+
+  #full-board {
+    width: 1181px;
+  }
 }
 
 .icon {

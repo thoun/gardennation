@@ -530,8 +530,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 var ANIMATION_MS = 500;
 var SCORE_MS = 1500;
 var TITLE_COLOR = ['#6b7123', '#ba782e', '#ab3b2b'];
-var ZOOM_LEVELS = [0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1, 1.25, 1.5];
-var ZOOM_LEVELS_MARGIN = [-300, -166, -100, -60, -33, -14, 0, 20, 33.34];
+var ZOOM_LEVELS = [0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1];
+var ZOOM_LEVELS_MARGIN = [-300, -166, -100, -60, -33, -14, 0];
 var LOCAL_STORAGE_ZOOM_KEY = 'GardenNation-zoom';
 var isDebug = window.location.host == 'studio.boardgamearena.com';
 var log = isDebug ? console.log.bind(window.console) : function () { };
@@ -546,6 +546,8 @@ var GardenNation = /** @class */ (function () {
         var zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
             this.zoom = Number(zoomStr);
+            document.getElementById('zoom-out').classList.toggle('disabled', this.zoom === ZOOM_LEVELS[0]);
+            document.getElementById('zoom-in').classList.toggle('disabled', this.zoom === ZOOM_LEVELS[ZOOM_LEVELS.length - 1]);
         }
     }
     /*
@@ -586,14 +588,14 @@ var GardenNation = /** @class */ (function () {
         this.addHelp();
         this.setupNotifications();
         this.setupPreferences();
-        /*document.getElementById('zoom-out').addEventListener('click', () => this.zoomOut());
-        document.getElementById('zoom-in').addEventListener('click', () => this.zoomIn());
+        document.getElementById('zoom-out').addEventListener('click', function () { return _this.zoomOut(); });
+        document.getElementById('zoom-in').addEventListener('click', function () { return _this.zoomIn(); });
         if (this.zoom !== 1) {
             this.setZoom(this.zoom);
         }
-        (this as any).onScreenWidthChange = () => {
-            this.setAutoZoom();
-        }*/
+        this.onScreenWidthChange = function () {
+            _this.setAutoZoom();
+        };
         log("Ending game setup");
     };
     ///////////////////////////////////////////////////
@@ -772,11 +774,17 @@ var GardenNation = /** @class */ (function () {
         var div = document.getElementById('full-table');
         div.style.transform = zoom === 1 ? '' : "scale(".concat(zoom, ")");
         div.style.marginRight = "".concat(ZOOM_LEVELS_MARGIN[newIndex], "%");
-        // TODO zoom ? this.tableHeightChange();
+        this.tableHeightChange();
         document.getElementById('board').classList.toggle('hd', this.zoom > 1);
         document.getElementById('zoom-wrapper').style.height = "".concat(div.getBoundingClientRect().height, "px");
         var fullBoardWrapperDiv = document.getElementById('full-board-wrapper');
-        fullBoardWrapperDiv.style.display = fullBoardWrapperDiv.clientWidth < 916 * zoom ? 'block' : 'flex';
+        fullBoardWrapperDiv.style.display = fullBoardWrapperDiv.clientWidth < 1181 * zoom ? 'block' : 'flex';
+    };
+    GardenNation.prototype.tableHeightChange = function () {
+        setTimeout(function () {
+            var div = document.getElementById('full-table');
+            document.getElementById('zoom-wrapper').style.height = "".concat(div.getBoundingClientRect().height, "px");
+        }, 500);
     };
     GardenNation.prototype.zoomIn = function () {
         if (this.zoom === ZOOM_LEVELS[ZOOM_LEVELS.length - 1]) {
@@ -800,7 +808,7 @@ var GardenNation = /** @class */ (function () {
             return;
         }
         var newZoom = this.zoom;
-        while (newZoom > ZOOM_LEVELS[0] && zoomWrapperWidth / newZoom < 916 /* board width */) {
+        while (newZoom > ZOOM_LEVELS[0] && zoomWrapperWidth / newZoom < 1181 /* board width */) {
             newZoom = ZOOM_LEVELS[ZOOM_LEVELS.indexOf(newZoom) - 1];
         }
         this.setZoom(newZoom);

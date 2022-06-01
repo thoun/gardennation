@@ -307,6 +307,12 @@
     transform: unset;
   }
 }
+#playerstables {
+  /*display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  gap: 10px;*/
+}
 #playerstables .whiteblock {
   padding: 0;
 }
@@ -619,7 +625,7 @@
   height: 50px;
   background: #9e1a27;
   font-weight: bold;
-  color: #fed698;
+  color: #ffeab9;
   border-radius: 25px;
   box-shadow: 3px 5px 5px 0px rgb(0, 0, 0);
   cursor: pointer;
@@ -671,7 +677,7 @@
 }
 
 .player-board {
-  background-color: #fed698;
+  background-color: #ffeab9;
 }
 .player-board .counters {
   display: flex;
@@ -717,7 +723,7 @@ html {
   margin: 5px -5px -5px;
   text-align: center;
   background-color: #9e1a27;
-  color: #fed698;
+  color: #ffeab9;
 }
 
 /* make space between buttons on touch devices */
@@ -729,6 +735,46 @@ html {
 }
 .whiteblock {
   background: rgba(255, 255, 255, 0.6666666667);
+}
+
+#zoom-wrapper {
+  position: relative;
+}
+#zoom-wrapper #zoom-controls {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+#zoom-wrapper #zoom-controls button {
+  width: 40px;
+  height: 40px;
+  background: url("img/zoom.svg");
+  background-size: auto 220%;
+}
+#zoom-wrapper #zoom-controls button:not(.disabled) {
+  cursor: pointer;
+}
+#zoom-wrapper #zoom-controls button.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+#zoom-wrapper #zoom-controls #zoom-in {
+  background-position: 6% 94%;
+}
+#zoom-wrapper #zoom-controls #zoom-out {
+  background-position: 82% 94%;
+}
+#zoom-wrapper #full-table {
+  transform-origin: left top;
+}
+
+#full-board-wrapper {
+  display: flex;
+  justify-content: center;
+  overflow: auto;
+}
+#full-board-wrapper #full-board {
+  width: 1181px;
 }
 
 .icon {
