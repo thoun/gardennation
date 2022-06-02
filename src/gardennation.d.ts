@@ -157,6 +157,7 @@ interface NotifSetBuildingArgs {
 
 interface NotifTerritoryControlArgs {
     territoryNumber: number | string;
+    territoryPosition: number;
     buildingsToHighlight: Building[];
 }
 

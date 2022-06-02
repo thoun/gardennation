@@ -164,6 +164,17 @@ $area-spacing: 106px;
             top: $big-hex-y-offset + $big-hex-height * 3 / 4;
         }
 
+        .shadow {
+            position: absolute;
+            width: 428px;
+            height: 454px;
+            background: url('img/territory-shadow.png');
+            opacity: 0;
+            left: -42px;
+            top: -30px;
+            z-index: 1;
+        }
+
         .area {
             position: absolute;
             width: $area-size;
@@ -266,6 +277,23 @@ $area-spacing: 106px;
           }
         }
     }
+
+    @for $i from 0 through 6 {
+        &[data-shadow-on-torticrane-territory="true"][data-torticrane-position="#{$i}"] {
+            .territory[data-position="#{$i}"] {
+                .shadow {
+                    opacity: 0.8;
+                }
+            }
+        }
+        &[data-score-territory="#{$i}"] {
+            .territory[data-position="#{$i}"] {
+                .shadow {
+                    animation: highlight-territory-shadow-animation 1s;
+                }
+            }
+        }
+    }
         
     #torticrane-spot--1 {
         position: absolute;
@@ -342,5 +370,20 @@ $area-spacing: 106px;
   }
   100% { 
     transform: unset;
+  }
+}
+
+@keyframes highlight-territory-shadow-animation {
+  0% { 
+    opacity: 0;
+  }
+  25% { 
+    opacity: 1;
+  }
+  75% { 
+    opacity: 1;
+  }
+  100% { 
+    opacity: 0;
   }
 }

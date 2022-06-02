@@ -16,7 +16,7 @@
     <div id="full-table">
         <div id="full-board-wrapper">
             <div id="full-board">
-                <div id="board">
+                <div id="board" data-shadow-on-torticrane-territory="true">
                     <div id="order-track">
                         <div id="order-track-0" class="order-track-number"></div>
                         <div id="order-track-1" class="order-track-number"></div>

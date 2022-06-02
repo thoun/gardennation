@@ -232,6 +232,8 @@ trait UtilTrait {
     }
 
     function scoreTerritoryControl() {
+        $territories = $this->getTerritories();
+
         for ($i=1; $i<=7; $i++) {
             $playersIds = $this->getTerritoryControlPlayersIds($i);
             
@@ -246,6 +248,7 @@ trait UtilTrait {
                 $args = [
                     'buildingsToHighlight' => $buildingsToHighlight,
                     'territoryNumber' => $i,
+                    'territoryPosition' => $this->array_find_index($territories, fn($territory) => $territory[0] == $i),
                 ];
                 if ($alone) {
                     $args['player_name'] = $this->getPlayerName($playersIds[0]);
@@ -487,7 +490,7 @@ trait UtilTrait {
                 $mappingAreaUnrotated = $mappingTerritoryUnrotated[$areaPositionUnrotated];
                 $adjacentTerritoryIndex = $mappingAreaUnrotated[0];
                 $adjacentTerritoryRotation = $territories[$adjacentTerritoryIndex][1];
-                $adjacentAreaFromAdjacentTerritory = 10 * $territories[$adjacentTerritoryIndex][0] + ($mappingAreaUnrotated[1] - $adjacentTerritoryRotation - 1) % 6 + 1;
+                $adjacentAreaFromAdjacentTerritory = 10 * $territories[$adjacentTerritoryIndex][0] + ($mappingAreaUnrotated[1] - $adjacentTerritoryRotation + 5) % 6 + 1;
                 $adjacentAreas[] = $adjacentAreaFromAdjacentTerritory;
             }
 

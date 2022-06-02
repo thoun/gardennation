@@ -38,6 +38,7 @@ class Board {
             const territoryRotation = territories[territoryPosition][1];
             dojo.place(`
                 <div id="territory${territoryPosition}" class="territory" data-position="${territoryPosition}" data-number="${territoryNumber}" data-rotation="${territoryRotation}">
+                    <div class="shadow"></div>
                     <div class="territory-number top">${territoryNumber}</div>
                     <div class="territory-number left">${territoryNumber}</div>
                     <div class="territory-number right">${territoryNumber}</div>
@@ -70,6 +71,7 @@ class Board {
         });
 
         dojo.place(`<div id="torticrane"></div>`, `torticrane-spot-${torticranePosition}`);
+        document.getElementById(`board`).dataset.torticranePosition = ''+torticranePosition;
     }
 
     private createRemainingBrambleTokens(brambleIds: number[][]) {
@@ -178,5 +180,10 @@ class Board {
         buildingsToHighlight.forEach(building => 
             document.getElementById(`building${building.areaPosition}`)?.classList.add('highlight')
         );
+    }
+
+    moveTorticrane(torticranePosition: number) {
+        slideToObjectAndAttach(this.game, document.getElementById('torticrane'), `torticrane-spot-${torticranePosition}`);
+        document.getElementById(`board`).dataset.torticranePosition = ''+torticranePosition;
     }
 }

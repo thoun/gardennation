@@ -139,6 +139,16 @@
   left: 80px;
   top: 391.5px;
 }
+#board .territory .shadow {
+  position: absolute;
+  width: 428px;
+  height: 454px;
+  background: url("img/territory-shadow.png");
+  opacity: 0;
+  left: -42px;
+  top: -30px;
+  z-index: 1;
+}
 #board .territory .area {
   position: absolute;
   width: 100px;
@@ -241,6 +251,48 @@
   right: 10px;
   bottom: 108px;
 }
+#board[data-shadow-on-torticrane-territory=true][data-torticrane-position="0"] .territory[data-position="0"] .shadow {
+  opacity: 0.8;
+}
+#board[data-score-territory="0"] .territory[data-position="0"] .shadow {
+  animation: highlight-territory-shadow-animation 1s;
+}
+#board[data-shadow-on-torticrane-territory=true][data-torticrane-position="1"] .territory[data-position="1"] .shadow {
+  opacity: 0.8;
+}
+#board[data-score-territory="1"] .territory[data-position="1"] .shadow {
+  animation: highlight-territory-shadow-animation 1s;
+}
+#board[data-shadow-on-torticrane-territory=true][data-torticrane-position="2"] .territory[data-position="2"] .shadow {
+  opacity: 0.8;
+}
+#board[data-score-territory="2"] .territory[data-position="2"] .shadow {
+  animation: highlight-territory-shadow-animation 1s;
+}
+#board[data-shadow-on-torticrane-territory=true][data-torticrane-position="3"] .territory[data-position="3"] .shadow {
+  opacity: 0.8;
+}
+#board[data-score-territory="3"] .territory[data-position="3"] .shadow {
+  animation: highlight-territory-shadow-animation 1s;
+}
+#board[data-shadow-on-torticrane-territory=true][data-torticrane-position="4"] .territory[data-position="4"] .shadow {
+  opacity: 0.8;
+}
+#board[data-score-territory="4"] .territory[data-position="4"] .shadow {
+  animation: highlight-territory-shadow-animation 1s;
+}
+#board[data-shadow-on-torticrane-territory=true][data-torticrane-position="5"] .territory[data-position="5"] .shadow {
+  opacity: 0.8;
+}
+#board[data-score-territory="5"] .territory[data-position="5"] .shadow {
+  animation: highlight-territory-shadow-animation 1s;
+}
+#board[data-shadow-on-torticrane-territory=true][data-torticrane-position="6"] .territory[data-position="6"] .shadow {
+  opacity: 0.8;
+}
+#board[data-score-territory="6"] .territory[data-position="6"] .shadow {
+  animation: highlight-territory-shadow-animation 1s;
+}
 #board #torticrane-spot--1 {
   position: absolute;
   bottom: 68px;
@@ -305,6 +357,20 @@
   }
   100% {
     transform: unset;
+  }
+}
+@keyframes highlight-territory-shadow-animation {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
   }
 }
 #playerstables {

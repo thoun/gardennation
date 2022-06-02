@@ -347,7 +347,7 @@ var Board = /** @class */ (function () {
         [0, 1, 2, 3, 4, 5, 6].forEach(function (territoryPosition) {
             var territoryNumber = territories[territoryPosition][0];
             var territoryRotation = territories[territoryPosition][1];
-            dojo.place("\n                <div id=\"territory".concat(territoryPosition, "\" class=\"territory\" data-position=\"").concat(territoryPosition, "\" data-number=\"").concat(territoryNumber, "\" data-rotation=\"").concat(territoryRotation, "\">\n                    <div class=\"territory-number top\">").concat(territoryNumber, "</div>\n                    <div class=\"territory-number left\">").concat(territoryNumber, "</div>\n                    <div class=\"territory-number right\">").concat(territoryNumber, "</div>\n                    <div id=\"torticrane-spot-").concat(territoryPosition, "\" class=\"torticrane-spot\"></div>\n                </div>\n            "), "board");
+            dojo.place("\n                <div id=\"territory".concat(territoryPosition, "\" class=\"territory\" data-position=\"").concat(territoryPosition, "\" data-number=\"").concat(territoryNumber, "\" data-rotation=\"").concat(territoryRotation, "\">\n                    <div class=\"shadow\"></div>\n                    <div class=\"territory-number top\">").concat(territoryNumber, "</div>\n                    <div class=\"territory-number left\">").concat(territoryNumber, "</div>\n                    <div class=\"territory-number right\">").concat(territoryNumber, "</div>\n                    <div id=\"torticrane-spot-").concat(territoryPosition, "\" class=\"torticrane-spot\"></div>\n                </div>\n            "), "board");
             [0, 1, 2, 3, 4, 5, 6].forEach(function (areaPosition) {
                 var position = territoryNumber * 10 + areaPosition;
                 var mapPosition = map[position];
@@ -369,6 +369,7 @@ var Board = /** @class */ (function () {
             });
         });
         dojo.place("<div id=\"torticrane\"></div>", "torticrane-spot-".concat(torticranePosition));
+        document.getElementById("board").dataset.torticranePosition = '' + torticranePosition;
     }
     Board.prototype.createRemainingBrambleTokens = function (brambleIds) {
         dojo.place("\n        <div id=\"remaining-bramble-tokens\" class=\"whiteblock\">\n            <div class=\"title\">".concat(_('Remaining bramble tokens'), "</div>\n            <div id=\"remaining-bramble-tokens-container-1\" class=\"container\"></div>\n            <div id=\"remaining-bramble-tokens-container-2\" class=\"container\"></div>\n            <div id=\"remaining-bramble-tokens-container-3\" class=\"container\"></div>\n            </div>\n        </div>\n        "), "board");
@@ -458,6 +459,10 @@ var Board = /** @class */ (function () {
     };
     Board.prototype.highlightBuilding = function (buildingsToHighlight) {
         buildingsToHighlight.forEach(function (building) { var _a; return (_a = document.getElementById("building".concat(building.areaPosition))) === null || _a === void 0 ? void 0 : _a.classList.add('highlight'); });
+    };
+    Board.prototype.moveTorticrane = function (torticranePosition) {
+        slideToObjectAndAttach(this.game, document.getElementById('torticrane'), "torticrane-spot-".concat(torticranePosition));
+        document.getElementById("board").dataset.torticranePosition = '' + torticranePosition;
     };
     return Board;
 }());
@@ -627,6 +632,7 @@ var GardenNation = /** @class */ (function () {
                 break;
             case 'endRound':
                 Array.from(document.querySelectorAll(".building.highlight")).forEach(function (elem) { return elem.classList.remove('highlight'); });
+                document.getElementById('board').dataset.shadowOnTorticraneTerritory = 'false';
             case 'endScore':
                 this.onEnteringShowScore();
                 break;
@@ -683,6 +689,9 @@ var GardenNation = /** @class */ (function () {
             case 'chooseCompletedCommonProject':
                 this.onLeavingChooseCompletedCommonProject();
                 break;
+            case 'endRound':
+                document.getElementById('board').dataset.scoreTerritory = '';
+                document.getElementById('board').dataset.shadowOnTorticraneTerritory = 'true';
         }
     };
     GardenNation.prototype.onLeavingSelectAreaPosition = function () {
@@ -1164,7 +1173,7 @@ var GardenNation = /** @class */ (function () {
         this.setInhabitants(notif.args.playerId, notif.args.newInhabitants);
     };
     GardenNation.prototype.notif_moveTorticrane = function (notif) {
-        slideToObjectAndAttach(this, document.getElementById('torticrane'), "torticrane-spot-".concat(notif.args.torticranePosition));
+        this.board.moveTorticrane(notif.args.torticranePosition);
     };
     GardenNation.prototype.notif_setPlayerOrder = function (notif) {
         slideToObjectAndAttach(this, document.getElementById("order-token-".concat(notif.args.playerId)), "order-track-".concat(notif.args.order));
@@ -1180,6 +1189,7 @@ var GardenNation = /** @class */ (function () {
         });
     };
     GardenNation.prototype.notif_territoryControl = function (notif) {
+        document.getElementById('board').dataset.scoreTerritory = '' + notif.args.territoryPosition;
         this.board.highlightBuilding(notif.args.buildingsToHighlight);
     };
     GardenNation.prototype.notif_ployTokenUsed = function (notif) {

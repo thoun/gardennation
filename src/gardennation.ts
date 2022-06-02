@@ -134,6 +134,7 @@ class GardenNation implements GardenNationGame {
 
             case 'endRound':
                 Array.from(document.querySelectorAll(`.building.highlight`)).forEach(elem => elem.classList.remove('highlight'));
+                document.getElementById('board').dataset.shadowOnTorticraneTerritory = 'false';
             case 'endScore':
                 this.onEnteringShowScore();
                 break;
@@ -197,6 +198,9 @@ class GardenNation implements GardenNationGame {
             case 'chooseCompletedCommonProject':
                 this.onLeavingChooseCompletedCommonProject();
                 break;
+            case 'endRound':
+                document.getElementById('board').dataset.scoreTerritory = '';
+                document.getElementById('board').dataset.shadowOnTorticraneTerritory = 'true';
         }
     }
 
@@ -829,7 +833,7 @@ class GardenNation implements GardenNationGame {
     }
 
     notif_moveTorticrane(notif: Notif<NotifMoveTorticraneArgs>) {
-        slideToObjectAndAttach(this, document.getElementById('torticrane'), `torticrane-spot-${notif.args.torticranePosition}`);
+        this.board.moveTorticrane(notif.args.torticranePosition);
     }
 
     notif_setPlayerOrder(notif: Notif<NotifSetPlayerOrderArgs>) {
@@ -850,6 +854,7 @@ class GardenNation implements GardenNationGame {
     }
 
     notif_territoryControl(notif: Notif<NotifTerritoryControlArgs>) {
+        document.getElementById('board').dataset.scoreTerritory = ''+notif.args.territoryPosition;
         this.board.highlightBuilding(notif.args.buildingsToHighlight);
     }
 
