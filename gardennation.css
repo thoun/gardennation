@@ -433,6 +433,15 @@
 #playerstables .player-table .player-score-board .meeple-marker.color-blind[data-player-no="4"]::after {
   content: "◆";
 }
+#playerstables .player-table .remaining-building-floors {
+  width: 112px;
+  align-self: flex-start;
+  margin-left: 20px;
+  margin-top: 2px;
+}
+#playerstables .player-table .remaining-building-floors .building-floor {
+  margin-left: -35px;
+}
 #playerstables .player-table .player-secret-missions-wrapper {
   display: inline-block;
 }
@@ -917,7 +926,6 @@ html {
 }
 
 #remaining-roofs {
-  position: absolute;
   position: absolute;
   left: 976px;
   top: 5px;

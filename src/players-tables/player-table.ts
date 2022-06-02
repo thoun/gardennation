@@ -13,6 +13,7 @@ class PlayerTable {
                 <div id="player-table-${this.playerId}-name" class="player-name" style="color: #${player.color};">${player.name}</div>
                 <div id="player-table-${this.playerId}-meeple-marker" class="meeple-marker" data-color="${player.color}"></div>
             </div>
+            <div id="player-table-${this.playerId}-remaining-building-floors" class="remaining-building-floors"></div>
             <div id="player-table-${this.playerId}-secret-missions-wrapper" class="player-secret-missions-wrapper">
                 <div class="title">${_('Secret missions')}</div>
                 <div id="player-table-${this.playerId}-secret-missions" class="player-secret-missions">
@@ -44,6 +45,8 @@ class PlayerTable {
                 this.setPloyTokenUsed(type);
             }
         });
+
+        player.buildingFloors.forEach(floor => dojo.place(`<div id="building-floor-${floor.id}" class="building-floor" data-player-id="${floor.playerId}" data-color="${player.color}"></div>`, `player-table-${this.playerId}-remaining-building-floors`));
     
         this.setInhabitants(player.inhabitants);
 
@@ -55,7 +58,7 @@ class PlayerTable {
         const cases = Math.min(points, 40);
 
         const top = points <= 20 ? 0 : 44;
-        const left = (cases % 20) * 29.5;
+        const left = (points <= 20 ? cases : cases - 20) * 29.5;
 
         return [-17 + left, 203 + top];
     }

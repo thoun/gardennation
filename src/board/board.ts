@@ -150,7 +150,7 @@ class Board {
     }
 
     public setBuilding(areaPosition: number, building: Building | null) {
-        const buildingDiv = document.getElementById(`building${areaPosition}`);
+        const buildingDiv = document.getElementById(`building${areaPosition}`) as HTMLDivElement;
         if (building) {
             if (!buildingDiv) {
                 dojo.place(`<div id="building${areaPosition}" class="building"></div>`, `area${areaPosition}`);
@@ -158,7 +158,7 @@ class Board {
             building.buildingFloors.forEach((floor, index) => {
                 const buildingFloorDiv = document.getElementById(`building-floor-${floor.id}`);
                 if (!buildingFloorDiv) {
-                    dojo.place(`<div id="building-floor-${floor.id}" class="building-floor" data-color="${floor.playerId ? this.game.getPlayerColor(floor.playerId): 0}" style="z-index: ${index}"></div>`, `building${areaPosition}`);
+                    dojo.place(`<div id="building-floor-${floor.id}" class="building-floor" data-player-id="${floor.playerId}" data-color="${floor.playerId ? this.game.getPlayerColor(floor.playerId): 0}" style="z-index: ${index}"></div>`, `building${areaPosition}`);
                 } else {
                     const currentAreaDiv = buildingFloorDiv.closest('.area') as HTMLDivElement;
                     if (!currentAreaDiv || currentAreaDiv.id != `area${areaPosition}`) {
@@ -168,6 +168,8 @@ class Board {
                 }
             });
         } else {
+            Array.from(buildingDiv.children).forEach((child: HTMLDivElement) => 
+                slideToObjectAndAttach(this.game, child, Number(child.dataset.playerId) ? `player-table-${child.dataset.playerId}-remaining-building-floors` : `remaining-roofs`));
             buildingDiv?.parentElement?.removeChild(buildingDiv);
         }
     }

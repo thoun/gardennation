@@ -125,6 +125,17 @@
             }
         }  
 
+        .remaining-building-floors {
+          width: 112px;
+          align-self: flex-start;
+          margin-left: 20px;
+          margin-top: 2px;
+        
+          .building-floor {
+            margin-left: -35px;
+          }
+        }
+
         .player-secret-missions-wrapper {
           display: inline-block;
         }

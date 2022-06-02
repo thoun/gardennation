@@ -79,7 +79,7 @@ class GardenNation implements GardenNationGame {
         this.commonProjectCards.createMoveOrUpdateCard({} as any, `common-project-wrapper-0`);
         gamedatas.commonProjects.forEach(commonProject => this.commonProjectCards.createMoveOrUpdateCard(commonProject, `common-project-wrapper-${commonProject.locationArg}`));
 
-        gamedatas.remainingRoofs.forEach(roof => dojo.place(`<div id="building-floor-${roof.id}" class="building-floor" data-color="0"></div>`, `remaining-roofs`));
+        gamedatas.remainingRoofs.forEach(roof => dojo.place(`<div id="building-floor-${roof.id}" class="building-floor" data-player-id="0" data-color="0"></div>`, `remaining-roofs`));
 
         if (gamedatas.endTurn) {
             this.notif_lastTurn();
@@ -842,6 +842,11 @@ class GardenNation implements GardenNationGame {
 
     notif_setBuilding(notif: Notif<NotifSetBuildingArgs>) {
         this.board.setBuilding(notif.args.areaPosition, notif.args.building);
+        Object.values(this.gamedatas.players).forEach(player => 
+            this.buildingFloorCounters[Number(player.id)].toValue(
+                document.getElementById(`player-table-${player.id}-remaining-building-floors`).childElementCount
+            )
+        );
     }
 
     notif_territoryControl(notif: Notif<NotifTerritoryControlArgs>) {

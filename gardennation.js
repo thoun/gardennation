@@ -438,7 +438,7 @@ var Board = /** @class */ (function () {
             building.buildingFloors.forEach(function (floor, index) {
                 var buildingFloorDiv = document.getElementById("building-floor-".concat(floor.id));
                 if (!buildingFloorDiv) {
-                    dojo.place("<div id=\"building-floor-".concat(floor.id, "\" class=\"building-floor\" data-color=\"").concat(floor.playerId ? _this.game.getPlayerColor(floor.playerId) : 0, "\" style=\"z-index: ").concat(index, "\"></div>"), "building".concat(areaPosition));
+                    dojo.place("<div id=\"building-floor-".concat(floor.id, "\" class=\"building-floor\" data-player-id=\"").concat(floor.playerId, "\" data-color=\"").concat(floor.playerId ? _this.game.getPlayerColor(floor.playerId) : 0, "\" style=\"z-index: ").concat(index, "\"></div>"), "building".concat(areaPosition));
                 }
                 else {
                     var currentAreaDiv = buildingFloorDiv.closest('.area');
@@ -450,6 +450,9 @@ var Board = /** @class */ (function () {
             });
         }
         else {
+            Array.from(buildingDiv.children).forEach(function (child) {
+                return slideToObjectAndAttach(_this.game, child, Number(child.dataset.playerId) ? "player-table-".concat(child.dataset.playerId, "-remaining-building-floors") : "remaining-roofs");
+            });
             (_a = buildingDiv === null || buildingDiv === void 0 ? void 0 : buildingDiv.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(buildingDiv);
         }
     };
@@ -463,7 +466,7 @@ var PlayerTable = /** @class */ (function () {
         var _this = this;
         this.game = game;
         this.playerId = Number(player.id);
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n                <div id=\"player-table-").concat(this.playerId, "-meeple-marker\" class=\"meeple-marker\" data-color=\"").concat(player.color, "\"></div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-secret-missions-wrapper\" class=\"player-secret-missions-wrapper\">\n                <div class=\"title\">").concat(_('Secret missions'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-secret-missions\" class=\"player-secret-missions\">\n                </div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-common-projects-wrapper\" class=\"player-common-projects-wrapper\">\n                <div id=\"player-table-").concat(this.playerId, "-common-projects-title\" class=\"title ").concat(player.commonProjects.length ? '' : 'hidden', "\">").concat(_('Completed common projects'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-common-projects\" class=\"player-common-projects\">\n                </div>\n            </div>\n        </div>");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n                <div id=\"player-table-").concat(this.playerId, "-meeple-marker\" class=\"meeple-marker\" data-color=\"").concat(player.color, "\"></div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-remaining-building-floors\" class=\"remaining-building-floors\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-secret-missions-wrapper\" class=\"player-secret-missions-wrapper\">\n                <div class=\"title\">").concat(_('Secret missions'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-secret-missions\" class=\"player-secret-missions\">\n                </div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-common-projects-wrapper\" class=\"player-common-projects-wrapper\">\n                <div id=\"player-table-").concat(this.playerId, "-common-projects-title\" class=\"title ").concat(player.commonProjects.length ? '' : 'hidden', "\">").concat(_('Completed common projects'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-common-projects\" class=\"player-common-projects\">\n                </div>\n            </div>\n        </div>");
         dojo.place(html, 'playerstables');
         [0, 1, 2, 3].forEach(function (type) {
             var html = "\n            <div id=\"player-table-".concat(_this.playerId, "-ploy-tokens-container-").concat(type, "\" class=\"ploy-tokens-container\" data-type=\"").concat(type, "\">");
@@ -480,6 +483,7 @@ var PlayerTable = /** @class */ (function () {
                 _this.setPloyTokenUsed(type);
             }
         });
+        player.buildingFloors.forEach(function (floor) { return dojo.place("<div id=\"building-floor-".concat(floor.id, "\" class=\"building-floor\" data-player-id=\"").concat(floor.playerId, "\" data-color=\"").concat(player.color, "\"></div>"), "player-table-".concat(_this.playerId, "-remaining-building-floors")); });
         this.setInhabitants(player.inhabitants);
         this.setCommonProjects(player.commonProjects);
         this.setSecretMissions(player.secretMissions);
@@ -487,7 +491,7 @@ var PlayerTable = /** @class */ (function () {
     PlayerTable.prototype.getPointsCoordinates = function (points) {
         var cases = Math.min(points, 40);
         var top = points <= 20 ? 0 : 44;
-        var left = (cases % 20) * 29.5;
+        var left = (points <= 20 ? cases : cases - 20) * 29.5;
         return [-17 + left, 203 + top];
     };
     PlayerTable.prototype.setInhabitants = function (points) {
@@ -578,7 +582,7 @@ var GardenNation = /** @class */ (function () {
         });
         this.commonProjectCards.createMoveOrUpdateCard({}, "common-project-wrapper-0");
         gamedatas.commonProjects.forEach(function (commonProject) { return _this.commonProjectCards.createMoveOrUpdateCard(commonProject, "common-project-wrapper-".concat(commonProject.locationArg)); });
-        gamedatas.remainingRoofs.forEach(function (roof) { return dojo.place("<div id=\"building-floor-".concat(roof.id, "\" class=\"building-floor\" data-color=\"0\"></div>"), "remaining-roofs"); });
+        gamedatas.remainingRoofs.forEach(function (roof) { return dojo.place("<div id=\"building-floor-".concat(roof.id, "\" class=\"building-floor\" data-player-id=\"0\" data-color=\"0\"></div>"), "remaining-roofs"); });
         if (gamedatas.endTurn) {
             this.notif_lastTurn();
         }
@@ -1169,7 +1173,11 @@ var GardenNation = /** @class */ (function () {
         this.board.setBrambleType(notif.args.areaPosition, notif.args.type, notif.args.brambleId);
     };
     GardenNation.prototype.notif_setBuilding = function (notif) {
+        var _this = this;
         this.board.setBuilding(notif.args.areaPosition, notif.args.building);
+        Object.values(this.gamedatas.players).forEach(function (player) {
+            return _this.buildingFloorCounters[Number(player.id)].toValue(document.getElementById("player-table-".concat(player.id, "-remaining-building-floors")).childElementCount);
+        });
     };
     GardenNation.prototype.notif_territoryControl = function (notif) {
         this.board.highlightBuilding(notif.args.buildingsToHighlight);
