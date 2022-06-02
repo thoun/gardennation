@@ -233,6 +233,7 @@ $area-spacing: 106px;
             }
             &.selected {
                 border-color: blue;
+                border-style: solid;
 
                 .bramble-type-token {
                     box-shadow: none;
@@ -324,6 +325,7 @@ $area-spacing: 106px;
         }
         &.highlight {            
             animation: highlight-building-animation 1s;
+            z-index: 30;
         }
     }
     #remaining-bramble-tokens {
@@ -366,7 +368,7 @@ $area-spacing: 106px;
     transform: unset;
   }
   50% { 
-    transform: scale(1.5);
+    transform: scale(2);
   }
   100% { 
     transform: unset;

@@ -48,7 +48,7 @@ trait ActionTrait {
         }
 
         if ($area[0] == 0) {
-            $this->setGameStateValue(BRAMBLE_CHOICE_AREA, $areaPosition);
+            $this->setGameStateValue(SELECTED_AREA_POSITION, $areaPosition);
             $this->gamestate->nextState('chooseTypeOfLand');
             return true;
         }
@@ -158,7 +158,7 @@ trait ActionTrait {
         
         $playerId = intval($this->getActivePlayerId());
         
-        $areaPosition = intval($this->getGameStateValue(BRAMBLE_CHOICE_AREA));
+        $areaPosition = intval($this->getGameStateValue(SELECTED_AREA_POSITION));
         
         $id = intval($this->getUniqueValueFromDB("SELECT max(`id`) FROM `bramble_area` WHERE `position` IS NULL AND `type` = $typeOfLand"));
         $this->DbQuery("UPDATE `bramble_area` SET `position` = $areaPosition WHERE `id` = $id");

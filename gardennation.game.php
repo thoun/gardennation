@@ -47,8 +47,7 @@ class GardenNation extends Table {
             PLAYED_ACTIONS => 11,
             PLOY_USED => 12,
             TORTICRANE_POSITION => 13,
-            BRAMBLE_CHOICE_AREA => 14,
-            SELECTED_AREA_POSITION => 15,
+            SELECTED_AREA_POSITION => 14,
         ]);
 		
         $this->commonProjects = $this->getNew("module.common.deck");

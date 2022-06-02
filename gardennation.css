@@ -216,6 +216,7 @@
 }
 #board .territory .area.selected {
   border-color: blue;
+  border-style: solid;
 }
 #board .territory .area.selected .bramble-type-token {
   box-shadow: none;
@@ -317,6 +318,7 @@
 }
 #board .building.highlight {
   animation: highlight-building-animation 1s;
+  z-index: 30;
 }
 #board #remaining-bramble-tokens {
   position: absolute;
@@ -353,7 +355,7 @@
     transform: unset;
   }
   50% {
-    transform: scale(1.5);
+    transform: scale(2);
   }
   100% {
     transform: unset;
