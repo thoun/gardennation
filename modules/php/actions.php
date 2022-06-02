@@ -76,65 +76,23 @@ trait ActionTrait {
 
         return false;
 
-        /*$allPlacedRoutes = $this->getPlacedRoutes();
-        $playerPlacedRoutes = array_filter($allPlacedRoutes, fn($placedRoute) => $placedRoute->playerId === $playerId);
-        $currentPosition = $this->getCurrentPosition($playerId, $playerPlacedRoutes);
-        $from = $currentPosition == $routeFrom ? $routeFrom : $routeTo;
-        $to = $currentPosition == $routeFrom ? $routeTo : $routeFrom;
-        $turnShape = $this->getPlayerTurnShape($playerId);
-        $possibleRoutes = $this->getPossibleRoutes($playerId, $this->getMap(), $turnShape, $currentPosition, $allPlacedRoutes);
-        $possibleRoute = $this->array_find($possibleRoutes, fn($route) => $this->isSameRoute($route, $from, $to));
-
-        if ($possibleRoute == null) {
-            throw new BgaUserException("Invalid route");
-        }
-
-        $round = $this->getRoundNumber();
-        $useTurnZone = $possibleRoute->useTurnZone ? 1 : 0;
-        $this->DbQuery("INSERT INTO placed_routes(`player_id`, `from`, `to`, `round`, `use_turn_zone`, `traffic_jam`) VALUES ($playerId, $from, $to, $round, $useTurnZone, $possibleRoute->trafficJam)");
-
-        $mapElements = $this->MAP_POSITIONS[$this->getMap()][$to];
-        $zones = array_map(fn($element) => floor($element / 10), $mapElements);
-        $zones = array_unique(array_filter($zones, fn($zone) => $zone >=2 && $zone <= 5));
-        if ($useTurnZone) {            
-            $zones[] = 6;
-        }
-        if ($possibleRoute->trafficJam > 0) {            
-            $zones[] = 7;
-        }
-
-        $logElements = array_values(array_filter($mapElements, fn($element) => in_array($element, [0, 20, 30, 32, 40, 41, 42, 50, 51])));
-        
-        $this->notifyAllPlayers('placedRoute', clienttranslate('${player_name} places a route marker to ${elements}'), [
-            'playerId' => $playerId,
-            'player_name' => $this->getPlayerName($playerId),
-            'marker' => PlacedRoute::forNotif($from, $to, false),
-            'zones' => $zones,
-            'position' => $to,
-            'elements' => $logElements,
-        ]);
-
-        if ($possibleRoute->isElimination) {
-            $this->setGameStateValue(ELIMINATE_PLAYER, $playerId);
-            $this->applyConfirmTurn($playerId);
-        }
-
-        $this->notifUpdateScoreSheet($playerId);
-
-        //self::incStat(1, 'placedRoutes');
-        //self::incStat(1, 'placedRoutes', $playerId);*/
     }
 
     public function constructBuilding(int $areaPosition) {
         self::checkAction('constructBuilding');
+        $playerId = intval($this->getActivePlayerId());
 
         if (!$this->applyConstructBuildingFloor($areaPosition, false)) {
+            $this->incStat(1, 'constructedFloors');
+            $this->incStat(1, 'constructedFloors', $playerId);
+            $this->incStat(1, 'actionsNumber');
+            $this->incStat(1, 'actionsNumber', $playerId);
+
             // not redirected to area choice
             $this->moveTorticrane($areaPosition);
         
             // check objectives if there is at least 1 remaining roof
             if (count($this->getAvailableBuildingFloors(0)) > 0) {
-                $playerId = intval($this->getActivePlayerId());
                 
                 if ($this->checkCompletedCommonProjects($playerId, $areaPosition)) {
                     // redirected to choose common project
@@ -179,6 +137,10 @@ trait ActionTrait {
         }
         
         $this->applyAbandonBuilding($building, false);
+        $this->incStat(1, 'abandonedBuildings');
+        $this->incStat(1, 'abandonedBuildings', $playerId);
+        $this->incStat(1, 'actionsNumber');
+        $this->incStat(1, 'actionsNumber', $playerId);
 
         $this->moveTorticrane($areaPosition);
 
@@ -213,6 +175,8 @@ trait ActionTrait {
         ]);
 
         $this->applyConstructBuildingFloor($areaPosition, false);
+        $this->incStat(1, 'brambleAreasPlaced');
+        $this->incStat(1, 'brambleAreasPlaced', $playerId);
 
         $this->moveTorticrane($areaPosition);
 
@@ -244,6 +208,8 @@ trait ActionTrait {
 
     public function chooseNextPlayer(int $playerId) {
         self::checkAction('chooseNextPlayer');
+
+        $this->giveExtraTime($this->getActivePlayerId()); // not $playerId !
 
         if (!in_array($playerId, $this->argChooseNextPlayer()['possibleNextPlayers'])) {
             throw new BgaUserException("Invalid player choice");
@@ -278,6 +244,9 @@ trait ActionTrait {
 
     public function strategicMovement(int $territoryNumber) {
         self::checkAction('strategicMovement');
+        
+        $playerId = intval($this->getActivePlayerId());
+        $this->giveExtraTime($playerId);
 
         $args = $this->argStrategicMovement();
         if (!in_array($territoryNumber, [$args['down'], $args['up']])) {
@@ -287,10 +256,15 @@ trait ActionTrait {
         $territories = $this->getTerritories();
         $newTerritoryPosition = $this->array_find_index($territories, fn($territory) => $territory[0] == $territoryNumber);
 
-        $this->setPloyTokenUsed($this->getActivePlayerId(), 2);
+        $this->setPloyTokenUsed($playerId, 2);
+
+        $this->incStat(1, 'usedPloys');
+        $this->incStat(1, 'usedPloys', $playerId);
+        $this->incStat(1, 'usedPloysStrategicMovement');
+        $this->incStat(1, 'usedPloysStrategicMovement', $playerId);
 
         $this->notifyAllPlayers('log', clienttranslate('${player_name} makes a strategic movement to go to territory ${number}'), [
-            'player_name' => $this->getPlayerName($this->getActivePlayerId()),
+            'player_name' => $this->getPlayerName($playerId),
             'number' => $territoryNumber,
         ]);
 
@@ -318,12 +292,18 @@ trait ActionTrait {
         self::checkAction('chooseRoofDestination');
         
         $playerId = intval($this->getActivePlayerId());
+        $this->giveExtraTime($playerId);
         
         $fromBuilding = $this->getBuildingByAreaPosition($this->getGameStateValue(SELECTED_AREA_POSITION));
         $toBuilding = $this->getBuildingByAreaPosition($areaPosition);
         $this->moveRoof($playerId, $fromBuilding, $toBuilding);
 
         $this->setPloyTokenUsed($this->getActivePlayerId(), 3);
+
+        $this->incStat(1, 'usedPloys');
+        $this->incStat(1, 'usedPloys', $playerId);
+        $this->incStat(1, 'usedPloysRoofTransfer');
+        $this->incStat(1, 'usedPloysRoofTransfer', $playerId);
 
         $this->setGameStateValue(PLOY_USED, 1);
         $this->gamestate->nextState('endPloy');
@@ -347,6 +327,13 @@ trait ActionTrait {
 
         $this->setPloyTokenUsed($this->getActivePlayerId(), 1);
 
+        $this->incStat(1, 'actionsNumber');
+        $this->incStat(1, 'actionsNumber', $playerId);
+        $this->incStat(1, 'usedPloys');
+        $this->incStat(1, 'usedPloys', $playerId);
+        $this->incStat(1, 'usedPloysBuildingInvasion');
+        $this->incStat(1, 'usedPloysBuildingInvasion', $playerId);
+
         $this->notifyAllPlayers('log', clienttranslate('${player_name} invades a ${player_name2} ${floors}-floor(s) building and sends ${cost} inhabitants'), [
             'player_name' => $this->getPlayerName($playerId),
             'player_name2' => $this->getPlayerName($building->playerId),
@@ -367,6 +354,7 @@ trait ActionTrait {
         self::checkAction('chooseCompletedCommonProject');
         
         $playerId = intval($this->getActivePlayerId());
+        $this->giveExtraTime($playerId);
     
         $areaPosition = intval($this->getGameStateValue(SELECTED_AREA_POSITION));
         $completedCommonProjects = $this->getCompletedCommonProjects($playerId, $areaPosition);

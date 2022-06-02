@@ -47,49 +47,117 @@
     
 */
 
-$stats_type = array(
+
+$commonStats = [
+    "actionsNumber" => [
+        "id" => 10,
+        "name" => totranslate("Number of actions"),
+        "type" => "int" 
+    ],
+    "turnsNumber" => [
+        "id" => 11,
+        "name" => totranslate("Number of turns"),
+        "type" => "int" 
+    ],
+    "constructedFloors" => [
+        "id" => 12,
+        "name" => totranslate("Contructed building floors"),
+        "type" => "int"
+    ],
+    "abandonedBuildings" => [
+        "id" => 13,
+        "name" => totranslate("Abandoned buildings"),
+        "type" => "int"
+    ],
+    "usedPloys" => [
+        "id" => 14,
+        "name" => totranslate("Used ploys"),
+        "type" => "int"
+    ],
+    "usedPloysBuildingInvasion" => [
+        "id" => 15,
+        "name" => totranslate("Used ploys (Building invasion)"),
+        "type" => "int"
+    ],
+    "usedPloysStrategicMovement" => [
+        "id" => 16,
+        "name" => totranslate("Used ploys (Srategic movement)"),
+        "type" => "int"
+    ],
+    "usedPloysRoofTransfer" => [
+        "id" => 17,
+        "name" => totranslate("Used ploys (Roof transfer)"),
+        "type" => "int"
+    ],
+    "territoryControlWin" => [
+        "id" => 18,
+        "name" => totranslate("Majority on territory control"),
+        "type" => "int"
+    ],
+    "inhabitantsGainedWithTerritoryControl" => [
+        "id" => 19,
+        "name" => totranslate("Inhabitants gained with territory control"),
+        "type" => "int"
+    ],
+    "territoryControlWinAlone" => [
+        "id" => 20,
+        "name" => totranslate("Majority on territory control (alone)"),
+        "type" => "int"
+    ],
+    "territoryControlWinShared" => [
+        "id" => 21,
+        "name" => totranslate("Majority on territory control (shared)"),
+        "type" => "int"
+    ],
+    "completedCommonProjects" => [
+        "id" => 22,
+        "name" => totranslate("Completed Common projects"),
+        "type" => "int"
+    ],
+    "pointsWithCommonProjects" => [
+        "id" => 23,
+        "name" => totranslate("Points gained with Common projects"),
+        "type" => "int"
+    ],
+    "completedSecretMissions" => [
+        "id" => 24,
+        "name" => totranslate("Completed Secret missions"),
+        "type" => "int"
+    ],
+    "pointsWithSecretMissions" => [
+        "id" => 25,
+        "name" => totranslate("Points gained with Secret missions"),
+        "type" => "int"
+    ],
+    "endGameBuildingCount" => [
+        "id" => 26,
+        "name" => totranslate("End game buildings count"),
+        "type" => "int"
+    ],
+    "endGameBuildingWithRoofCount" => [
+        "id" => 27,
+        "name" => totranslate("End game buildings with roofs count"),
+        "type" => "int"
+    ],
+    "brambleAreasPlaced" => [
+        "id" => 28,
+        "name" => totranslate("Number of bramble areas placed"),
+        "type" => "int"
+    ],
+];
+
+$stats_type = [
 
     // Statistics global to table
-    "table" => array(
-
-        "turns_number" => array("id"=> 10,
-                    "name" => totranslate("Number of turns"),
-                    "type" => "int" ),
-
-/*
-        Examples:
-
-
-        "table_teststat1" => array(   "id"=> 10,
-                                "name" => totranslate("table test stat 1"), 
-                                "type" => "int" ),
-                                
-        "table_teststat2" => array(   "id"=> 11,
-                                "name" => totranslate("table test stat 2"), 
-                                "type" => "float" )
-*/  
-    ),
+    "table" => $commonStats + [
+        "roundNumber" => [
+            "id" => 50,
+            "name" => totranslate("Round number"),
+            "type" => "int"
+        ], 
+    ],
     
     // Statistics existing for each player
-    "player" => array(
-
-        "turns_number" => array("id"=> 10,
-                    "name" => totranslate("Number of turns"),
-                    "type" => "int" ),
-    
-/*
-        Examples:    
-        
-        
-        "player_teststat1" => array(   "id"=> 10,
-                                "name" => totranslate("player test stat 1"), 
-                                "type" => "int" ),
-                                
-        "player_teststat2" => array(   "id"=> 11,
-                                "name" => totranslate("player test stat 2"), 
-                                "type" => "float" )
-
-*/    
-    )
-
-);
+    "player" => $commonStats + [
+    ]
+];

@@ -106,8 +106,26 @@ class GardenNation extends Table {
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
-        //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
-        //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
+        $this->initStat('table', 'roundNumber', 0);
+        foreach(['table', 'player'] as $statType) {
+            $this->initStat($statType, 'actionsNumber', 0);
+            $this->initStat($statType, 'turnsNumber', 0);
+            $this->initStat($statType, 'constructedFloors', 0);
+            $this->initStat($statType, 'abandonedBuildings', 0);
+            $this->initStat($statType, 'usedPloys', 0);
+            $this->initStat($statType, 'usedPloysBuildingInvasion', 0);
+            $this->initStat($statType, 'usedPloysStrategicMovement', 0);
+            $this->initStat($statType, 'usedPloysRoofTransfer', 0);
+            $this->initStat($statType, 'territoryControlWin', 0);
+            $this->initStat($statType, 'inhabitantsGainedWithTerritoryControl', 0);
+            $this->initStat($statType, 'territoryControlWinAlone', 0);
+            $this->initStat($statType, 'territoryControlWinShared', 0);
+            $this->initStat($statType, 'completedCommonProjects', 0);
+            $this->initStat($statType, 'pointsWithCommonProjects', 0);
+            $this->initStat($statType, 'completedSecretMissions', 0);
+            $this->initStat($statType, 'pointsWithSecretMissions', 0);
+            $this->initStat($statType, 'brambleAreasPlaced', 0);
+        }
 
         // setup the initial game situation
 

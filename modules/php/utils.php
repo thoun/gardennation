@@ -260,6 +260,13 @@ trait UtilTrait {
                 $inc = $alone ? 2 : 1;
                 foreach($playersIds as $playerId) {
                     $this->incPlayerInhabitants($playerId, $inc);
+
+                    $this->incStat($inc, 'inhabitantsGainedWithTerritoryControl');
+                    $this->incStat($inc, 'inhabitantsGainedWithTerritoryControl', $playerId);
+                    $this->incStat(1, 'territoryControlWin');
+                    $this->incStat(1, 'territoryControlWin', $playerId);
+                    $this->incStat(1, $alone ? 'territoryControlWinAlone' : 'territoryControlWinShared');
+                    $this->incStat(1, $alone ? 'territoryControlWinAlone' : 'territoryControlWinShared', $playerId);
                 }
             }
         }
@@ -600,5 +607,10 @@ trait UtilTrait {
             'commonProject' => $newCommonProject,
             'i18n' => [ 'cardName' ],
         ]);
+
+        $this->incStat(1, 'completedCommonProjects');
+        $this->incStat(1, 'completedCommonProjects', $playerId);
+        $this->incStat($commonProject->points, 'pointsWithCommonProjects');
+        $this->incStat($commonProject->points, 'pointsWithCommonProjects', $playerId);
     }
 }

@@ -15,6 +15,7 @@ trait StateTrait {
 
     function stEndAction() {
         $playerId = intval($this->getActivePlayerId());
+        $this->giveExtraTime($playerId);
 
         $this->setGameStateValue(PLOY_USED, 0);
         $this->incGameStateValue(PLAYED_ACTIONS, 1);
@@ -41,6 +42,10 @@ trait StateTrait {
         $players = $this->getPlayers();
         $maxOrder = max(array_map(fn($player) => $player->turnTrack, $players));
 
+        $playerId = intval($this->getActivePlayerId());
+        $this->incStat(1, 'turnsNumber');
+        $this->incStat(1, 'turnsNumber', $playerId);
+
         $this->gamestate->changeActivePlayer($this->array_find($players, fn($player) => $player->turnTrack == $maxOrder)->id);
 
         $this->setGameStateValue(PLAYED_ACTIONS, 0);
@@ -56,6 +61,8 @@ trait StateTrait {
         if (!$lastRound) {
             $this->resetPlayerOrder();
         }
+
+        $this->incStat(1, 'roundNumber');
             
         $this->gamestate->nextState($lastRound ? 'endScore' : 'newRound');
     }
@@ -119,6 +126,13 @@ trait StateTrait {
             'cardName' => $secretMission->name,
             'i18n' => [ 'cardName' ],
         ]);
+
+        if ($secretMissionScore > 0) {
+            $this->incStat(1, 'completedSecretMissions');
+            $this->incStat(1, 'completedSecretMissions', $playerId);
+            $this->incStat($secretMissionScore, 'pointsWithSecretMissions');
+            $this->incStat($secretMissionScore, 'pointsWithSecretMissions', $playerId);
+        }
     }
 
     function stEndScore() {
@@ -127,11 +141,15 @@ trait StateTrait {
         $buildings = $this->getTerritoryBuildings();
 
         foreach($players as $player) {
-            $playerBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId == $player->id && !$building->roof));
+            $playerBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId == $player->id));
+            $playerBuildingsWithoutRoof = array_values(array_filter($playerBuildings, fn($building) => !$building->roof));
             $secretMissions = $this->getSecretMissionsFromDb($this->secretMissions->getCardsInLocation('hand', $player->id));
             foreach($secretMissions as $secretMission) {
-                $this->revealAndScoreSecretMission($player->id,  $secretMission, $map, $playerBuildings);
+                $this->revealAndScoreSecretMission($player->id,  $secretMission, $map, $playerBuildingsWithoutRoof);
             }
+
+            $this->setStat(count($playerBuildings), "endGameBuildingCount", $player->id);
+            $this->setStat(count($playerBuildings) - count($playerBuildingsWithoutRoof), "endGameBuildingWithRoofCount", $player->id);
         }
 
         foreach($players as $player) {
