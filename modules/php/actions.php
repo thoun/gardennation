@@ -257,13 +257,13 @@ trait ActionTrait {
         
         switch ($type) {
             case 1:
-                $this->gamestate->nextState('strategicMovement');
+                $this->gamestate->nextState('buildingInvasion');
                 return;
             case 2:
-                $this->gamestate->nextState('roofTransfer');
+                $this->gamestate->nextState('strategicMovement');
                 return;
             case 3:
-                $this->gamestate->nextState('buildingInvasion');
+                $this->gamestate->nextState('roofTransfer');
                 return;
         }
 
@@ -287,7 +287,7 @@ trait ActionTrait {
         $territories = $this->getTerritories();
         $newTerritoryPosition = $this->array_find_index($territories, fn($territory) => $territory[0] == $territoryNumber);
 
-        $this->setPloyTokenUsed($this->getActivePlayerId(), 1);
+        $this->setPloyTokenUsed($this->getActivePlayerId(), 2);
 
         $this->notifyAllPlayers('log', clienttranslate('${player_name} makes a strategic movement to go to territory ${number}'), [
             'player_name' => $this->getPlayerName($this->getActivePlayerId()),
@@ -323,7 +323,7 @@ trait ActionTrait {
         $toBuilding = $this->getBuildingByAreaPosition($areaPosition);
         $this->moveRoof($playerId, $fromBuilding, $toBuilding);
 
-        $this->setPloyTokenUsed($this->getActivePlayerId(), 2);
+        $this->setPloyTokenUsed($this->getActivePlayerId(), 3);
 
         $this->setGameStateValue(PLOY_USED, 1);
         $this->gamestate->nextState('endPloy');
@@ -345,7 +345,7 @@ trait ActionTrait {
             $this->applyConstructBuildingFloor($areaPosition, true);
         }
 
-        $this->setPloyTokenUsed($this->getActivePlayerId(), 3);
+        $this->setPloyTokenUsed($this->getActivePlayerId(), 1);
 
         $this->notifyAllPlayers('log', clienttranslate('${player_name} invades a ${player_name2} ${floors}-floor(s) building and sends ${cost} inhabitants'), [
             'player_name' => $this->getPlayerName($playerId),

@@ -129,14 +129,17 @@ trait ArgsTrait {
         $playerId = intval($this->getActivePlayerId());
         $buildings = $this->getTerritoryBuildings();
 
+        $canInvade = $this->array_some($buildings, fn($building) => $building->playerId != $playerId);
+
+        $canMoveTorticrane = intval($this->getGameStateValue(TORTICRANE_POSITION)) >= 0;
+
         $canTransferRoof = $this->array_some($buildings, fn($building) => $building->playerId == $playerId && $building->roof) && 
             $this->array_some($buildings, fn($building) => $building->playerId == $playerId && !$building->roof);
 
-        $canInvade = $this->array_some($buildings, fn($building) => $building->playerId != $playerId);
-
         return [
-            'canTransferRoof' => $canTransferRoof,
             'canInvade' => $canInvade,
+            'canMoveTorticrane' => $canMoveTorticrane,
+            'canTransferRoof' => $canTransferRoof,
         ];
     }
 

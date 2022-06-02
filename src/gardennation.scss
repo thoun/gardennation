@@ -126,6 +126,25 @@ html {
   }
 }
 
+.button-ploy-icon {
+  position: relative;
+  display: inline-block;
+  width: 47px;
+  height: 28px;
+  background: url('img/ploy-icons.png');
+  background-size: auto 100%;
+  vertical-align: middle;
+
+  @for $i from 1 through 3 {
+      &[data-type="#{$i}"] { 
+          background-position-x: #{($i - 1) * 100% / 2};
+      }
+  }
+  &[data-type="2"] { 
+    margin: 0 -10px;
+  }
+}
+
 .button-bramble-type, .bramble-type-token {
   position: relative;
   display: inline-block;

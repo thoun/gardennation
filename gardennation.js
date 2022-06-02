@@ -722,9 +722,7 @@ var GardenNation = /** @class */ (function () {
                 case 'chooseTypeOfLand':
                     var chooseTypeOfLandArgs = args;
                     chooseTypeOfLandArgs.possibleTypes.forEach(function (type) {
-                        _this.addActionButton("chooseTypeOfLand".concat(type, "-button"), '', function () { return _this.chooseTypeOfLand(type); });
-                        document.getElementById("chooseTypeOfLand".concat(type, "-button")).innerHTML =
-                            "<div class=\"button-bramble-type\" data-type=\"".concat(type, "\"><div class=\"land-number\">5</div></div>");
+                        return _this.addActionButton("chooseTypeOfLand".concat(type, "-button"), "<div class=\"button-bramble-type\" data-type=\"".concat(type, "\"><div class=\"land-number\">5</div></div>"), function () { return _this.chooseTypeOfLand(type); });
                     });
                     this.addActionButton("cancelChooseTypeOfLand-button", _("Cancel"), function () { return _this.cancelChooseTypeOfLand(); }, null, null, 'gray');
                     break;
@@ -740,12 +738,15 @@ var GardenNation = /** @class */ (function () {
                     break;
                 case 'usePloyToken':
                     var usePloyTokenArgs = args;
-                    this.addActionButton("strategicMovement-button", _("Strategic Movement"), function () { return _this.usePloyToken(1); });
-                    this.addActionButton("roofTransfer-button", _("Roof Transfer"), function () { return _this.usePloyToken(2); });
-                    this.addActionButton("buildingInvasion-button", _("Building Invasion"), function () { return _this.usePloyToken(3); });
+                    var labels = [_("Building Invasion"), _("Strategic Movement"), _("Roof Transfer")];
+                    labels.forEach(function (label, index) {
+                        var type = index + 1;
+                        _this.addActionButton("usePloyToken".concat(type, "-button"), "<div class=\"button-ploy-icon\" data-type=\"".concat(type, "\"></div> ").concat(label), function () { return _this.usePloyToken(type); });
+                    });
                     this.addActionButton("cancelUsePloyToken-button", _("Cancel"), function () { return _this.cancelUsePloyToken(); }, null, null, 'gray');
-                    document.getElementById("roofTransfer-button").classList.toggle('disabled', !usePloyTokenArgs.canTransferRoof);
-                    document.getElementById("buildingInvasion-button").classList.toggle('disabled', !usePloyTokenArgs.canInvade);
+                    document.getElementById("usePloyToken1-button").classList.toggle('disabled', !usePloyTokenArgs.canInvade);
+                    document.getElementById("usePloyToken2-button").classList.toggle('disabled', !usePloyTokenArgs.canMoveTorticrane);
+                    document.getElementById("usePloyToken3-button").classList.toggle('disabled', !usePloyTokenArgs.canTransferRoof);
                     break;
                 case 'strategicMovement':
                     var strategicMovementArgs_1 = args;

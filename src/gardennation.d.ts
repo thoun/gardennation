@@ -115,8 +115,9 @@ interface EnteringChooseNextPlayerArgs {
 }
 
 interface EnteringUsePloyTokenArgs {
-    canTransferRoof: boolean;
     canInvade: boolean;
+    canMoveTorticrane: boolean;
+    canTransferRoof: boolean;
 }
 
 interface EnteringStrategicMovementArgs {

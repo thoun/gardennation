@@ -361,13 +361,13 @@
   top: 50px;
 }
 #playerstables .player-table .player-score-board .ploy-tokens-container[data-type="1"] {
-  left: 68px;
+  left: 14px;
 }
 #playerstables .player-table .player-score-board .ploy-tokens-container[data-type="2"] {
-  left: 123px;
+  left: 68px;
 }
 #playerstables .player-table .player-score-board .ploy-tokens-container[data-type="3"] {
-  left: 14px;
+  left: 123px;
 }
 #playerstables .player-table .player-score-board .ploy-tokens-container .ploy-token {
   display: inline-block;
@@ -805,6 +805,28 @@ html {
 }
 .icon.ploy-token {
   background-position-y: 100%;
+}
+
+.button-ploy-icon {
+  position: relative;
+  display: inline-block;
+  width: 47px;
+  height: 28px;
+  background: url("img/ploy-icons.png");
+  background-size: auto 100%;
+  vertical-align: middle;
+}
+.button-ploy-icon[data-type="1"] {
+  background-position-x: 0%;
+}
+.button-ploy-icon[data-type="2"] {
+  background-position-x: 50%;
+}
+.button-ploy-icon[data-type="3"] {
+  background-position-x: 100%;
+}
+.button-ploy-icon[data-type="2"] {
+  margin: 0 -10px;
 }
 
 .button-bramble-type, .bramble-type-token {

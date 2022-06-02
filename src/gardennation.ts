@@ -242,11 +242,9 @@ class GardenNation implements GardenNationGame {
                     break;
                 case 'chooseTypeOfLand':
                     const chooseTypeOfLandArgs = args as EnteringChooseTypeOfLandArgs;
-                    chooseTypeOfLandArgs.possibleTypes.forEach(type => {
-                        (this as any).addActionButton(`chooseTypeOfLand${type}-button`, '', () => this.chooseTypeOfLand(type));
-                        document.getElementById(`chooseTypeOfLand${type}-button`).innerHTML = 
-                            `<div class="button-bramble-type" data-type="${type}"><div class="land-number">5</div></div>`;
-                    });
+                    chooseTypeOfLandArgs.possibleTypes.forEach(type => 
+                        (this as any).addActionButton(`chooseTypeOfLand${type}-button`,  `<div class="button-bramble-type" data-type="${type}"><div class="land-number">5</div></div>`, () => this.chooseTypeOfLand(type))
+                    );
                     (this as any).addActionButton(`cancelChooseTypeOfLand-button`, _("Cancel"), () => this.cancelChooseTypeOfLand(), null, null, 'gray');
                     break;
                 case 'chooseNextPlayer':
@@ -261,12 +259,15 @@ class GardenNation implements GardenNationGame {
                     break;
                 case 'usePloyToken':
                     const usePloyTokenArgs = args as EnteringUsePloyTokenArgs;
-                    (this as any).addActionButton(`strategicMovement-button`, _("Strategic Movement"), () => this.usePloyToken(1));
-                    (this as any).addActionButton(`roofTransfer-button`, _("Roof Transfer"), () => this.usePloyToken(2));
-                    (this as any).addActionButton(`buildingInvasion-button`, _("Building Invasion"), () => this.usePloyToken(3));
+                    const labels = [_("Building Invasion"), _("Strategic Movement"), _("Roof Transfer")];
+                    labels.forEach((label, index) => {
+                        const type = index + 1;
+                        (this as any).addActionButton(`usePloyToken${type}-button`, `<div class="button-ploy-icon" data-type="${type}"></div> ${label}`, () => this.usePloyToken(type));
+                    });
                     (this as any).addActionButton(`cancelUsePloyToken-button`, _("Cancel"), () => this.cancelUsePloyToken(), null, null, 'gray');
-                    document.getElementById(`roofTransfer-button`).classList.toggle('disabled', !usePloyTokenArgs.canTransferRoof);
-                    document.getElementById(`buildingInvasion-button`).classList.toggle('disabled', !usePloyTokenArgs.canInvade);
+                    document.getElementById(`usePloyToken1-button`).classList.toggle('disabled', !usePloyTokenArgs.canInvade);
+                    document.getElementById(`usePloyToken2-button`).classList.toggle('disabled', !usePloyTokenArgs.canMoveTorticrane);
+                    document.getElementById(`usePloyToken3-button`).classList.toggle('disabled', !usePloyTokenArgs.canTransferRoof);
                     break;
                 case 'strategicMovement':
                     const strategicMovementArgs = args as EnteringStrategicMovementArgs;
