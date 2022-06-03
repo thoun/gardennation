@@ -55,16 +55,16 @@ var CommonProjectCards = /** @class */ (function () {
     // gameui.commonProjectCards.debugSeeAllCards()
     CommonProjectCards.prototype.debugSeeAllCards = function () {
         var _this = this;
+        document.querySelectorAll('.card.common-project').forEach(function (card) { return card.remove(); });
         var html = "<div id=\"all-common-project-cards\">";
         html += "</div>";
         dojo.place(html, 'full-table', 'before');
         [1, 2, 3, 4, 5, 6].forEach(function (subType) {
             var card = {
                 id: 10 + subType,
-                side: 0,
                 type: 1,
                 subType: subType,
-                name: '[name]'
+                name: _this.getTitle(1, subType)
             };
             _this.createMoveOrUpdateCard(card, "all-common-project-cards");
         });
@@ -72,10 +72,9 @@ var CommonProjectCards = /** @class */ (function () {
             return [1, 2, 3].forEach(function (subType) {
                 var card = {
                     id: 10 * type + subType,
-                    side: 0,
                     type: type,
                     subType: subType,
-                    name: '[name]'
+                    name: _this.getTitle(type, subType)
                 };
                 _this.createMoveOrUpdateCard(card, "all-common-project-cards");
             });
@@ -133,9 +132,12 @@ var CommonProjectCards = /** @class */ (function () {
         switch (type) {
             case 1:
                 switch (subType) {
-                    case 1: return _('Infirmary');
-                    case 2: return _('Sacred Place');
-                    case 3: return _('Fortress');
+                    case 1:
+                    case 2: return _('Infirmary');
+                    case 3:
+                    case 4: return _('Sacred Place');
+                    case 5:
+                    case 6: return _('Fortress');
                 }
             case 2:
                 switch (subType) {
@@ -194,6 +196,7 @@ var SecretMissionCards = /** @class */ (function () {
     // gameui.secretMissionCards.debugSeeAllCards()
     SecretMissionCards.prototype.debugSeeAllCards = function () {
         var _this = this;
+        document.querySelectorAll('.card.secret-mission').forEach(function (card) { return card.remove(); });
         var html = "<div id=\"all-secret-mission-cards\">";
         html += "</div>";
         dojo.place(html, 'full-table', 'before');
@@ -201,10 +204,9 @@ var SecretMissionCards = /** @class */ (function () {
             return [1, 2, 3].forEach(function (subType) {
                 var card = {
                     id: 10 * type + subType,
-                    side: 0,
                     type: type,
                     subType: subType,
-                    name: '[name]'
+                    name: _this.getTitle(type, subType)
                 };
                 _this.createMoveOrUpdateCard(card, "all-secret-mission-cards");
             });
@@ -212,20 +214,18 @@ var SecretMissionCards = /** @class */ (function () {
         [1, 2].forEach(function (subType) {
             var card = {
                 id: 10 * 3 + subType,
-                side: 0,
                 type: 3,
                 subType: subType,
-                name: '[name]'
+                name: _this.getTitle(3, subType)
             };
             _this.createMoveOrUpdateCard(card, "all-secret-mission-cards");
         });
         [1, 2, 3, 4, 5, 6, 7].forEach(function (subType) {
             var card = {
                 id: 10 * 4 + subType,
-                side: 0,
                 type: 4,
                 subType: subType,
-                name: '[name]'
+                name: _this.getTitle(4, subType)
             };
             _this.createMoveOrUpdateCard(card, "all-secret-mission-cards");
         });

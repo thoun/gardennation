@@ -3,6 +3,8 @@ class CommonProjectCards {
 
     // gameui.commonProjectCards.debugSeeAllCards()
     private debugSeeAllCards() {
+        document.querySelectorAll('.card.common-project').forEach(card => card.remove());
+        
         let html = `<div id="all-common-project-cards">`;
         html += `</div>`;
         dojo.place(html, 'full-table', 'before');
@@ -10,10 +12,9 @@ class CommonProjectCards {
         [1, 2, 3, 4, 5, 6].forEach(subType => {
             const card = {
                 id: 10+subType,
-                side: 0,
                 type: 1,
                 subType,
-                name: '[name]'
+                name: this.getTitle(1, subType)
             } as any as CommonProject;
             this.createMoveOrUpdateCard(card, `all-common-project-cards`);
         });
@@ -22,10 +23,9 @@ class CommonProjectCards {
             [1, 2, 3].forEach(subType => {
                 const card = {
                     id: 10*type+subType,
-                    side: 0,
                     type,
                     subType,
-                    name: '[name]'
+                    name: this.getTitle(type, subType)
                 } as any as CommonProject;
                 this.createMoveOrUpdateCard(card, `all-common-project-cards`);
             })
@@ -93,9 +93,9 @@ class CommonProjectCards {
         switch(type) {
             case 1:
                 switch(subType) {
-                    case 1: return _('Infirmary');
-                    case 2: return _('Sacred Place');
-                    case 3: return _('Fortress');
+                    case 1: case 2: return _('Infirmary');
+                    case 3: case 4: return _('Sacred Place');
+                    case 5: case 6: return _('Fortress');
                 }
             case 2:
                 switch(subType) {

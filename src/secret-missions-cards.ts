@@ -3,6 +3,8 @@ class SecretMissionCards {
 
     // gameui.secretMissionCards.debugSeeAllCards()
     private debugSeeAllCards() {
+        document.querySelectorAll('.card.secret-mission').forEach(card => card.remove());
+        
         let html = `<div id="all-secret-mission-cards">`;
         html += `</div>`;
         dojo.place(html, 'full-table', 'before');
@@ -11,10 +13,9 @@ class SecretMissionCards {
             [1, 2, 3].forEach(subType => {
                 const card = {
                     id: 10*type+subType,
-                    side: 0,
                     type,
                     subType,
-                    name: '[name]'
+                    name: this.getTitle(type, subType)
                 } as SecretMission;
                 this.createMoveOrUpdateCard(card, `all-secret-mission-cards`);
             })
@@ -23,10 +24,9 @@ class SecretMissionCards {
         [1, 2].forEach(subType => {
             const card = {
                 id: 10*3+subType,
-                side: 0,
                 type: 3,
                 subType,
-                name: '[name]'
+                name: this.getTitle(3, subType)
             } as SecretMission;
             this.createMoveOrUpdateCard(card, `all-secret-mission-cards`);
         });
@@ -34,10 +34,9 @@ class SecretMissionCards {
         [1, 2, 3, 4, 5, 6, 7].forEach(subType => {
             const card = {
                 id: 10*4+subType,
-                side: 0,
                 type: 4,
                 subType,
-                name: '[name]'
+                name: this.getTitle(4, subType)
             } as SecretMission;
             this.createMoveOrUpdateCard(card, `all-secret-mission-cards`);
         });
