@@ -564,6 +564,11 @@ trait UtilTrait {
     }
 
     function checkCompletedCommonProjects(int $playerId, int $areaPosition) {
+        // check objectives if there is at least 1 remaining roof
+        if (count($this->getAvailableBuildingFloors(0)) == 0) {
+            return false;
+        }
+
         $completedCommonProjects = $this->getCompletedCommonProjects($playerId, $areaPosition);
 
         if (count($completedCommonProjects) > 0) {

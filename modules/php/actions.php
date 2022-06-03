@@ -82,24 +82,19 @@ trait ActionTrait {
         self::checkAction('constructBuilding');
         $playerId = intval($this->getActivePlayerId());
 
-        if (!$this->applyConstructBuildingFloor($areaPosition, false)) {
+        if (!$this->applyConstructBuildingFloor($areaPosition, false)) { // not redirected to area choice
             $this->incStat(1, 'constructedFloors');
             $this->incStat(1, 'constructedFloors', $playerId);
             $this->incStat(1, 'actionsNumber');
             $this->incStat(1, 'actionsNumber', $playerId);
 
-            // not redirected to area choice
             $this->moveTorticrane($areaPosition);
-        
-            // check objectives if there is at least 1 remaining roof
-            if (count($this->getAvailableBuildingFloors(0)) > 0) {
                 
-                if ($this->checkCompletedCommonProjects($playerId, $areaPosition)) {
-                    // redirected to choose common project
-                    $this->setGameStateValue(SELECTED_AREA_POSITION, $areaPosition);
-                    $this->gamestate->nextState('chooseCompletedCommonProject');
-                    return;
-                }
+            if ($this->checkCompletedCommonProjects($playerId, $areaPosition)) {
+                // redirected to choose common project
+                $this->setGameStateValue(SELECTED_AREA_POSITION, $areaPosition);
+                $this->gamestate->nextState('chooseCompletedCommonProject');
+                return;
             }
 
             $this->gamestate->nextState('endAction');
@@ -340,6 +335,13 @@ trait ActionTrait {
             'floors' => $building->floors,
             'cost' => $cost,
         ]);
+                
+        if ($this->checkCompletedCommonProjects($playerId, $areaPosition)) {
+            // redirected to choose common project
+            $this->setGameStateValue(SELECTED_AREA_POSITION, $areaPosition);
+            $this->gamestate->nextState('chooseCompletedCommonProject');
+            return;
+        }
 
         $this->gamestate->nextState('endAction');
     }

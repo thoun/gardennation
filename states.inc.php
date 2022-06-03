@@ -241,6 +241,7 @@ $playerActionsGameStates = [
             "cancelUsePloy",
         ],
         "transitions" => [
+            "chooseCompletedCommonProject" => ST_PLAYER_CHOOSE_COMPLETED_COMMON_PROJECT,
             "endAction" => ST_PLAYER_CHOOSE_ACTION,
             "cancel" => ST_PLAYER_USE_PLOY_TOKEN,
         ]
