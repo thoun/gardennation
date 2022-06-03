@@ -41,13 +41,6 @@ function slideFromObject(game, object, fromId) {
         }, 600);
     }
 }
-function formatTextIcons(rawText) {
-    return rawText
-        .replace(/\[reroll\]/ig, '<span class="icon reroll"></span>')
-        .replace(/\[point\]/ig, '<span class="icon point"></span>')
-        .replace(/\[symbol(\d)\]/ig, '<span class="icon symbol$1"></span>')
-        .replace(/\[die:(\d):(\d)\]/ig, '<span class="die-icon" data-color="$1" data-face="$2"></span>');
-}
 var CommonProjectCards = /** @class */ (function () {
     function CommonProjectCards(game) {
         this.game = game;
@@ -735,7 +728,7 @@ var GardenNation = /** @class */ (function () {
                 case 'chooseTypeOfLand':
                     var chooseTypeOfLandArgs = args;
                     chooseTypeOfLandArgs.possibleTypes.forEach(function (type) {
-                        return _this.addActionButton("chooseTypeOfLand".concat(type, "-button"), "<div class=\"button-bramble-type\" data-type=\"".concat(type, "\"><div class=\"land-number\">5</div></div>"), function () { return _this.chooseTypeOfLand(type); });
+                        return _this.addActionButton("chooseTypeOfLand".concat(type, "-button"), "<div class=\"bramble-type-token\" data-type=\"".concat(type, "\"><div class=\"land-number\">5</div></div>"), function () { return _this.chooseTypeOfLand(type); });
                     });
                     this.addActionButton("cancelChooseTypeOfLand-button", _("Cancel"), function () { return _this.cancelChooseTypeOfLand(); }, null, null, 'gray');
                     break;
@@ -1238,17 +1231,14 @@ var GardenNation = /** @class */ (function () {
                     });
                     args.playersNames = namesConcat_1;
                 }
-                if (args.cardName && args.cardName[0] != '<') {
-                    args.cardName = "<strong>".concat(_(args.cardName), "</strong>");
+                if (args.brambleIcon && args.brambleIcon[0] != '<') {
+                    args.brambleIcon = "<div class=\"bramble-type-token\" data-type=\"".concat(args.brambleIcon, "\"></div>");
                 }
-                /*
-                for (const property in args) {
-                    if (args[property]?.indexOf?.(']') > 0) {
-                        args[property] = formatTextIcons(_(args[property]));
+                for (var property in args) {
+                    if (['cardName', 'territoryNumber', 'points', 'cost', 'inhabitants'].includes(property) && args[property][0] != '<') {
+                        args[property] = "<strong>".concat(_(args[property]), "</strong>");
                     }
                 }
-
-                log = formatTextIcons(_(log));*/
             }
         }
         catch (e) {

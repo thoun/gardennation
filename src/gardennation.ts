@@ -247,7 +247,7 @@ class GardenNation implements GardenNationGame {
                 case 'chooseTypeOfLand':
                     const chooseTypeOfLandArgs = args as EnteringChooseTypeOfLandArgs;
                     chooseTypeOfLandArgs.possibleTypes.forEach(type => 
-                        (this as any).addActionButton(`chooseTypeOfLand${type}-button`,  `<div class="button-bramble-type" data-type="${type}"><div class="land-number">5</div></div>`, () => this.chooseTypeOfLand(type))
+                        (this as any).addActionButton(`chooseTypeOfLand${type}-button`,  `<div class="bramble-type-token" data-type="${type}"><div class="land-number">5</div></div>`, () => this.chooseTypeOfLand(type))
                     );
                     (this as any).addActionButton(`cancelChooseTypeOfLand-button`, _("Cancel"), () => this.cancelChooseTypeOfLand(), null, null, 'gray');
                     break;
@@ -908,17 +908,15 @@ class GardenNation implements GardenNationGame {
                     args.playersNames = namesConcat;
                 }
 
-                if (args.cardName && args.cardName[0] != '<') {
-                    args.cardName = `<strong>${_(args.cardName)}</strong>`;
+                if (args.brambleIcon && args.brambleIcon[0] != '<') {
+                    args.brambleIcon = `<div class="bramble-type-token" data-type="${args.brambleIcon}"></div>`;
                 }
-                /*
+                
                 for (const property in args) {
-                    if (args[property]?.indexOf?.(']') > 0) {
-                        args[property] = formatTextIcons(_(args[property]));
+                    if (['cardName', 'territoryNumber', 'points', 'cost', 'inhabitants'].includes(property) && args[property][0] != '<') {
+                        args[property] = `<strong>${_(args[property])}</strong>`;
                     }
                 }
-
-                log = formatTextIcons(_(log));*/
             }
         } catch (e) {
             console.error(log,args,"Exception thrown", e.stack);

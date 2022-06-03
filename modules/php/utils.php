@@ -38,8 +38,8 @@ trait UtilTrait {
     }
 
     function array_some(array $array, callable $fn) {
-        foreach ($array as $value) {
-            if($fn($value)) {
+        foreach ($array as $key => $value) {
+            if($fn($value, $key)) {
                 return true;
             }
         }
@@ -243,12 +243,13 @@ trait UtilTrait {
 
                 $alone = count($playersIds) == 1;
                 $message = $alone ? 
-                    clienttranslate('${player_name} controls the territory ${territoryNumber} and gains 2 inhabitants') :
-                    clienttranslate('${playersNames} control the territory ${territoryNumber} gains 1 inhabitant');
+                    clienttranslate('${player_name} controls the territory ${territoryNumber} and gains ${inhabitants} inhabitants') :
+                    clienttranslate('${playersNames} control the territory ${territoryNumber} gains ${inhabitants} inhabitant');
                 $args = [
                     'buildingsToHighlight' => $buildingsToHighlight,
                     'territoryNumber' => $i,
                     'territoryPosition' => $this->array_find_index($territories, fn($territory) => $territory[0] == $i),
+                    'inhabitants' => $alone ? 2 : 1,
                 ];
                 if ($alone) {
                     $args['player_name'] = $this->getPlayerName($playersIds[0]);
@@ -506,7 +507,26 @@ trait UtilTrait {
         
     }
 
-    function isCommonProjectCompleted(CommonProject $commonProject, int $playerId, array $territories, array $map, Building $building) {
+    function isAssociatedBuildingsCommonProjectCompleted(array $territories, array $map, int $areaPosition, array $buildingsToMatch /* key 0 is min height, key 1 is area type*/, array $playerBuildings) {
+        if (count($buildingsToMatch) == 0) {
+            return true;
+        }
+
+        return $this->array_some($buildingsToMatch, function(array $buildingToMatch, int $index) use ($territories, $map, $areaPosition, $buildingsToMatch, $playerBuildings) {
+            $minHeight = $buildingToMatch[0];
+            $areaType = $buildingToMatch[1];
+            if ($this->array_some($playerBuildings, fn($playerBuilding) => $playerBuilding->areaPosition == $areaPosition && $playerBuilding->floors >= $minHeight && $map[$playerBuilding->areaPosition][0] == $areaType)) {
+                $remainingBuildingsToMatch = $buildingsToMatch; // copy
+                array_splice($remainingBuildingsToMatch, $index, 1);
+                $adjacentAreas = $this->getAdjacentAreas($territories, $map, $areaPosition);
+                return $this->array_some($adjacentAreas, fn($adjacentArea) => $this->isAssociatedBuildingsCommonProjectCompleted($territories, $map, $adjacentArea, $remainingBuildingsToMatch, $playerBuildings));
+            }
+            return false;
+        });
+    }
+
+    function isCommonProjectCompleted(CommonProject $commonProject, int $playerId, array $territories, array $map, Building $building, array $playerBuildings) {
+        // no need to check roof on current building, as it was just constructed it can't have one
         switch ($commonProject->type) {
             case 1:
                 if ($building->floors < 2 || $map[$building->areaPosition][0] != $commonProject->primaryColor) {
@@ -523,32 +543,40 @@ trait UtilTrait {
                 $territoryIndex = $this->array_find_index($territories, fn($territory) => $territory[0] == floor($building->areaPosition / 10));
                 return $commonProject->type == 5 ? $territoryIndex == 0 : $territoryIndex != 0;
             case 3:
+                $buildingsToMatch = [[1, $commonProject->subType], [1, $commonProject->subType]];
+                return $this->isAssociatedBuildingsCommonProjectCompleted($territories, $map, $building->areaPosition, $buildingsToMatch, $playerBuildings);
             case 4:
-                $minLevel = $commonProject->type == 4 ? 2 : 1;
-                if ($building->floors < $minLevel || $map[$building->areaPosition][0] != $commonProject->subType) {
-                    return false;
-                }
-                $adjacentAreas = $this->getAdjacentAreas($territories, $map, $building->areaPosition);
-                return $this->array_some($adjacentAreas, function($adjacentArea) use ($map, $playerId, $commonProject) {
-                    if ($map[$adjacentArea][0] != $commonProject->subType) {
-                        return false;
-                    }
-                    $adjacentBuilding = $this->getBuildingByAreaPosition($adjacentArea);
-                    return $adjacentBuilding != null && !$adjacentBuilding->roof && $adjacentBuilding->playerId == $playerId && $adjacentBuilding->floors >= 1;
-                });
+                $buildingsToMatch = [[2, $commonProject->subType], [1, $commonProject->subType]];
+                //$this->debug([$buildingsToMatch, $this->isAssociatedBuildingsCommonProjectCompleted($territories, $map, $building->areaPosition, $buildingsToMatch, $playerBuildings)]);
+                return $this->isAssociatedBuildingsCommonProjectCompleted($territories, $map, $building->areaPosition, $buildingsToMatch, $playerBuildings);
             case 6:
-                if ($building->floors < 2 || $map[$building->areaPosition][0] != $commonProject->subType) {
-                    return false;
-                }
-                $otherColors = array_values(array_filter([1, 2, 3], fn($key) => $key != $commonProject->subType));                
-                $adjacentAreas = $this->getAdjacentAreas($territories, $map, $building->areaPosition);
-                return $this->array_every($otherColors, fn($otherColor) => $this->array_some($adjacentAreas, function($adjacentArea) use ($map, $playerId, $otherColor) {
-                    if ($map[$adjacentArea][0] != $otherColor) {
-                        return false;
+                $otherColors = array_values(array_filter([1, 2, 3], fn($color) => $color != $commonProject->subType));  
+                foreach($otherColors as $otherColor) {
+                    $buildingsToMatch = [[2, $commonProject->subType], [1, $otherColor]];
+                    if ($this->isAssociatedBuildingsCommonProjectCompleted($territories, $map, $building->areaPosition, $buildingsToMatch, $playerBuildings)) {
+                        $areasWithSubTypeColor = null;
+                        if ($map[$building->areaPosition][0] == $commonProject->subType) {
+                            $areasWithSubTypeColor = [$building->areaPosition];
+                        } else {
+                            //  if the main building of the objective is not at $building->areaPosition, we search the other lower building from the other areaPosition
+                            $adjacentAreas = $this->getAdjacentAreas($territories, $map, $building->areaPosition);
+                            foreach($adjacentAreas as $adjacentArea) {
+                                if ($this->array_some($playerBuildings, fn($playerBuilding) => $playerBuilding->areaPosition == $adjacentArea && $playerBuilding->floors >= 2 && $map[$adjacentArea][0] == $commonProject->subType)) {
+                                    $areasWithSubTypeColor[] = $adjacentArea;
+                                }
+                            }
+                        }
+
+                        $lastColor = array_values(array_filter([1, 2, 3], fn($color) => $color != $commonProject->subType && $color != $otherColor))[0];
+                        $buildingsToMatch = [[2, $commonProject->subType], [1, $lastColor]];
+                        foreach($areasWithSubTypeColor as $areaWithSubTypeColor) {
+                            if ($this->isAssociatedBuildingsCommonProjectCompleted($territories, $map, $areaWithSubTypeColor, $buildingsToMatch, $playerBuildings)) {
+                                return true;
+                            }
+                        }
                     }
-                    $adjacentBuilding = $this->getBuildingByAreaPosition($adjacentArea);
-                    return $adjacentBuilding != null && !$adjacentBuilding->roof && $adjacentBuilding->playerId == $playerId && $adjacentBuilding->floors >= 1;
-                }));
+                }
+                return false;
         }
         
         return false;
@@ -557,10 +585,12 @@ trait UtilTrait {
     function getCompletedCommonProjects(int $playerId, int $areaPosition) {
         $territories = $this->getTerritories();
         $map = $this->getMap();
-        $building = $this->getBuildingByAreaPosition($areaPosition);
+        $buildings = $this->getTerritoryBuildings();
+        $playerBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId == $playerId));
+        $building = $this->array_find($playerBuildings, fn($building) => $building->areaPosition == $areaPosition);
 
         $commonProjects = $this->getCommonProjectsFromDb($this->commonProjects->getCardsInLocation('table', null, 'location_arg'));
-        return array_values(array_filter($commonProjects, fn($commonProject) => $this->isCommonProjectCompleted($commonProject, $playerId, $territories, $map, $building)));
+        return array_values(array_filter($commonProjects, fn($commonProject) => $this->isCommonProjectCompleted($commonProject, $playerId, $territories, $map, $building, $playerBuildings)));
     }
 
     function checkCompletedCommonProjects(int $playerId, int $areaPosition) {

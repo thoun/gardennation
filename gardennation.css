@@ -906,7 +906,7 @@ html {
   margin: 0 -10px;
 }
 
-.button-bramble-type, .bramble-type-token {
+.bramble-type-token {
   position: relative;
   display: inline-block;
   width: 100px;
@@ -916,14 +916,21 @@ html {
   border-radius: 50%;
   box-shadow: 1px 1px 3px 2px black;
 }
-.button-bramble-type[data-type="1"], .bramble-type-token[data-type="1"] {
+.bramble-type-token[data-type="1"] {
   background-position: 33.3333333333%;
 }
-.button-bramble-type[data-type="2"], .bramble-type-token[data-type="2"] {
+.bramble-type-token[data-type="2"] {
   background-position: 66.6666666667%;
 }
-.button-bramble-type[data-type="3"], .bramble-type-token[data-type="3"] {
+.bramble-type-token[data-type="3"] {
   background-position: 100%;
+}
+
+.log .bramble-type-token {
+  width: 32px;
+  height: 32px;
+  box-shadow: none;
+  vertical-align: middle;
 }
 
 .land-number {

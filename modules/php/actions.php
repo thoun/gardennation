@@ -159,7 +159,7 @@ trait ActionTrait {
         $this->DbQuery("UPDATE `bramble_area` SET `position` = $areaPosition WHERE `id` = $id");
 
         $territoryNumber = floor($areaPosition / 10);
-        $this->notifyAllPlayers('setBrambleType', clienttranslate('${player_name} choses bramble ${brambleIcon} for territory ${territoryNumber}'), [
+        $this->notifyAllPlayers('setBrambleType', clienttranslate('${player_name} chooses bramble ${brambleIcon} for territory ${territoryNumber}'), [
             'playerId' => $playerId,
             'player_name' => $this->getPlayerName($playerId),
             'territoryNumber' => $territoryNumber,

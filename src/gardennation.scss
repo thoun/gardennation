@@ -145,7 +145,7 @@ html {
   }
 }
 
-.button-bramble-type, .bramble-type-token {
+.bramble-type-token {
   position: relative;
   display: inline-block;
   width: $area-size;
@@ -159,6 +159,15 @@ html {
       &[data-type="#{$i}"] { 
           background-position: #{$i * 100% / 3};
       }
+  }
+}
+
+.log {
+  .bramble-type-token {
+    width: 32px;
+    height: 32px;
+    box-shadow: none;
+    vertical-align: middle;
   }
 }
 
