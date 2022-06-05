@@ -325,14 +325,17 @@
   text-align: center;
   right: 10px;
   top: 50px;
-  width: 130px;
-  border-radius: 15px 15px 50px 50px;
+  border-radius: 50px;
+  display: flex;
 }
 #board #remaining-bramble-tokens .title {
   font-size: 90%;
   text-shadow: 0 0 2px white;
+  writing-mode: vertical-rl;
+  margin-left: 8px;
+  margin-right: -8px;
 }
-#board #remaining-bramble-tokens .container {
+#board #remaining-bramble-tokens .container:not(:first-child) {
   margin-top: 10px;
 }
 #board #remaining-bramble-tokens .container .bramble-type-token {
@@ -340,7 +343,6 @@
 }
 #board #remaining-bramble-tokens .container .bramble-type-token:not(:first-child) {
   margin-left: -90px;
-  margin-top: -90px;
 }
 
 #common-projects {

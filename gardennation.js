@@ -365,7 +365,7 @@ var Board = /** @class */ (function () {
         document.getElementById("board").dataset.torticranePosition = '' + torticranePosition;
     }
     Board.prototype.createRemainingBrambleTokens = function (brambleIds) {
-        dojo.place("\n        <div id=\"remaining-bramble-tokens\" class=\"whiteblock\">\n            <div class=\"title\">".concat(_('Remaining bramble tokens'), "</div>\n            <div id=\"remaining-bramble-tokens-container-1\" class=\"container\"></div>\n            <div id=\"remaining-bramble-tokens-container-2\" class=\"container\"></div>\n            <div id=\"remaining-bramble-tokens-container-3\" class=\"container\"></div>\n            </div>\n        </div>\n        "), "board");
+        dojo.place("\n        <div id=\"remaining-bramble-tokens\" class=\"whiteblock\">\n            <div id=\"remaining-bramble-tokens-containers\">\n                <div id=\"remaining-bramble-tokens-container-1\" class=\"container\"></div>\n                <div id=\"remaining-bramble-tokens-container-2\" class=\"container\"></div>\n                <div id=\"remaining-bramble-tokens-container-3\" class=\"container\"></div>\n            </div>\n            <div class=\"title\">".concat(_('Remaining bramble tokens'), "</div>\n            </div>\n        </div>\n        "), "board");
         [1, 2, 3].forEach(function (type) { return brambleIds[type].forEach(function (id) {
             return dojo.place("<div id=\"bramble".concat(id, "\" class=\"bramble-type-token\" data-type=\"").concat(type, "\"><div class=\"land-number\">5</div></div>"), "remaining-bramble-tokens-container-".concat(type));
         }); });

@@ -333,23 +333,27 @@ $area-spacing: 106px;
         text-align: center;
         right: 10px;
         top: 50px;
-        width: 130px;
-        border-radius: 15px 15px 50px 50px;
+        border-radius: 50px;
+        display: flex;
 
         .title {
             font-size: 90%;
             text-shadow: 0 0 2px white;
+            writing-mode: vertical-rl;
+            margin-left: 8px;
+            margin-right: -8px;
         }
 
-        .container {            
-            margin-top: 10px;
+        .container { 
+            &:not(:first-child) {
+                margin-top: 10px;
+            }          
 
             .bramble-type-token {
                 box-shadow: 1px 1px 3px 2px black;
 
                 &:not(:first-child) {
                     margin-left: -90px;
-                    margin-top: -90px;
                 }
             }
         }
