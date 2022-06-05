@@ -365,7 +365,7 @@ var Board = /** @class */ (function () {
         document.getElementById("board").dataset.torticranePosition = '' + torticranePosition;
     }
     Board.prototype.createRemainingBrambleTokens = function (brambleIds) {
-        dojo.place("\n        <div id=\"remaining-bramble-tokens\" class=\"whiteblock\">\n            <div id=\"remaining-bramble-tokens-containers\">\n                <div id=\"remaining-bramble-tokens-container-1\" class=\"container\"></div>\n                <div id=\"remaining-bramble-tokens-container-2\" class=\"container\"></div>\n                <div id=\"remaining-bramble-tokens-container-3\" class=\"container\"></div>\n            </div>\n            <div class=\"title\">".concat(_('Remaining bramble tokens'), "</div>\n            </div>\n        </div>\n        "), "board");
+        dojo.place("\n        <div id=\"remaining-bramble-tokens\" class=\"whiteblock\">\n            <div id=\"remaining-bramble-tokens-containers\">\n                <div id=\"remaining-bramble-tokens-container-1\" class=\"bramble-container\"></div>\n                <div id=\"remaining-bramble-tokens-container-2\" class=\"bramble-container\"></div>\n                <div id=\"remaining-bramble-tokens-container-3\" class=\"bramble-container\"></div>\n            </div>\n            <div class=\"title\">".concat(_('Remaining bramble tokens'), "</div>\n            </div>\n        </div>\n        "), "board");
         [1, 2, 3].forEach(function (type) { return brambleIds[type].forEach(function (id) {
             return dojo.place("<div id=\"bramble".concat(id, "\" class=\"bramble-type-token\" data-type=\"").concat(type, "\"><div class=\"land-number\">5</div></div>"), "remaining-bramble-tokens-container-".concat(type));
         }); });
@@ -785,7 +785,10 @@ var GardenNation = /** @class */ (function () {
         document.getElementById('board').classList.toggle('hd', this.zoom > 1);
         document.getElementById('zoom-wrapper').style.height = "".concat(div.getBoundingClientRect().height, "px");
         var fullBoardWrapperDiv = document.getElementById('full-board-wrapper');
-        fullBoardWrapperDiv.style.display = fullBoardWrapperDiv.clientWidth < 1181 * zoom ? 'block' : 'flex';
+        var clientWidth = fullBoardWrapperDiv.clientWidth;
+        fullBoardWrapperDiv.style.display = clientWidth < 1181 * zoom ? 'block' : 'flex';
+        // set second board placement
+        document.getElementById('full-board').classList.toggle('common-projects-side-board', clientWidth > 1464);
     };
     GardenNation.prototype.tableHeightChange = function () {
         setTimeout(function () {

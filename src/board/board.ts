@@ -78,9 +78,9 @@ class Board {
         dojo.place(`
         <div id="remaining-bramble-tokens" class="whiteblock">
             <div id="remaining-bramble-tokens-containers">
-                <div id="remaining-bramble-tokens-container-1" class="container"></div>
-                <div id="remaining-bramble-tokens-container-2" class="container"></div>
-                <div id="remaining-bramble-tokens-container-3" class="container"></div>
+                <div id="remaining-bramble-tokens-container-1" class="bramble-container"></div>
+                <div id="remaining-bramble-tokens-container-2" class="bramble-container"></div>
+                <div id="remaining-bramble-tokens-container-3" class="bramble-container"></div>
             </div>
             <div class="title">${_('Remaining bramble tokens')}</div>
             </div>

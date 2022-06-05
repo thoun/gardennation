@@ -93,10 +93,10 @@ html {
   display: flex;
   justify-content: center;
   overflow: auto;
+}
 
-  #full-board {
-    width: 1181px;
-  }
+#full-board {
+  width: 1181px;
 }
 
 .icon {
@@ -185,31 +185,6 @@ html {
   pointer-events: none;
 }
 
-.common-project-wrapper {
-  top: 32px;
-  position: absolute;
-
-  &[data-number="0"] { 
-    left: 24px;
-    box-shadow: 3px 3px 0px 0px #333, 4px 4px 5px 5px black;
-    border-radius: 5px;
-
-    .card {
-      margin: 0;
-
-      .card-side {
-          box-shadow: unset;
-      }
-    }
-  }
-
-  @for $i from 1 through 4 {
-    &[data-number="#{$i}"] { 
-      left: #{222 + ($i - 1) * 184}px;
-    }
-  }
-}
-
 .building-floor {
   display: inline-block;
   width: 72px;
@@ -231,13 +206,100 @@ html {
   }
 }
 
-#remaining-roofs {
-  position: absolute;
-  left: 976px;
-  top: 5px;
-  width: 200px;
+#common-projects {
+    position: relative;
+    width: 1181px;
+    height: 283px;
+    background: url('img/secondboard.jpg');    
 
-  .building-floor {
-    margin-left: -35px;
+    .common-project-wrapper {
+      top: 32px;
+      position: absolute;
+
+      &[data-number="0"] { 
+        left: 24px;
+        box-shadow: 3px 3px 0px 0px #333, 4px 4px 5px 5px black;
+        border-radius: 5px;
+
+        .card {
+          margin: 0;
+
+          .card-side {
+              box-shadow: unset;
+          }
+        }
+      }
+
+      @for $i from 1 through 4 {
+        &[data-number="#{$i}"] { 
+          left: #{222 + ($i - 1) * 184}px;
+        }
+      }
+    }
+
+    #remaining-roofs {
+      position: absolute;
+      left: 976px;
+      top: 5px;
+      width: 200px;
+    
+      .building-floor {
+        margin-left: -35px;
+      }
+    }
+}
+
+#full-board.common-projects-side-board {
+  display: flex;
+  width: 1464px;
+
+  #common-projects {
+    width: 283px;
+    height: 1181px;
+    background: unset;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 1181px;
+      height: 283px;
+      background: url('img/secondboard.jpg');
+      transform: translate(-449px, 449px) rotate(90deg);
+    }    
+
+    .common-project-wrapper {
+      left: 62px;
+      position: absolute;
+
+      &[data-number="0"] { 
+        top: 2px;
+        box-shadow: 3px 3px 0px 0px #333, 4px 4px 5px 5px black;
+        border-radius: 5px;
+        z-index: 4;
+
+        .card {
+          margin: 0;
+
+          .card-side {
+              box-shadow: unset;
+          }
+        }
+      }
+
+      @for $i from 1 through 4 {
+        &[data-number="#{$i}"] { 
+          top: #{188 + ($i - 1) * 181}px;
+          z-index: #{4 - $i};
+        }
+      }
+    }
+
+    #remaining-roofs {
+      left: 35px;
+      top: 940px;
+      width: 250px;
+      height: 240px;
+    }
   }
 }

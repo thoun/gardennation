@@ -310,7 +310,11 @@ class GardenNation implements GardenNationGame {
         document.getElementById('zoom-wrapper').style.height = `${div.getBoundingClientRect().height}px`;
 
         const fullBoardWrapperDiv = document.getElementById('full-board-wrapper');
-        fullBoardWrapperDiv.style.display = fullBoardWrapperDiv.clientWidth < 1181*zoom ? 'block' : 'flex';
+        const clientWidth = fullBoardWrapperDiv.clientWidth;
+        fullBoardWrapperDiv.style.display = clientWidth < 1181*zoom ? 'block' : 'flex';
+
+        // set second board placement
+        document.getElementById('full-board').classList.toggle('common-projects-side-board', clientWidth > 1464);
     }
 
     public tableHeightChange() {

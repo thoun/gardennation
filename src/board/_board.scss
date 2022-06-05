@@ -344,7 +344,7 @@ $area-spacing: 106px;
             margin-right: -8px;
         }
 
-        .container { 
+        .bramble-container { 
             &:not(:first-child) {
                 margin-top: 10px;
             }          
@@ -358,13 +358,6 @@ $area-spacing: 106px;
             }
         }
     }
-}
-
-#common-projects {
-    position: relative;
-    width: 1181px;
-    height: 283px;
-    background: url('img/secondboard.jpg');
 }
 
 @keyframes highlight-building-animation {

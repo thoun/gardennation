@@ -335,21 +335,14 @@
   margin-left: 8px;
   margin-right: -8px;
 }
-#board #remaining-bramble-tokens .container:not(:first-child) {
+#board #remaining-bramble-tokens .bramble-container:not(:first-child) {
   margin-top: 10px;
 }
-#board #remaining-bramble-tokens .container .bramble-type-token {
+#board #remaining-bramble-tokens .bramble-container .bramble-type-token {
   box-shadow: 1px 1px 3px 2px black;
 }
-#board #remaining-bramble-tokens .container .bramble-type-token:not(:first-child) {
+#board #remaining-bramble-tokens .bramble-container .bramble-type-token:not(:first-child) {
   margin-left: -90px;
-}
-
-#common-projects {
-  position: relative;
-  width: 1181px;
-  height: 283px;
-  background: url("img/secondboard.jpg");
 }
 
 @keyframes highlight-building-animation {
@@ -852,7 +845,8 @@ html {
   justify-content: center;
   overflow: auto;
 }
-#full-board-wrapper #full-board {
+
+#full-board {
   width: 1181px;
 }
 
@@ -949,34 +943,6 @@ html {
   pointer-events: none;
 }
 
-.common-project-wrapper {
-  top: 32px;
-  position: absolute;
-}
-.common-project-wrapper[data-number="0"] {
-  left: 24px;
-  box-shadow: 3px 3px 0px 0px #333, 4px 4px 5px 5px black;
-  border-radius: 5px;
-}
-.common-project-wrapper[data-number="0"] .card {
-  margin: 0;
-}
-.common-project-wrapper[data-number="0"] .card .card-side {
-  box-shadow: unset;
-}
-.common-project-wrapper[data-number="1"] {
-  left: 222px;
-}
-.common-project-wrapper[data-number="2"] {
-  left: 406px;
-}
-.common-project-wrapper[data-number="3"] {
-  left: 590px;
-}
-.common-project-wrapper[data-number="4"] {
-  left: 774px;
-}
-
 .building-floor {
   display: inline-block;
   width: 72px;
@@ -1002,12 +968,102 @@ html {
   margin-left: -9px;
 }
 
-#remaining-roofs {
+#common-projects {
+  position: relative;
+  width: 1181px;
+  height: 283px;
+  background: url("img/secondboard.jpg");
+}
+#common-projects .common-project-wrapper {
+  top: 32px;
+  position: absolute;
+}
+#common-projects .common-project-wrapper[data-number="0"] {
+  left: 24px;
+  box-shadow: 3px 3px 0px 0px #333, 4px 4px 5px 5px black;
+  border-radius: 5px;
+}
+#common-projects .common-project-wrapper[data-number="0"] .card {
+  margin: 0;
+}
+#common-projects .common-project-wrapper[data-number="0"] .card .card-side {
+  box-shadow: unset;
+}
+#common-projects .common-project-wrapper[data-number="1"] {
+  left: 222px;
+}
+#common-projects .common-project-wrapper[data-number="2"] {
+  left: 406px;
+}
+#common-projects .common-project-wrapper[data-number="3"] {
+  left: 590px;
+}
+#common-projects .common-project-wrapper[data-number="4"] {
+  left: 774px;
+}
+#common-projects #remaining-roofs {
   position: absolute;
   left: 976px;
   top: 5px;
   width: 200px;
 }
-#remaining-roofs .building-floor {
+#common-projects #remaining-roofs .building-floor {
   margin-left: -35px;
+}
+
+#full-board.common-projects-side-board {
+  display: flex;
+  width: 1464px;
+}
+#full-board.common-projects-side-board #common-projects {
+  width: 283px;
+  height: 1181px;
+  background: unset;
+  overflow: hidden;
+}
+#full-board.common-projects-side-board #common-projects::before {
+  content: "";
+  position: absolute;
+  width: 1181px;
+  height: 283px;
+  background: url("img/secondboard.jpg");
+  transform: translate(-449px, 449px) rotate(90deg);
+}
+#full-board.common-projects-side-board #common-projects .common-project-wrapper {
+  left: 62px;
+  position: absolute;
+}
+#full-board.common-projects-side-board #common-projects .common-project-wrapper[data-number="0"] {
+  top: 2px;
+  box-shadow: 3px 3px 0px 0px #333, 4px 4px 5px 5px black;
+  border-radius: 5px;
+  z-index: 4;
+}
+#full-board.common-projects-side-board #common-projects .common-project-wrapper[data-number="0"] .card {
+  margin: 0;
+}
+#full-board.common-projects-side-board #common-projects .common-project-wrapper[data-number="0"] .card .card-side {
+  box-shadow: unset;
+}
+#full-board.common-projects-side-board #common-projects .common-project-wrapper[data-number="1"] {
+  top: 188px;
+  z-index: 3;
+}
+#full-board.common-projects-side-board #common-projects .common-project-wrapper[data-number="2"] {
+  top: 369px;
+  z-index: 2;
+}
+#full-board.common-projects-side-board #common-projects .common-project-wrapper[data-number="3"] {
+  top: 550px;
+  z-index: 1;
+}
+#full-board.common-projects-side-board #common-projects .common-project-wrapper[data-number="4"] {
+  top: 731px;
+  z-index: 0;
+}
+#full-board.common-projects-side-board #common-projects #remaining-roofs {
+  left: 35px;
+  top: 940px;
+  width: 250px;
+  height: 240px;
 }
