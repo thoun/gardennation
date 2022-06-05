@@ -83,7 +83,7 @@ class GardenNation extends Table {
         $values = [];
         $firstPlayer = true;
         foreach ($players as $player_id => $player) {
-            $color = array_shift( $default_colors );
+            $color = array_splice($default_colors, bga_rand(0, count($default_colors) - 1), 1)[0];
             $inhabitants = $firstPlayer ? 38 : 35;
             $playerTurnTrack = $firstPlayer ? 1 : 0;
             $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."', $inhabitants, $playerTurnTrack, '[0,0,0]')";
@@ -206,7 +206,7 @@ class GardenNation extends Table {
         $result['territories'] = $this->getTerritories();
         $map = $this->getMap();
         //$this->debug($map);
-        $buildings = $this->getTerritoryBuildings();
+        $buildings = $this->getBuildings();
         $result['map'] = [];
         
         foreach ($map as $position => $area) {

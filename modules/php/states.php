@@ -138,7 +138,7 @@ trait StateTrait {
     function stEndScore() {
         $players = $this->getPlayers();
         $map = $this->getMap();
-        $buildings = $this->getTerritoryBuildings();
+        $buildings = $this->getBuildings();
 
         foreach($players as $player) {
             $playerBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId == $player->id));

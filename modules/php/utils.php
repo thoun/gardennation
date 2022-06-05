@@ -202,7 +202,7 @@ trait UtilTrait {
     }
 
     function canUsePloy(int $playerId) {
-        if (boolval($this->getGameStateValue(PLOY_USED))) {
+        if (boolval($this->getGameStateValue(PLOY_USED)) || intval($this->getGameStateValue(TORTICRANE_POSITION)) < 0) {
             return false;
         }
 
@@ -238,7 +238,7 @@ trait UtilTrait {
             $playersIds = $this->getTerritoryControlPlayersIds($i);
             
             if (count($playersIds) > 0) {
-                $buildingsToHighlight = $this->getTerritoryBuildings($i);
+                $buildingsToHighlight = $this->getBuildings($i);
                 $buildingsToHighlight = array_values(array_filter($buildingsToHighlight, fn($building) => in_array($building->playerId, $playersIds)));
 
                 $alone = count($playersIds) == 1;
@@ -316,11 +316,11 @@ trait UtilTrait {
     }
 
     function getBuildingByAreaPosition(int $areaPosition) {
-        $buildings = $this->getTerritoryBuildings(floor($areaPosition / 10), $areaPosition % 10);
+        $buildings = $this->getBuildings(floor($areaPosition / 10), $areaPosition % 10);
         return count($buildings) > 0 ? array_values($buildings)[0] : null;
     }
 
-    function getTerritoryBuildings(/*int|null*/ $territoryNumber = null, /*int|null*/ $positionInTerritory = null) {
+    function getBuildings(/*int|null*/ $territoryNumber = null, /*int|null*/ $positionInTerritory = null) {
         $sql = "SELECT * FROM `building_floor` WHERE `territory_number` is not null";
         if ($territoryNumber !== null) {
             $sql .= " AND `territory_number` = $territoryNumber";
@@ -359,10 +359,10 @@ trait UtilTrait {
         $territoryBuildings = [];
         if ($torticranePosition == -1) {
             foreach ([1,2,3,4,5,6,7] as $number) {
-                $territoryBuildings = array_merge($territoryBuildings, $this->getTerritoryBuildings($number));
+                $territoryBuildings = array_merge($territoryBuildings, $this->getBuildings($number));
             }
         } else {
-            $territoryBuildings = $this->getTerritoryBuildings($territories[$torticranePosition][0]);
+            $territoryBuildings = $this->getBuildings($territories[$torticranePosition][0]);
         }
         return $territoryBuildings;
     }
@@ -585,7 +585,7 @@ trait UtilTrait {
     function getCompletedCommonProjects(int $playerId, int $areaPosition) {
         $territories = $this->getTerritories();
         $map = $this->getMap();
-        $buildings = $this->getTerritoryBuildings();
+        $buildings = $this->getBuildings();
         $playerBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId == $playerId));
         $building = $this->array_find($playerBuildings, fn($building) => $building->areaPosition == $areaPosition);
 

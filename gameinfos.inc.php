@@ -99,8 +99,8 @@ $gameinfos = [
 // Diplomacy of the game, from 0 (no interaction in this game) to 5 (totally based on interaction and discussion between players)
 'diplomacy' => 2,    
 
-// Colors attributed to players : yellow / red / green / blue
-'player_colors' => ["fcaf26", "ab3b2a", "5f8637", "456e96"],
+// Colors attributed to players : blue / green / yellow / red
+'player_colors' => ["456e96", "5f8637", "fcaf26", "ab3b2a"],
 
 // Favorite colors support : if set to "true", support attribution of favorite colors based on player's preferences (see reattributeColorsBasedOnPreferences PHP method)
 // NB: this parameter is used only to flag games supporting this feature; you must use (or not use) reattributeColorsBasedOnPreferences PHP method to actually enable or disable the feature.
