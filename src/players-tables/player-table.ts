@@ -20,7 +20,7 @@ class PlayerTable {
                 </div>
             </div>
             <div id="player-table-${this.playerId}-common-projects-wrapper" class="player-common-projects-wrapper">
-                <div id="player-table-${this.playerId}-common-projects-title" class="title ${player.commonProjects.length ? '' : 'hidden'}">${_('Completed common projects')}</div>
+                <div id="player-table-${this.playerId}-common-projects-title" class="title ${player.commonProjects.length ? '' : 'hidden'}">${_('Completed Common projects')}</div>
                 <div id="player-table-${this.playerId}-common-projects" class="player-common-projects">
                 </div>
             </div>
