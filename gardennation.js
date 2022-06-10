@@ -576,7 +576,7 @@ var GardenNation = /** @class */ (function () {
         this.board = new Board(this, players, gamedatas);
         this.createPlayerTables(gamedatas);
         [0, 1, 2, 3, 4].forEach(function (number) {
-            dojo.place("\n            <div id=\"common-project-wrapper-".concat(number, "\" class=\"common-project-wrapper\" data-number=\"").concat(number, "\">\n            </div>\n            "), 'common-projects');
+            dojo.place("\n            <div id=\"common-project-wrapper-".concat(number, "\" class=\"common-project-wrapper\" data-number=\"").concat(number, "\">\n            </div>\n            "), 'common-projects-inner');
         });
         this.commonProjectCards.createMoveOrUpdateCard({}, "common-project-wrapper-0");
         gamedatas.commonProjects.forEach(function (commonProject) { return _this.commonProjectCards.createMoveOrUpdateCard(commonProject, "common-project-wrapper-".concat(commonProject.locationArg)); });
@@ -597,6 +597,7 @@ var GardenNation = /** @class */ (function () {
         }
         this.onScreenWidthChange = function () {
             _this.setAutoZoom();
+            _this.tableHeightChange();
         };
         log("Ending game setup");
     };
@@ -784,14 +785,13 @@ var GardenNation = /** @class */ (function () {
         var div = document.getElementById('full-table');
         div.style.transform = zoom === 1 ? '' : "scale(".concat(zoom, ")");
         div.style.marginRight = "".concat(ZOOM_LEVELS_MARGIN[newIndex], "%");
-        this.tableHeightChange();
         document.getElementById('board').classList.toggle('hd', this.zoom > 1);
-        document.getElementById('zoom-wrapper').style.height = "".concat(div.getBoundingClientRect().height, "px");
         var fullBoardWrapperDiv = document.getElementById('full-board-wrapper');
         var clientWidth = fullBoardWrapperDiv.clientWidth;
         fullBoardWrapperDiv.style.display = clientWidth < 1181 * zoom ? 'block' : 'flex';
         // set second board placement
         document.getElementById('full-board').classList.toggle('common-projects-side-board', clientWidth > 1464);
+        this.tableHeightChange();
     };
     GardenNation.prototype.tableHeightChange = function () {
         setTimeout(function () {
@@ -1204,6 +1204,7 @@ var GardenNation = /** @class */ (function () {
     };
     GardenNation.prototype.notif_takeCommonProject = function (notif) {
         this.getPlayerTable(notif.args.playerId).setCommonProjects([notif.args.commonProject]);
+        this.tableHeightChange();
     };
     GardenNation.prototype.notif_newCommonProject = function (notif) {
         // we first create a backflipped card

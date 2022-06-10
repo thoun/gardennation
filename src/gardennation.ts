@@ -74,7 +74,7 @@ class GardenNation implements GardenNationGame {
             dojo.place(`
             <div id="common-project-wrapper-${number}" class="common-project-wrapper" data-number="${number}">
             </div>
-            `, 'common-projects');
+            `, 'common-projects-inner');
         });        
         this.commonProjectCards.createMoveOrUpdateCard({} as any, `common-project-wrapper-0`);
         gamedatas.commonProjects.forEach(commonProject => this.commonProjectCards.createMoveOrUpdateCard(commonProject, `common-project-wrapper-${commonProject.locationArg}`));
@@ -101,6 +101,7 @@ class GardenNation implements GardenNationGame {
         }
         (this as any).onScreenWidthChange = () => {
             this.setAutoZoom();
+            this.tableHeightChange();
         }
 
         log( "Ending game setup" );
@@ -307,10 +308,7 @@ class GardenNation implements GardenNationGame {
         const div = document.getElementById('full-table');
         div.style.transform = zoom === 1 ? '' : `scale(${zoom})`;
         div.style.marginRight = `${ZOOM_LEVELS_MARGIN[newIndex]}%`;
-        this.tableHeightChange();
         document.getElementById('board').classList.toggle('hd', this.zoom > 1);
-
-        document.getElementById('zoom-wrapper').style.height = `${div.getBoundingClientRect().height}px`;
 
         const fullBoardWrapperDiv = document.getElementById('full-board-wrapper');
         const clientWidth = fullBoardWrapperDiv.clientWidth;
@@ -318,6 +316,8 @@ class GardenNation implements GardenNationGame {
 
         // set second board placement
         document.getElementById('full-board').classList.toggle('common-projects-side-board', clientWidth > 1464);
+
+        this.tableHeightChange();
     }
 
     public tableHeightChange() {
@@ -880,6 +880,7 @@ class GardenNation implements GardenNationGame {
 
     notif_takeCommonProject(notif: Notif<NotifTakeCommonProjectArgs>) {
         this.getPlayerTable(notif.args.playerId).setCommonProjects([notif.args.commonProject]);
+        this.tableHeightChange();
     }
 
     notif_newCommonProject(notif: Notif<NotifTakeCommonProjectArgs>) {

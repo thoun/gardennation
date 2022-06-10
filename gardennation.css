@@ -973,6 +973,10 @@ html {
   position: relative;
   width: 1181px;
   height: 283px;
+}
+#common-projects #common-projects-inner {
+  width: 1181px;
+  height: 283px;
   background: url("img/secondboard.jpg");
 }
 #common-projects .common-project-wrapper {
@@ -1022,47 +1026,16 @@ html {
   background: unset;
   overflow: hidden;
 }
-#full-board.common-projects-side-board #common-projects::before {
-  content: "";
-  position: absolute;
-  width: 1181px;
-  height: 283px;
-  background: url("img/secondboard.jpg");
+#full-board.common-projects-side-board #common-projects #common-projects-inner {
   transform: translate(-449px, 449px) rotate(90deg);
 }
-#full-board.common-projects-side-board #common-projects .common-project-wrapper {
-  left: 62px;
-  position: absolute;
+#full-board.common-projects-side-board #common-projects #common-projects-inner .common-project-wrapper:not(#common-project-wrapper-0) .card {
+  transition: transform 0.5s ease-in-out;
 }
-#full-board.common-projects-side-board #common-projects .common-project-wrapper[data-number="0"] {
-  top: 2px;
-  box-shadow: 3px 3px 0px 0px #333, 4px 4px 5px 5px black;
-  border-radius: 5px;
-  z-index: 4;
+#full-board.common-projects-side-board #common-projects #common-projects-inner .common-project-wrapper:not(#common-project-wrapper-0):hover .card, #full-board.common-projects-side-board #common-projects #common-projects-inner .common-project-wrapper:not(#common-project-wrapper-0) .card:hover {
+  transform: rotate(-90deg);
 }
-#full-board.common-projects-side-board #common-projects .common-project-wrapper[data-number="0"] .card {
-  margin: 0;
-}
-#full-board.common-projects-side-board #common-projects .common-project-wrapper[data-number="0"] .card .card-side {
-  box-shadow: unset;
-}
-#full-board.common-projects-side-board #common-projects .common-project-wrapper[data-number="1"] {
-  top: 188px;
-  z-index: 3;
-}
-#full-board.common-projects-side-board #common-projects .common-project-wrapper[data-number="2"] {
-  top: 369px;
-  z-index: 2;
-}
-#full-board.common-projects-side-board #common-projects .common-project-wrapper[data-number="3"] {
-  top: 550px;
-  z-index: 1;
-}
-#full-board.common-projects-side-board #common-projects .common-project-wrapper[data-number="4"] {
-  top: 731px;
-  z-index: 0;
-}
-#full-board.common-projects-side-board #common-projects #remaining-roofs {
+#full-board.common-projects-side-board #remaining-roofs {
   left: 35px;
   top: 940px;
   width: 250px;
