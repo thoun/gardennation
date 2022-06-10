@@ -284,6 +284,11 @@ trait UtilTrait {
         $this->DbQuery("UPDATE player SET `player_turn_track` = 0 WHERE `player_id` <> $playerId");
         $this->DbQuery("UPDATE player SET `player_turn_track` = 1 WHERE `player_id` = $playerId");
 
+        $this->notifyAllPlayers('log', clienttranslate('A new round starts! ${player_name} was the last player of the previous round, and will start the new round'), [
+            'playerId' => $playerId,
+            'player_name' => $this->getPlayerName($playerId),
+        ]);
+
         foreach ($players as $player) {
             if ($player->id != $playerId) {
                 $this->notifyAllPlayers('setPlayerOrder', '', [
