@@ -98,7 +98,7 @@ class Board {
         const top = cases >= 48 ? 0 : (24 - Math.max(0, cases - 24)) * POINT_CASE_SIZE;
         const left = cases < 48 ? (24 - Math.min(cases, 24)) * POINT_CASE_SIZE : (cases - 48)*POINT_CASE_SIZE;
 
-        return [10 + left, 10 + top];
+        return [8 + left, 8 + top];
     }
 
     private movePoints() {
