@@ -141,6 +141,7 @@ $playerActionsGameStates = [
         "args" => "argChooseCompletedCommonProject",
         "possibleactions" => [ 
             "chooseCompletedCommonProject",
+            "skipCompletedCommonProject",
         ],
         "transitions" => [
             "endAction" => ST_END_ACTION,

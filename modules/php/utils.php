@@ -598,7 +598,7 @@ trait UtilTrait {
         return array_values(array_filter($commonProjects, fn($commonProject) => $this->isCommonProjectCompleted($commonProject, $playerId, $territories, $map, $building, $playerBuildings)));
     }
 
-    function checkCompletedCommonProjects(int $playerId, int $areaPosition) {
+    function checkCompletedCommonProjects(int $playerId, int $areaPosition) { // return if need redirect to choose common project
         // check objectives if there is at least 1 remaining roof
         if (count($this->getAvailableBuildingFloors(0)) == 0) {
             return false;
@@ -606,15 +606,7 @@ trait UtilTrait {
 
         $completedCommonProjects = $this->getCompletedCommonProjects($playerId, $areaPosition);
 
-        if (count($completedCommonProjects) > 0) {
-            if (count($completedCommonProjects) > 1) {
-                return true;
-            }
-            
-            $this->takeCompletedCommonProject($completedCommonProjects[0], $playerId, $areaPosition);
-        }
-
-        return false;
+        return count($completedCommonProjects) > 0;
     }
 
     function takeCompletedCommonProject(CommonProject $commonProject, int $playerId, int $areaPosition) {

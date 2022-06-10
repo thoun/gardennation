@@ -335,6 +335,8 @@ trait ActionTrait {
             'floors' => $building->floors,
             'cost' => $cost,
         ]);
+
+        $this->moveTorticrane($areaPosition);
                 
         if ($this->checkCompletedCommonProjects($playerId, $areaPosition)) {
             // redirected to choose common project
@@ -352,7 +354,7 @@ trait ActionTrait {
         $this->gamestate->nextState('cancel');
     }
 
-    public function chooseCompletedCommonProject($id) {
+    public function chooseCompletedCommonProject(int $id) {
         self::checkAction('chooseCompletedCommonProject');
         
         $playerId = intval($this->getActivePlayerId());
@@ -367,6 +369,12 @@ trait ActionTrait {
         }
 
         $this->takeCompletedCommonProject($commonProject, $playerId, $areaPosition);
+
+        $this->gamestate->nextState('endAction');
+    }
+
+    public function skipCompletedCommonProject() {
+        self::checkAction('skipCompletedCommonProject');
 
         $this->gamestate->nextState('endAction');
     }

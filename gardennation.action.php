@@ -224,6 +224,14 @@
       self::ajaxResponse();
     }
 
+    public function skipCompletedCommonProject() {
+      self::setAjaxMode();
+
+      $this->game->skipCompletedCommonProject();
+
+      self::ajaxResponse();
+    }
+
   }
   
 

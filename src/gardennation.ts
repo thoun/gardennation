@@ -241,6 +241,9 @@ class GardenNation implements GardenNationGame {
                 case 'constructBuilding':
                     (this as any).addActionButton(`cancelConstructBuilding-button`, _("Cancel"), () => this.cancelConstructBuilding(), null, null, 'gray');
                     break;
+                case 'chooseCompletedCommonProject':
+                    (this as any).addActionButton(`skipCompletedCommonProject-button`, _("Skip"), () => this.skipCompletedCommonProject(), null, null, 'red');
+                    break;
                 case 'abandonBuilding':
                     (this as any).addActionButton(`cancelAbandonBuilding-button`, _("Cancel"), () => this.cancelAbandonBuilding(), null, null, 'gray');
                     break;
@@ -540,6 +543,14 @@ class GardenNation implements GardenNationGame {
         }
 
         this.takeAction('cancelConstructBuilding');
+    }
+
+    public skipCompletedCommonProject() {
+        if (!(this as any).checkAction('skipCompletedCommonProject')) {
+            return;
+        }
+
+        this.takeAction('skipCompletedCommonProject');
     }
 
     public abandonBuilding(areaPosition: number) {

@@ -722,6 +722,9 @@ var GardenNation = /** @class */ (function () {
                 case 'constructBuilding':
                     this.addActionButton("cancelConstructBuilding-button", _("Cancel"), function () { return _this.cancelConstructBuilding(); }, null, null, 'gray');
                     break;
+                case 'chooseCompletedCommonProject':
+                    this.addActionButton("skipCompletedCommonProject-button", _("Skip"), function () { return _this.skipCompletedCommonProject(); }, null, null, 'red');
+                    break;
                 case 'abandonBuilding':
                     this.addActionButton("cancelAbandonBuilding-button", _("Cancel"), function () { return _this.cancelAbandonBuilding(); }, null, null, 'gray');
                     break;
@@ -962,6 +965,12 @@ var GardenNation = /** @class */ (function () {
             return;
         }
         this.takeAction('cancelConstructBuilding');
+    };
+    GardenNation.prototype.skipCompletedCommonProject = function () {
+        if (!this.checkAction('skipCompletedCommonProject')) {
+            return;
+        }
+        this.takeAction('skipCompletedCommonProject');
     };
     GardenNation.prototype.abandonBuilding = function (areaPosition) {
         if (!this.checkAction('abandonBuilding')) {
