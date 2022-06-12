@@ -93,8 +93,16 @@ class PlayerTable {
             document.getElementById(`player-table-${this.playerId}-secret-missions-title`).classList.remove('hidden');
         }
 
-        secretMissions.forEach(secretMission => 
-            this.game.secretMissionCards.createMoveOrUpdateCard(secretMission, `player-table-${this.playerId}-secret-missions`)
-        );
+        secretMissions.forEach((secretMission, index) => {
+            this.game.secretMissionCards.createMoveOrUpdateCard(secretMission, `player-table-${this.playerId}-secret-missions`);
+
+            if (this.playerId == this.game.getPlayerId()) {
+                const secretMissionReminderDiv = document.getElementById(`secret-mission-reminder-${index}`);
+                if (secretMissionReminderDiv) {
+                    secretMissionReminderDiv.dataset.type = ''+secretMission.type;
+                    secretMissionReminderDiv.dataset.subType = ''+secretMission.subType;
+                }
+            }
+        });
     }
 }

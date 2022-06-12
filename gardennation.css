@@ -330,11 +330,11 @@
   display: flex;
 }
 #board #remaining-bramble-tokens .title {
-  font-size: 90%;
   text-shadow: 0 0 2px white;
   writing-mode: vertical-rl;
   margin-left: 8px;
   margin-right: -8px;
+  font-family: "garden-nation-title";
 }
 #board #remaining-bramble-tokens .bramble-container:not(:first-child) {
   margin-top: 10px;
@@ -1054,4 +1054,154 @@ html {
 }
 #secret-missions-selector .card {
   cursor: pointer;
+}
+
+#objectives-reminder {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  height: 44px;
+  user-select: none;
+  border-radius: 5px;
+  padding: 5px;
+}
+#objectives-reminder.hidden {
+  display: none;
+}
+#objectives-reminder .title {
+  text-shadow: 0 0 2px white;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-family: "garden-nation-title";
+  text-align: center;
+  font-size: 75%;
+  margin-right: -8px;
+}
+#objectives-reminder .cards {
+  display: flex;
+}
+#objectives-reminder .card-reminder {
+  width: 149px;
+  height: 44px;
+  margin: 2px;
+  border-radius: 5px;
+  background-position-y: 53px;
+  background-size: auto 208px;
+}
+#objectives-reminder .common-project-reminder {
+  background-image: url("img/common-projects.jpg");
+}
+#objectives-reminder .secret-mission-reminder {
+  background-image: url("img/secret-missions.jpg");
+}
+#objectives-reminder .common-project-reminder[data-type="1"][data-sub-type="1"] {
+  background-position-x: 4.7619047619%;
+}
+#objectives-reminder .common-project-reminder[data-type="1"][data-sub-type="2"] {
+  background-position-x: 9.5238095238%;
+}
+#objectives-reminder .common-project-reminder[data-type="1"][data-sub-type="3"] {
+  background-position-x: 14.2857142857%;
+}
+#objectives-reminder .common-project-reminder[data-type="1"][data-sub-type="4"] {
+  background-position-x: 19.0476190476%;
+}
+#objectives-reminder .common-project-reminder[data-type="1"][data-sub-type="5"] {
+  background-position-x: 23.8095238095%;
+}
+#objectives-reminder .common-project-reminder[data-type="1"][data-sub-type="6"] {
+  background-position-x: 28.5714285714%;
+}
+#objectives-reminder .common-project-reminder[data-type="2"][data-sub-type="1"] {
+  background-position-x: 33.3333333333%;
+}
+#objectives-reminder .common-project-reminder[data-type="2"][data-sub-type="2"] {
+  background-position-x: 38.0952380952%;
+}
+#objectives-reminder .common-project-reminder[data-type="2"][data-sub-type="3"] {
+  background-position-x: 42.8571428571%;
+}
+#objectives-reminder .common-project-reminder[data-type="3"][data-sub-type="1"] {
+  background-position-x: 47.619047619%;
+}
+#objectives-reminder .common-project-reminder[data-type="3"][data-sub-type="2"] {
+  background-position-x: 52.380952381%;
+}
+#objectives-reminder .common-project-reminder[data-type="3"][data-sub-type="3"] {
+  background-position-x: 57.1428571429%;
+}
+#objectives-reminder .common-project-reminder[data-type="4"][data-sub-type="1"] {
+  background-position-x: 61.9047619048%;
+}
+#objectives-reminder .common-project-reminder[data-type="4"][data-sub-type="2"] {
+  background-position-x: 66.6666666667%;
+}
+#objectives-reminder .common-project-reminder[data-type="4"][data-sub-type="3"] {
+  background-position-x: 71.4285714286%;
+}
+#objectives-reminder .common-project-reminder[data-type="5"][data-sub-type="1"] {
+  background-position-x: 76.1904761905%;
+}
+#objectives-reminder .common-project-reminder[data-type="5"][data-sub-type="2"] {
+  background-position-x: 80.9523809524%;
+}
+#objectives-reminder .common-project-reminder[data-type="5"][data-sub-type="3"] {
+  background-position-x: 85.7142857143%;
+}
+#objectives-reminder .common-project-reminder[data-type="6"][data-sub-type="1"] {
+  background-position-x: 90.4761904762%;
+}
+#objectives-reminder .common-project-reminder[data-type="6"][data-sub-type="2"] {
+  background-position-x: 95.2380952381%;
+}
+#objectives-reminder .common-project-reminder[data-type="6"][data-sub-type="3"] {
+  background-position-x: 100%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="1"][data-sub-type="1"] {
+  background-position-x: 6.6666666667%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="1"][data-sub-type="2"] {
+  background-position-x: 13.3333333333%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="1"][data-sub-type="3"] {
+  background-position-x: 20%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="2"][data-sub-type="1"] {
+  background-position-x: 26.6666666667%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="2"][data-sub-type="2"] {
+  background-position-x: 33.3333333333%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="2"][data-sub-type="3"] {
+  background-position-x: 40%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="3"][data-sub-type="1"] {
+  background-position-x: 46.6666666667%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="3"][data-sub-type="2"] {
+  background-position-x: 53.3333333333%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="4"][data-sub-type="1"] {
+  background-position-x: 60%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="4"][data-sub-type="2"] {
+  background-position-x: 66.6666666667%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="4"][data-sub-type="3"] {
+  background-position-x: 73.3333333333%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="4"][data-sub-type="4"] {
+  background-position-x: 80%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="4"][data-sub-type="5"] {
+  background-position-x: 86.6666666667%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="4"][data-sub-type="6"] {
+  background-position-x: 93.3333333333%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="4"][data-sub-type="7"] {
+  background-position-x: 100%;
+}
+#objectives-reminder .secret-mission-reminder[data-type="0"] {
+  visibility: hidden;
 }

@@ -520,8 +520,15 @@ var PlayerTable = /** @class */ (function () {
         if (secretMissions.length) {
             document.getElementById("player-table-".concat(this.playerId, "-secret-missions-title")).classList.remove('hidden');
         }
-        secretMissions.forEach(function (secretMission) {
-            return _this.game.secretMissionCards.createMoveOrUpdateCard(secretMission, "player-table-".concat(_this.playerId, "-secret-missions"));
+        secretMissions.forEach(function (secretMission, index) {
+            _this.game.secretMissionCards.createMoveOrUpdateCard(secretMission, "player-table-".concat(_this.playerId, "-secret-missions"));
+            if (_this.playerId == _this.game.getPlayerId()) {
+                var secretMissionReminderDiv = document.getElementById("secret-mission-reminder-".concat(index));
+                if (secretMissionReminderDiv) {
+                    secretMissionReminderDiv.dataset.type = '' + secretMission.type;
+                    secretMissionReminderDiv.dataset.subType = '' + secretMission.subType;
+                }
+            }
         });
     };
     return PlayerTable;
@@ -583,12 +590,8 @@ var GardenNation = /** @class */ (function () {
         var players = Object.values(gamedatas.players);
         this.board = new Board(this, players, gamedatas);
         this.createPlayerTables(gamedatas);
-        [0, 1, 2, 3, 4].forEach(function (number) {
-            dojo.place("\n            <div id=\"common-project-wrapper-".concat(number, "\" class=\"common-project-wrapper\" data-number=\"").concat(number, "\">\n            </div>\n            "), 'common-projects-inner');
-        });
-        this.commonProjectCards.createMoveOrUpdateCard({}, "common-project-wrapper-0");
-        gamedatas.commonProjects.forEach(function (commonProject) { return _this.commonProjectCards.createMoveOrUpdateCard(commonProject, "common-project-wrapper-".concat(commonProject.locationArg)); });
-        gamedatas.remainingRoofs.forEach(function (roof) { return dojo.place("<div id=\"building-floor-".concat(roof.id, "\" class=\"building-floor\" data-player-id=\"0\" data-color=\"0\"></div>"), "remaining-roofs"); });
+        this.createSecondBoard(gamedatas);
+        this.createObjectiveReminder(gamedatas);
         if (gamedatas.endTurn) {
             this.notif_lastTurn();
         }
@@ -816,6 +819,9 @@ var GardenNation = /** @class */ (function () {
     ///////////////////////////////////////////////////
     //// Utility methods
     ///////////////////////////////////////////////////
+    /**
+     * Handle user preferences changes.
+     */
     GardenNation.prototype.setZoom = function (zoom) {
         if (zoom === void 0) { zoom = 1; }
         this.zoom = zoom;
@@ -887,10 +893,9 @@ var GardenNation = /** @class */ (function () {
     };
     GardenNation.prototype.onPreferenceChange = function (prefId, prefValue) {
         switch (prefId) {
-            // KEEP
-            /*case 202:
-                document.getElementById('full-table').dataset.highContrastPoints = '' + prefValue;
-                break;*/
+            case 201:
+                document.getElementById('objectives-reminder').classList.toggle('hidden', prefValue == 2);
+                break;
         }
     };
     GardenNation.prototype.setTooltip = function (id, html) {
@@ -945,6 +950,35 @@ var GardenNation = /** @class */ (function () {
     GardenNation.prototype.createPlayerTable = function (gamedatas, playerId) {
         var playerTable = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(playerTable);
+    };
+    GardenNation.prototype.createSecondBoard = function (gamedatas) {
+        var _this = this;
+        [0, 1, 2, 3, 4].forEach(function (number) {
+            dojo.place("\n            <div id=\"common-project-wrapper-".concat(number, "\" class=\"common-project-wrapper\" data-number=\"").concat(number, "\">\n            </div>\n            "), 'common-projects-inner');
+        });
+        this.commonProjectCards.createMoveOrUpdateCard({}, "common-project-wrapper-0");
+        gamedatas.commonProjects.forEach(function (commonProject) { return _this.commonProjectCards.createMoveOrUpdateCard(commonProject, "common-project-wrapper-".concat(commonProject.locationArg)); });
+        gamedatas.remainingRoofs.forEach(function (roof) { return dojo.place("<div id=\"building-floor-".concat(roof.id, "\" class=\"building-floor\" data-player-id=\"0\" data-color=\"0\"></div>"), "remaining-roofs"); });
+    };
+    GardenNation.prototype.createObjectiveReminder = function (gamedatas) {
+        var _this = this;
+        var playerId = '' + this.getPlayerId();
+        if (!Object.keys(this.gamedatas.players).includes(playerId)) {
+            return;
+        }
+        dojo.place("<div id=\"objectives-reminder\" class=\"whiteblock\">\n            <div id=\"common-projects-reminder-title\" class=\"title\" title=\"".concat(_("Common projects"), "\">").concat(_("Common projects"), "</div>\n            <div id=\"common-projects-reminder\" class=\"cards\"></div>\n            <div id=\"secret-missions-reminder-title\" class=\"title\" title=\"").concat(_("Secret missions"), "\">").concat(_("Secret missions"), "</div>\n            <div id=\"secret-missions-reminder\" class=\"cards\"></div>\n        </div>"), 'zoom-wrapper', 'before');
+        [1, 2, 3, 4].forEach(function (number) {
+            var commonProject = _this.gamedatas.commonProjects.find(function (commonProject) { return commonProject.locationArg == number; });
+            dojo.place("\n            <div id=\"common-project-reminder-".concat(number, "\" class=\"common-project-reminder card-reminder\" data-type=\"").concat(commonProject.type, "\" data-sub-type=\"").concat(commonProject.subType, "\">\n            </div>\n            "), 'common-projects-reminder');
+        });
+        [0, 1].forEach(function (number) {
+            dojo.place("\n            <div id=\"secret-mission-reminder-".concat(number, "\" class=\"secret-mission-reminder card-reminder\" data-type=\"0\">\n            </div>\n            "), 'secret-missions-reminder');
+        });
+        this.gamedatas.players[playerId].secretMissions.forEach(function (secretMission, index) {
+            var secretMissionDiv = document.getElementById("secret-mission-reminder-".concat(index));
+            secretMissionDiv.dataset.type = '' + secretMission.type;
+            secretMissionDiv.dataset.subType = '' + secretMission.subType;
+        });
     };
     GardenNation.prototype.checkConfirmSecretMissionsButtonState = function () {
         var _a;
@@ -1298,12 +1332,16 @@ var GardenNation = /** @class */ (function () {
         this.tableHeightChange();
     };
     GardenNation.prototype.notif_newCommonProject = function (notif) {
+        var commonProject = notif.args.commonProject;
         // we first create a backflipped card
         this.commonProjectCards.createMoveOrUpdateCard({
-            id: notif.args.commonProject.id
+            id: commonProject.id
         }, "common-project-wrapper-0");
         // then we reveal it
-        this.commonProjectCards.createMoveOrUpdateCard(notif.args.commonProject, "common-project-wrapper-".concat(notif.args.commonProject.locationArg));
+        this.commonProjectCards.createMoveOrUpdateCard(commonProject, "common-project-wrapper-".concat(commonProject.locationArg));
+        var commonProjectReminderDiv = document.getElementById("common-project-reminder-".concat(commonProject.locationArg));
+        commonProjectReminderDiv.dataset.type = '' + commonProject.type;
+        commonProjectReminderDiv.dataset.subType = '' + commonProject.subType;
     };
     GardenNation.prototype.notif_revealSecretMission = function (notif) {
         this.getPlayerTable(notif.args.playerId).setSecretMissions([notif.args.secretMission]);

@@ -71,17 +71,8 @@ class GardenNation implements GardenNationGame {
         const players = Object.values(gamedatas.players);
         this.board = new Board(this, players, gamedatas);
         this.createPlayerTables(gamedatas);
-
-        [0, 1, 2, 3, 4].forEach(number => {
-            dojo.place(`
-            <div id="common-project-wrapper-${number}" class="common-project-wrapper" data-number="${number}">
-            </div>
-            `, 'common-projects-inner');
-        });        
-        this.commonProjectCards.createMoveOrUpdateCard({} as any, `common-project-wrapper-0`);
-        gamedatas.commonProjects.forEach(commonProject => this.commonProjectCards.createMoveOrUpdateCard(commonProject, `common-project-wrapper-${commonProject.locationArg}`));
-
-        gamedatas.remainingRoofs.forEach(roof => dojo.place(`<div id="building-floor-${roof.id}" class="building-floor" data-player-id="0" data-color="0"></div>`, `remaining-roofs`));
+        this.createSecondBoard(gamedatas);
+        this.createObjectiveReminder(gamedatas);
 
         if (gamedatas.endTurn) {
             this.notif_lastTurn();
@@ -328,9 +319,11 @@ class GardenNation implements GardenNationGame {
 
     ///////////////////////////////////////////////////
     //// Utility methods
-
-
     ///////////////////////////////////////////////////
+
+    /**
+     * Handle user preferences changes.
+     */ 
 
     private setZoom(zoom: number = 1) {
         this.zoom = zoom;
@@ -418,10 +411,9 @@ class GardenNation implements GardenNationGame {
       
     private onPreferenceChange(prefId: number, prefValue: number) {
         switch (prefId) {
-            // KEEP
-            /*case 202: 
-                document.getElementById('full-table').dataset.highContrastPoints = '' + prefValue;
-                break;*/
+            case 201: 
+                document.getElementById('objectives-reminder').classList.toggle('hidden', prefValue == 2);
+                break;
         }
     }
 
@@ -504,6 +496,52 @@ class GardenNation implements GardenNationGame {
     private createPlayerTable(gamedatas: GardenNationGamedatas, playerId: number) {
         const playerTable = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(playerTable);
+    }
+
+    private createSecondBoard(gamedatas: GardenNationGamedatas) {
+        [0, 1, 2, 3, 4].forEach(number => {
+            dojo.place(`
+            <div id="common-project-wrapper-${number}" class="common-project-wrapper" data-number="${number}">
+            </div>
+            `, 'common-projects-inner');
+        });        
+        this.commonProjectCards.createMoveOrUpdateCard({} as any, `common-project-wrapper-0`);
+        gamedatas.commonProjects.forEach(commonProject => this.commonProjectCards.createMoveOrUpdateCard(commonProject, `common-project-wrapper-${commonProject.locationArg}`));
+
+        gamedatas.remainingRoofs.forEach(roof => dojo.place(`<div id="building-floor-${roof.id}" class="building-floor" data-player-id="0" data-color="0"></div>`, `remaining-roofs`));
+    }
+
+    private createObjectiveReminder(gamedatas: GardenNationGamedatas) {
+        const playerId = ''+this.getPlayerId();
+        if (!Object.keys(this.gamedatas.players).includes(playerId)) {
+            return;
+        }
+
+        dojo.place(`<div id="objectives-reminder" class="whiteblock">
+            <div id="common-projects-reminder-title" class="title" title="${_("Common projects")}">${_("Common projects")}</div>
+            <div id="common-projects-reminder" class="cards"></div>
+            <div id="secret-missions-reminder-title" class="title" title="${_("Secret missions")}">${_("Secret missions")}</div>
+            <div id="secret-missions-reminder" class="cards"></div>
+        </div>`, 'zoom-wrapper', 'before');
+        [1, 2, 3, 4].forEach(number => {
+            const commonProject = this.gamedatas.commonProjects.find(commonProject => commonProject.locationArg == number);
+            dojo.place(`
+            <div id="common-project-reminder-${number}" class="common-project-reminder card-reminder" data-type="${commonProject.type}" data-sub-type="${commonProject.subType}">
+            </div>
+            `, 'common-projects-reminder');
+        });
+        [0, 1].forEach(number => {
+            dojo.place(`
+            <div id="secret-mission-reminder-${number}" class="secret-mission-reminder card-reminder" data-type="0">
+            </div>
+            `, 'secret-missions-reminder');
+        });
+
+        this.gamedatas.players[playerId].secretMissions.forEach((secretMission: SecretMission, index: number) => {
+            const secretMissionDiv = document.getElementById(`secret-mission-reminder-${index}`);
+            secretMissionDiv.dataset.type = ''+secretMission.type;
+            secretMissionDiv.dataset.subType = ''+secretMission.subType;
+        });
     }
     
     private checkConfirmSecretMissionsButtonState() {
@@ -970,12 +1008,17 @@ class GardenNation implements GardenNationGame {
     }
 
     notif_newCommonProject(notif: Notif<NotifTakeCommonProjectArgs>) {
+        const commonProject = notif.args.commonProject;
         // we first create a backflipped card
         this.commonProjectCards.createMoveOrUpdateCard({
-            id: notif.args.commonProject.id
+            id: commonProject.id
         } as any, `common-project-wrapper-0`);
         // then we reveal it
-        this.commonProjectCards.createMoveOrUpdateCard(notif.args.commonProject, `common-project-wrapper-${notif.args.commonProject.locationArg}`);
+        this.commonProjectCards.createMoveOrUpdateCard(commonProject, `common-project-wrapper-${commonProject.locationArg}`);
+
+        const commonProjectReminderDiv = document.getElementById(`common-project-reminder-${commonProject.locationArg}`);
+        commonProjectReminderDiv.dataset.type = ''+commonProject.type;
+        commonProjectReminderDiv.dataset.subType = ''+commonProject.subType;
     }
 
     notif_revealSecretMission(notif: Notif<NotifRevealSecretMissionArgs>) {
