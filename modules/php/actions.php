@@ -13,6 +13,34 @@ trait ActionTrait {
         (note: each method below must match an input method in nicodemus.action.php)
     */
     
+
+    public function chooseSecretMissions(array $ids) {
+        self::checkAction('chooseSecretMissions');
+
+        $playerId = intval($this->getCurrentPlayerId());
+
+        if (count($ids) != 2) {
+            throw new BgaUserException("You must choose exactly 2 secret missions");
+        }
+        
+        $choices = $this->argChooseSecretMissions()['_private'][$playerId]['secretMissions'];
+        if (!$this->array_some($ids, fn($id) => $this->array_some($choices, fn($choice) => $choice->id == $id))) {
+            throw new BgaUserException("You must choose secret missions from the list");
+        }
+
+        $this->secretMissions->moveCards($ids, 'chosen', $playerId);
+
+        $this->gamestate->setPlayerNonMultiactive($playerId, 'end');
+    }
+
+    public function cancelChooseSecretMissions() {
+        $playerId = intval($this->getCurrentPlayerId());
+
+        $this->secretMissions->moveAllCardsInLocation('chosen', 'choose', $playerId, $playerId);
+
+        $this->gamestate->setPlayersMultiactive([$playerId], 'end', false);
+    }
+
     public function chooseConstructBuilding() {
         self::checkAction('chooseConstructBuilding');
 

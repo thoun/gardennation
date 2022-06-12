@@ -11,6 +11,25 @@ trait ArgsTrait {
         These methods function is to return some additional information that is specific to the current
         game state.
     */
+
+    function argChooseSecretMissions() {
+        $playersIds = $this->getPlayersIds();
+        
+        $private = [];
+
+        foreach($playersIds as $playerId) {
+            $private[$playerId] = [
+                'secretMissions' => array_merge(
+                    $this->getSecretMissionsFromDb($this->secretMissions->getCardsInLocation('choose', $playerId)),
+                    $this->getSecretMissionsFromDb($this->secretMissions->getCardsInLocation('chosen', $playerId))
+                ),
+            ];
+        }
+
+        return [
+            '_private' => $private,
+        ];
+    }
    
     function argChooseAction() {
         $playerId = intval($this->getActivePlayerId());

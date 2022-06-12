@@ -15,7 +15,7 @@ class PlayerTable {
             </div>
             <div id="player-table-${this.playerId}-remaining-building-floors" class="remaining-building-floors"></div>
             <div id="player-table-${this.playerId}-secret-missions-wrapper" class="player-secret-missions-wrapper">
-                <div class="title">${_('Secret missions')}</div>
+                <div id="player-table-${this.playerId}-secret-missions-title" class="title ${player.secretMissions.length ? '' : 'hidden'}"">${_('Secret missions')}</div>
                 <div id="player-table-${this.playerId}-secret-missions" class="player-secret-missions">
                 </div>
             </div>
@@ -89,6 +89,10 @@ class PlayerTable {
     }
 
     public setSecretMissions(secretMissions: SecretMission[]) {
+        if (secretMissions.length) {
+            document.getElementById(`player-table-${this.playerId}-secret-missions-title`).classList.remove('hidden');
+        }
+
         secretMissions.forEach(secretMission => 
             this.game.secretMissionCards.createMoveOrUpdateCard(secretMission, `player-table-${this.playerId}-secret-missions`)
         );

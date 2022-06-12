@@ -315,6 +315,17 @@ class GardenNation extends Table {
                 	break;
             }
             return;
+        } else if ($state['type'] == "multipleactiveplayer") {
+            // Make sure player is in a non blocking status for role turn
+            $sql = "
+                UPDATE  player
+                SET     player_is_multiactive = 0
+                WHERE   player_id = $active_player
+            ";
+            $this->DbQuery($sql);
+
+            $this->gamestate->updateMultiactiveOrNextState('end');
+            return;
         }
 
         throw new feException("Zombie mode not supported at this game state: ".$statename);

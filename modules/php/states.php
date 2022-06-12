@@ -13,6 +13,34 @@ trait StateTrait {
         The action method of state X is called everytime the current game state is set to X.
     */
 
+    function stChooseSecretMissions() {
+        $this->gamestate->setAllPlayersMultiactive();
+    }
+
+    function stEndSecretMissions() {
+        $playersIds = $this->getPlayersIds();
+
+        $secretMissionsIds = [];
+        
+        foreach($playersIds as $playerId) {
+            $secretMissions = $this->getSecretMissionsFromDb($this->secretMissions->getCardsInLocation('chosen', $playerId));
+
+            $this->secretMissions->moveCards(array_map(fn($secretMission) => $secretMission->id, $secretMissions), 'hand', $playerId);
+
+            $this->notifyPlayer($playerId, 'giveSecretMissions', '', [
+                'playerId' => $playerId,
+                'secretMissions' => $secretMissions,
+            ]);
+            $secretMissionsIds[$playerId] = array_map(fn($secretMission) => $secretMission->id, $secretMissions);
+        }
+
+        $this->notifyAllPlayers('giveSecretMissionsIds', '', [
+            'secretMissionsIds' => $secretMissionsIds,
+        ]);
+
+        $this->gamestate->nextState("start");
+    }
+
     function stEndAction() {
         $playerId = intval($this->getActivePlayerId());
         $this->giveExtraTime($playerId);

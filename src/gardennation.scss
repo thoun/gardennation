@@ -3,7 +3,6 @@ $playerColors: 'fcaf26', 'ab3b2a', '5f8637', '456e96';
 @import 'board/board';
 @import 'players-tables/players-tables';
 @import 'cards';
-@import 'score';
 @import 'help';
 
 @import 'playerboards';
@@ -284,5 +283,14 @@ html {
     top: 940px;
     width: 250px;
     height: 240px;
+  }
+}
+
+#secret-missions-selector {
+  display: flex;
+  justify-content: center;
+
+  .card {
+    cursor: pointer;
   }
 }

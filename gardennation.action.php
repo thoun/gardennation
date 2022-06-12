@@ -34,6 +34,25 @@
       }
   	}
 
+    public function chooseSecretMissions() {
+      self::setAjaxMode();
+
+      $idsStr = explode(',', self::getArg("ids", AT_numberlist, true));
+      $ids = array_map(fn($idStr) => intval($idStr), $idsStr);
+
+      $this->game->chooseSecretMissions($ids);
+
+      self::ajaxResponse();
+    }
+
+    public function cancelChooseSecretMissions() {
+      self::setAjaxMode();
+
+      $this->game->cancelChooseSecretMissions();
+
+      self::ajaxResponse();
+    }
+
     public function chooseConstructBuilding() {
       self::setAjaxMode();
 

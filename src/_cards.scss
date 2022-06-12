@@ -48,11 +48,18 @@
                 transform: rotateY(180deg);
             }
         }
-    }
-    
+    }    
 
     &.selectable {
         cursor: pointer;
+        box-shadow: 0 0 8px 8px white;
+
+        .card-side {
+            box-shadow: unset;
+        }
+    }    
+
+    &.selected {
         box-shadow: 0 0 8px 8px white;
 
         .card-side {

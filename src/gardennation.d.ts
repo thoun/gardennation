@@ -34,6 +34,7 @@ interface SecretMission {
     subType: number;
     name: string;
     territories?: number[];
+    location: string;
 }
 
 interface GardenNationPlayer extends Player {
@@ -81,7 +82,14 @@ interface GardenNationGame extends Game {
     getPlayerColor(playerId: number): string;
     setTooltip(id: string, html: string): void;
     onCommonProjectClick(card: CommonProject): void;
+    onSecretMissionClick(card: SecretMission): void;
     tableHeightChange();
+}
+
+interface EnteringChooseSecretMissionsArgs {
+    _private: {
+        secretMissions: SecretMission[];
+    };
 }
 
 interface EnteringChooseActionArgs {
@@ -142,6 +150,14 @@ interface NotifScoreArgs {
 interface NotifInhabitantsArgs {
     playerId: number;
     newInhabitants: number;
+}
+
+interface NotifGiveSecretMissionsArgs {
+    playerId: number;
+    secretMissions: SecretMission[];
+}
+interface NotifGiveSecretMissionsIdsArgs {
+    secretMissionsIds: {[playerId: number]: number[]};
 }
 
 interface NotifSetBrambleTypeArgs {

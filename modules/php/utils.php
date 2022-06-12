@@ -479,7 +479,7 @@ trait UtilTrait {
     
     function setInitialSecretMissions(array $playersIds) {
         foreach ($playersIds as $playerId) {
-            $this->secretMissions->pickCards(2, 'deck', $playerId);
+            $this->secretMissions->pickCardsForLocation(4, 'deck', 'choose', $playerId);
         }
     }
 

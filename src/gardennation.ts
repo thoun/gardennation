@@ -31,6 +31,8 @@ class GardenNation implements GardenNationGame {
     private inhabitantCounters: Counter[] = [];
     private buildingFloorCounters: Counter[] = [];
     private ployTokenCounters: Counter[] = [];
+
+    private selectedSecretMissionsIds: number[] = [];
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -85,7 +87,12 @@ class GardenNation implements GardenNationGame {
             this.notif_lastTurn();
         }
 
-        if (Number(gamedatas.gamestate.id) >= 80) { // score or end
+        const stateId = Number(gamedatas.gamestate.id);
+        if (stateId >= 20) {
+            const selectorDiv = document.getElementById(`secret-missions-selector`);
+            selectorDiv?.parentElement?.removeChild(selectorDiv);
+        }
+        if (stateId >= 80) { // score or end
             this.onEnteringShowScore(true);
         }
 
@@ -117,6 +124,9 @@ class GardenNation implements GardenNationGame {
         log( 'Entering state: '+stateName , args.args );
 
         switch (stateName) {
+            case 'chooseSecretMissions':
+                this.onEnteringChooseSecretMissions(args.args);
+                break;
             case 'constructBuilding':
             case 'abandonBuilding':
             case 'buildingInvasion':
@@ -146,6 +156,18 @@ class GardenNation implements GardenNationGame {
                 }
                 break;
         }
+    }
+
+    private onEnteringChooseSecretMissions(args: EnteringChooseSecretMissionsArgs) {
+        this.selectedSecretMissionsIds = [];
+        args._private?.secretMissions?.forEach(secretMission => {
+            this.secretMissionCards.createMoveOrUpdateCard(secretMission, `secret-missions-selector`, true);
+            if (secretMission.location === 'chosen') {
+                this.selectedSecretMissionsIds.push(secretMission.id);
+                document.getElementById(`secret-mission-${secretMission.id}`).classList.add('selected');
+            }
+        });
+        this.checkConfirmSecretMissionsButtonState();
     }
 
     private onEnteringSelectAreaPositionWithCost(args: EnteringSelectAreaPositionWithCostArgs) {
@@ -188,6 +210,9 @@ class GardenNation implements GardenNationGame {
         log( 'Leaving state: '+stateName );
 
         switch (stateName) {
+            case 'endSecretMissions':
+                dojo.destroy(`secret-missions-selector`);
+                break;
             case 'constructBuilding':
             case 'abandonBuilding':
             case 'buildingInvasion':
@@ -222,6 +247,15 @@ class GardenNation implements GardenNationGame {
     //                        action status bar (ie: the HTML links in the status bar).
     //
     public onUpdateActionButtons(stateName: string, args: any) {
+        if (stateName === 'chooseSecretMissions') {
+            if ((this as any).isCurrentPlayerActive()) {
+                (this as any).addActionButton(`chooseSecretMissions-button`, _("Confirm selection"), () => this.chooseSecretMissions(this.selectedSecretMissionsIds));
+                this.checkConfirmSecretMissionsButtonState();
+            } else if (Object.keys(this.gamedatas.players).includes(''+this.getPlayerId())) { // ignore spectators
+                (this as any).addActionButton(`cancelChooseSecretMissions-button`, _("I changed my mind"), () => this.cancelChooseSecretMissions(), null, null, 'gray');
+            }
+        }
+
         if ((this as any).isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'chooseAction':
@@ -471,6 +505,10 @@ class GardenNation implements GardenNationGame {
         const playerTable = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(playerTable);
     }
+    
+    private checkConfirmSecretMissionsButtonState() {
+        document.getElementById(`chooseSecretMissions-button`)?.classList.toggle('disabled', this.selectedSecretMissionsIds.length !== 2);
+    }
 
     public onAreaClick(areaPosition: number): void {
         switch (this.gamedatas.gamestate.name) {
@@ -501,6 +539,43 @@ class GardenNation implements GardenNationGame {
                 }
                 break;
         }
+    }
+    
+    public onSecretMissionClick(card: SecretMission): void {
+        switch (this.gamedatas.gamestate.name) {
+            case 'chooseSecretMissions':
+                const args = this.gamedatas.gamestate.args as EnteringChooseSecretMissionsArgs;
+                if (args._private?.secretMissions?.some(cp => cp.id === card.id)) {
+                    const index = this.selectedSecretMissionsIds.findIndex(id => id == card.id);
+                    if (index !== -1) {
+                        this.selectedSecretMissionsIds.splice(index, 1);
+                    } else {
+                        this.selectedSecretMissionsIds.push(card.id);
+                    }
+                    document.getElementById(`secret-mission-${card.id}`).classList.toggle('selected', index === -1);
+                }
+
+                if ((this as any).isCurrentPlayerActive()) {
+                    this.checkConfirmSecretMissionsButtonState();
+                } else {
+                    this.cancelChooseSecretMissions();
+                }
+                break;
+        }
+    }
+
+    public chooseSecretMissions(ids: number[]) {
+        if (!(this as any).checkAction('chooseSecretMissions')) {
+            return;
+        }
+
+        this.takeAction('chooseSecretMissions', {
+            ids: ids.join(',')
+        });
+    }
+
+    public cancelChooseSecretMissions() {
+        this.takeAction('cancelChooseSecretMissions');
     }
 
     public chooseConstructBuilding() {
@@ -824,6 +899,8 @@ class GardenNation implements GardenNationGame {
             ['setBuilding', ANIMATION_MS],
             ['takeCommonProject', ANIMATION_MS],
             ['newCommonProject', ANIMATION_MS],
+            ['giveSecretMissions', ANIMATION_MS],
+            ['giveSecretMissionsIds', 1],
             ['score', 1],
             ['inhabitant', 1],
             ['setBrambleType', 1],
@@ -853,6 +930,15 @@ class GardenNation implements GardenNationGame {
 
     notif_setPlayerOrder(notif: Notif<NotifSetPlayerOrderArgs>) {
         slideToObjectAndAttach(this, document.getElementById(`order-token-${notif.args.playerId}`), `order-track-${notif.args.order}`);
+    }
+
+    notif_giveSecretMissions(notif: Notif<NotifGiveSecretMissionsArgs>) {
+        this.getPlayerTable(notif.args.playerId).setSecretMissions(notif.args.secretMissions);
+    }
+
+    notif_giveSecretMissionsIds(notif: Notif<NotifGiveSecretMissionsIdsArgs>) {
+        Object.keys(notif.args.secretMissionsIds).map(key => Number(key)).filter(playerId => playerId != this.getPlayerId()).forEach(playerId => 
+        this.getPlayerTable(playerId).setSecretMissions(notif.args.secretMissionsIds[playerId].map(id => ({ id } as SecretMission))));
     }
 
     notif_setBrambleType(notif: Notif<NotifSetBrambleTypeArgs>) {

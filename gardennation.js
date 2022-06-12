@@ -224,6 +224,7 @@ var SecretMissionCards = /** @class */ (function () {
         });
     };
     SecretMissionCards.prototype.createMoveOrUpdateCard = function (card, destinationId, init, from) {
+        var _this = this;
         if (init === void 0) { init = false; }
         if (from === void 0) { from = null; }
         var existingDiv = document.getElementById("secret-mission-".concat(card.id));
@@ -242,6 +243,7 @@ var SecretMissionCards = /** @class */ (function () {
                 this.setVisibleInformations(existingDiv, card);
             }
             this.game.setTooltip(existingDiv.id, this.getTooltip(card.type, card.subType));
+            existingDiv.classList.remove('selected');
         }
         else {
             var div = document.createElement('div');
@@ -252,6 +254,7 @@ var SecretMissionCards = /** @class */ (function () {
             div.dataset.subType = '' + card.subType;
             div.innerHTML = "\n                <div class=\"card-sides\">\n                    <div class=\"card-side front\">\n                        <div id=\"".concat(div.id, "-name\" class=\"name\">").concat(card.type ? this.getTitle(card.type, card.subType) : '', "</div>\n                    </div>\n                    <div class=\"card-side back\">\n                    </div>\n                </div>\n            ");
             document.getElementById(destinationId).appendChild(div);
+            div.addEventListener('click', function () { return _this.game.onSecretMissionClick(card); });
             if (from) {
                 var fromCardId = document.getElementById(from).children[0].id;
                 slideFromObject(this.game, div, fromCardId);
@@ -464,7 +467,7 @@ var PlayerTable = /** @class */ (function () {
         var _this = this;
         this.game = game;
         this.playerId = Number(player.id);
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n                <div id=\"player-table-").concat(this.playerId, "-meeple-marker\" class=\"meeple-marker\" data-color=\"").concat(player.color, "\"></div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-remaining-building-floors\" class=\"remaining-building-floors\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-secret-missions-wrapper\" class=\"player-secret-missions-wrapper\">\n                <div class=\"title\">").concat(_('Secret missions'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-secret-missions\" class=\"player-secret-missions\">\n                </div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-common-projects-wrapper\" class=\"player-common-projects-wrapper\">\n                <div id=\"player-table-").concat(this.playerId, "-common-projects-title\" class=\"title ").concat(player.commonProjects.length ? '' : 'hidden', "\">").concat(_('Completed Common projects'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-common-projects\" class=\"player-common-projects\">\n                </div>\n            </div>\n        </div>");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n                <div id=\"player-table-").concat(this.playerId, "-meeple-marker\" class=\"meeple-marker\" data-color=\"").concat(player.color, "\"></div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-remaining-building-floors\" class=\"remaining-building-floors\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-secret-missions-wrapper\" class=\"player-secret-missions-wrapper\">\n                <div id=\"player-table-").concat(this.playerId, "-secret-missions-title\" class=\"title ").concat(player.secretMissions.length ? '' : 'hidden', "\"\">").concat(_('Secret missions'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-secret-missions\" class=\"player-secret-missions\">\n                </div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-common-projects-wrapper\" class=\"player-common-projects-wrapper\">\n                <div id=\"player-table-").concat(this.playerId, "-common-projects-title\" class=\"title ").concat(player.commonProjects.length ? '' : 'hidden', "\">").concat(_('Completed Common projects'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-common-projects\" class=\"player-common-projects\">\n                </div>\n            </div>\n        </div>");
         dojo.place(html, 'playerstables');
         [0, 1, 2, 3].forEach(function (type) {
             var html = "\n            <div id=\"player-table-".concat(_this.playerId, "-ploy-tokens-container-").concat(type, "\" class=\"ploy-tokens-container\" data-type=\"").concat(type, "\">");
@@ -514,6 +517,9 @@ var PlayerTable = /** @class */ (function () {
     };
     PlayerTable.prototype.setSecretMissions = function (secretMissions) {
         var _this = this;
+        if (secretMissions.length) {
+            document.getElementById("player-table-".concat(this.playerId, "-secret-missions-title")).classList.remove('hidden');
+        }
         secretMissions.forEach(function (secretMission) {
             return _this.game.secretMissionCards.createMoveOrUpdateCard(secretMission, "player-table-".concat(_this.playerId, "-secret-missions"));
         });
@@ -544,6 +550,7 @@ var GardenNation = /** @class */ (function () {
         this.inhabitantCounters = [];
         this.buildingFloorCounters = [];
         this.ployTokenCounters = [];
+        this.selectedSecretMissionsIds = [];
         this.TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
         var zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
         if (zoomStr) {
@@ -566,6 +573,7 @@ var GardenNation = /** @class */ (function () {
     */
     GardenNation.prototype.setup = function (gamedatas) {
         var _this = this;
+        var _a;
         log("Starting game setup");
         this.gamedatas = gamedatas;
         log('gamedatas', gamedatas);
@@ -584,7 +592,12 @@ var GardenNation = /** @class */ (function () {
         if (gamedatas.endTurn) {
             this.notif_lastTurn();
         }
-        if (Number(gamedatas.gamestate.id) >= 80) { // score or end
+        var stateId = Number(gamedatas.gamestate.id);
+        if (stateId >= 20) {
+            var selectorDiv = document.getElementById("secret-missions-selector");
+            (_a = selectorDiv === null || selectorDiv === void 0 ? void 0 : selectorDiv.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(selectorDiv);
+        }
+        if (stateId >= 80) { // score or end
             this.onEnteringShowScore(true);
         }
         this.addHelp();
@@ -609,6 +622,9 @@ var GardenNation = /** @class */ (function () {
     GardenNation.prototype.onEnteringState = function (stateName, args) {
         log('Entering state: ' + stateName, args.args);
         switch (stateName) {
+            case 'chooseSecretMissions':
+                this.onEnteringChooseSecretMissions(args.args);
+                break;
             case 'constructBuilding':
             case 'abandonBuilding':
             case 'buildingInvasion':
@@ -637,6 +653,19 @@ var GardenNation = /** @class */ (function () {
                 }
                 break;
         }
+    };
+    GardenNation.prototype.onEnteringChooseSecretMissions = function (args) {
+        var _this = this;
+        var _a, _b;
+        this.selectedSecretMissionsIds = [];
+        (_b = (_a = args._private) === null || _a === void 0 ? void 0 : _a.secretMissions) === null || _b === void 0 ? void 0 : _b.forEach(function (secretMission) {
+            _this.secretMissionCards.createMoveOrUpdateCard(secretMission, "secret-missions-selector", true);
+            if (secretMission.location === 'chosen') {
+                _this.selectedSecretMissionsIds.push(secretMission.id);
+                document.getElementById("secret-mission-".concat(secretMission.id)).classList.add('selected');
+            }
+        });
+        this.checkConfirmSecretMissionsButtonState();
     };
     GardenNation.prototype.onEnteringSelectAreaPositionWithCost = function (args) {
         if (this.isCurrentPlayerActive()) {
@@ -672,6 +701,9 @@ var GardenNation = /** @class */ (function () {
     GardenNation.prototype.onLeavingState = function (stateName) {
         log('Leaving state: ' + stateName);
         switch (stateName) {
+            case 'endSecretMissions':
+                dojo.destroy("secret-missions-selector");
+                break;
             case 'constructBuilding':
             case 'abandonBuilding':
             case 'buildingInvasion':
@@ -703,6 +735,15 @@ var GardenNation = /** @class */ (function () {
     //
     GardenNation.prototype.onUpdateActionButtons = function (stateName, args) {
         var _this = this;
+        if (stateName === 'chooseSecretMissions') {
+            if (this.isCurrentPlayerActive()) {
+                this.addActionButton("chooseSecretMissions-button", _("Confirm selection"), function () { return _this.chooseSecretMissions(_this.selectedSecretMissionsIds); });
+                this.checkConfirmSecretMissionsButtonState();
+            }
+            else if (Object.keys(this.gamedatas.players).includes('' + this.getPlayerId())) { // ignore spectators
+                this.addActionButton("cancelChooseSecretMissions-button", _("I changed my mind"), function () { return _this.cancelChooseSecretMissions(); }, null, null, 'gray');
+            }
+        }
         if (this.isCurrentPlayerActive()) {
             switch (stateName) {
                 case 'chooseAction':
@@ -905,6 +946,10 @@ var GardenNation = /** @class */ (function () {
         var playerTable = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(playerTable);
     };
+    GardenNation.prototype.checkConfirmSecretMissionsButtonState = function () {
+        var _a;
+        (_a = document.getElementById("chooseSecretMissions-button")) === null || _a === void 0 ? void 0 : _a.classList.toggle('disabled', this.selectedSecretMissionsIds.length !== 2);
+    };
     GardenNation.prototype.onAreaClick = function (areaPosition) {
         switch (this.gamedatas.gamestate.name) {
             case 'constructBuilding':
@@ -933,6 +978,41 @@ var GardenNation = /** @class */ (function () {
                 }
                 break;
         }
+    };
+    GardenNation.prototype.onSecretMissionClick = function (card) {
+        var _a, _b;
+        switch (this.gamedatas.gamestate.name) {
+            case 'chooseSecretMissions':
+                var args = this.gamedatas.gamestate.args;
+                if ((_b = (_a = args._private) === null || _a === void 0 ? void 0 : _a.secretMissions) === null || _b === void 0 ? void 0 : _b.some(function (cp) { return cp.id === card.id; })) {
+                    var index = this.selectedSecretMissionsIds.findIndex(function (id) { return id == card.id; });
+                    if (index !== -1) {
+                        this.selectedSecretMissionsIds.splice(index, 1);
+                    }
+                    else {
+                        this.selectedSecretMissionsIds.push(card.id);
+                    }
+                    document.getElementById("secret-mission-".concat(card.id)).classList.toggle('selected', index === -1);
+                }
+                if (this.isCurrentPlayerActive()) {
+                    this.checkConfirmSecretMissionsButtonState();
+                }
+                else {
+                    this.cancelChooseSecretMissions();
+                }
+                break;
+        }
+    };
+    GardenNation.prototype.chooseSecretMissions = function (ids) {
+        if (!this.checkAction('chooseSecretMissions')) {
+            return;
+        }
+        this.takeAction('chooseSecretMissions', {
+            ids: ids.join(',')
+        });
+    };
+    GardenNation.prototype.cancelChooseSecretMissions = function () {
+        this.takeAction('cancelChooseSecretMissions');
     };
     GardenNation.prototype.chooseConstructBuilding = function () {
         if (!this.checkAction('chooseConstructBuilding')) {
@@ -1158,6 +1238,8 @@ var GardenNation = /** @class */ (function () {
             ['setBuilding', ANIMATION_MS],
             ['takeCommonProject', ANIMATION_MS],
             ['newCommonProject', ANIMATION_MS],
+            ['giveSecretMissions', ANIMATION_MS],
+            ['giveSecretMissionsIds', 1],
             ['score', 1],
             ['inhabitant', 1],
             ['setBrambleType', 1],
@@ -1182,6 +1264,15 @@ var GardenNation = /** @class */ (function () {
     };
     GardenNation.prototype.notif_setPlayerOrder = function (notif) {
         slideToObjectAndAttach(this, document.getElementById("order-token-".concat(notif.args.playerId)), "order-track-".concat(notif.args.order));
+    };
+    GardenNation.prototype.notif_giveSecretMissions = function (notif) {
+        this.getPlayerTable(notif.args.playerId).setSecretMissions(notif.args.secretMissions);
+    };
+    GardenNation.prototype.notif_giveSecretMissionsIds = function (notif) {
+        var _this = this;
+        Object.keys(notif.args.secretMissionsIds).map(function (key) { return Number(key); }).filter(function (playerId) { return playerId != _this.getPlayerId(); }).forEach(function (playerId) {
+            return _this.getPlayerTable(playerId).setSecretMissions(notif.args.secretMissionsIds[playerId].map(function (id) { return ({ id: id }); }));
+        });
     };
     GardenNation.prototype.notif_setBrambleType = function (notif) {
         this.board.setBrambleType(notif.args.areaPosition, notif.args.type, notif.args.brambleId);

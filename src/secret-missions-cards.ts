@@ -59,6 +59,8 @@ class SecretMissionCards {
                 this.setVisibleInformations(existingDiv, card);
             }
             this.game.setTooltip(existingDiv.id, this.getTooltip(card.type, card.subType));
+
+            existingDiv.classList.remove('selected');
         } else {
             const div = document.createElement('div');
             div.id = `secret-mission-${card.id}`;
@@ -77,6 +79,7 @@ class SecretMissionCards {
                 </div>
             `;
             document.getElementById(destinationId).appendChild(div);
+            div.addEventListener('click', () => this.game.onSecretMissionClick(card));
 
             if (from) {
                 const fromCardId = document.getElementById(from).children[0].id;

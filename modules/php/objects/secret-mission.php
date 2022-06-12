@@ -18,11 +18,13 @@ class SecretMissionCard {
 }
 
 class SecretMission extends SecretMissionCard {
+    public string $location;
 
     public function __construct($dbObject, $SECRET_MISSION) {
         $this->id = intval($dbObject['id']);
         $this->type = intval($dbObject['type']);
         $this->subType = intval($dbObject['type_arg']);
+        $this->location = $dbObject['location'];
 
         $secretMissionCard = $SECRET_MISSION;
         $this->name = $secretMissionCard->name;

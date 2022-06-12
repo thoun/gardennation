@@ -59,7 +59,7 @@ $basicGameStates = [
         "description" => clienttranslate("Game setup"),
         "type" => "manager",
         "action" => "stGameSetup",
-        "transitions" => [ "" => ST_PLAYER_CHOOSE_ACTION ]
+        "transitions" => [ "" => ST_MULTIPLAYER_CHOOSE_SECRET_MISSIONS ]
     ],
    
     // Final state.
@@ -75,6 +75,22 @@ $basicGameStates = [
 
 
 $playerActionsGameStates = [
+
+    ST_MULTIPLAYER_CHOOSE_SECRET_MISSIONS => [
+        "name" => "chooseSecretMissions",
+        "description" => clienttranslate('Waiting for other players'),
+        "descriptionmyturn" => clienttranslate('${you} must choose 2 Secret missions'),
+        "type" => "multipleactiveplayer",
+        "action" => "stChooseSecretMissions",
+        "args" => "argChooseSecretMissions",
+        "possibleactions" => [ 
+            "chooseSecretMissions",
+            "cancelChooseSecretMissions",
+        ],
+        "transitions" => [
+            "end" => ST_END_CHOOSE_SECRET_MISSIONS,
+        ],
+    ],
 
     ST_PLAYER_CHOOSE_ACTION => [
         "name" => "chooseAction",
@@ -267,6 +283,16 @@ $playerActionsGameStates = [
 
 
 $gameGameStates = [
+
+    ST_END_CHOOSE_SECRET_MISSIONS => [
+        "name" => "endSecretMissions",
+        "description" => "",
+        "type" => "game",
+        "action" => "stEndSecretMissions",
+        "transitions" => [
+            "start" => ST_PLAYER_CHOOSE_ACTION,
+        ],
+    ],
 
     ST_END_ACTION => [
         "name" => "endAction",
