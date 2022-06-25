@@ -211,9 +211,9 @@ class GardenNation extends Table {
         
         foreach ($map as $position => $area) {
             $areaSpot = new stdClass();
-            $areaSpot->type = $area[0] % 10;
+            $areaSpot->type = $area[0];
             $areaSpot->cost = $area[1];
-            $areaSpot->bramble = $area[0] == 0 || $area[0] > 10;
+            $areaSpot->bramble = $area[2];
             $areaSpot->building = array_key_exists($position, $buildings) ? $buildings[$position] : null;
             $result['map'][$position] = $areaSpot;
         }

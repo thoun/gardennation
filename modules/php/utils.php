@@ -164,10 +164,13 @@ trait UtilTrait {
 
     function getMap() {
         $map = $this->MAP;
+        foreach ($map as $key => $value) {
+            $map[$key][2] = $map[$key][0] == 0;
+        }
 
         $brambleAreasDb = $this->getCollectionFromDb("SELECT * FROM `bramble_area` WHERE `position` IS NOT NULL ORDER BY `position` ASC");
         foreach ($brambleAreasDb as $brambleAreaDb) {
-            $map[intval($brambleAreaDb['position'])][0] = intval($brambleAreaDb['type']) + 10;
+            $map[intval($brambleAreaDb['position'])][0] = intval($brambleAreaDb['type']);
         }
         
         return $map;
@@ -591,11 +594,12 @@ trait UtilTrait {
         $territories = $this->getTerritories();
         $map = $this->getMap();
         $buildings = $this->getBuildings();
-        $playerBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId == $playerId));
+        $playerBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId == $playerId && !$building->roof));
         $building = $this->array_find($playerBuildings, fn($building) => $building->areaPosition == $areaPosition);
 
         $commonProjects = $this->getCommonProjectsFromDb($this->commonProjects->getCardsInLocation('table', null, 'location_arg'));
-        return array_values(array_filter($commonProjects, fn($commonProject) => $this->isCommonProjectCompleted($commonProject, $playerId, $territories, $map, $building, $playerBuildings)));
+        $completedCommonProjects = array_values(array_filter($commonProjects, fn($commonProject) => $this->isCommonProjectCompleted($commonProject, $playerId, $territories, $map, $building, $playerBuildings)));
+        return $completedCommonProjects;
     }
 
     function checkCompletedCommonProjects(int $playerId, int $areaPosition) { // return if need redirect to choose common project
