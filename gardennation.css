@@ -1018,8 +1018,31 @@ html {
   top: 5px;
   width: 200px;
 }
+#common-projects #remaining-roofs::after {
+  counter-reset: number var(--number);
+  content: counter(number);
+  background: white;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: 22px;
+  margin-top: 20px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 80%;
+  border: 2px solid black;
+  z-index: 100;
+}
 #common-projects #remaining-roofs .building-floor {
-  margin-left: -35px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -36px;
+  margin-top: -22px;
 }
 
 #full-board.common-projects-side-board {

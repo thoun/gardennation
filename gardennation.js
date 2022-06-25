@@ -951,6 +951,10 @@ var GardenNation = /** @class */ (function () {
         var playerTable = new PlayerTable(this, gamedatas.players[playerId]);
         this.playersTables.push(playerTable);
     };
+    GardenNation.prototype.updateRemainingFloorsCounter = function (playerId) {
+        var div = document.getElementById(playerId == 0 ? 'remaining-roofs' : "player-table-".concat(playerId, "-remaining-building-floors"));
+        div.style.setProperty('--number', '' + div.childElementCount);
+    };
     GardenNation.prototype.createSecondBoard = function (gamedatas) {
         var _this = this;
         [0, 1, 2, 3, 4].forEach(function (number) {
@@ -959,6 +963,7 @@ var GardenNation = /** @class */ (function () {
         this.commonProjectCards.createMoveOrUpdateCard({}, "common-project-wrapper-0");
         gamedatas.commonProjects.forEach(function (commonProject) { return _this.commonProjectCards.createMoveOrUpdateCard(commonProject, "common-project-wrapper-".concat(commonProject.locationArg)); });
         gamedatas.remainingRoofs.forEach(function (roof) { return dojo.place("<div id=\"building-floor-".concat(roof.id, "\" class=\"building-floor\" data-player-id=\"0\" data-color=\"0\"></div>"), "remaining-roofs"); });
+        this.updateRemainingFloorsCounter(0);
     };
     GardenNation.prototype.createObjectiveReminder = function (gamedatas) {
         var _this = this;
@@ -1317,6 +1322,7 @@ var GardenNation = /** @class */ (function () {
         Object.values(this.gamedatas.players).forEach(function (player) {
             return _this.buildingFloorCounters[Number(player.id)].toValue(document.getElementById("player-table-".concat(player.id, "-remaining-building-floors")).childElementCount);
         });
+        this.updateRemainingFloorsCounter(0);
     };
     GardenNation.prototype.notif_territoryControl = function (notif) {
         document.getElementById('board').dataset.scoreTerritory = '' + notif.args.territoryPosition;

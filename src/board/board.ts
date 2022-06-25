@@ -178,13 +178,13 @@ class Board {
         }
     }
 
-    highlightBuilding(buildingsToHighlight: Building[]) {
+    public highlightBuilding(buildingsToHighlight: Building[]) {
         buildingsToHighlight.forEach(building => 
             document.getElementById(`building${building.areaPosition}`)?.classList.add('highlight')
         );
     }
 
-    moveTorticrane(torticranePosition: number) {
+    public moveTorticrane(torticranePosition: number) {
         slideToObjectAndAttach(this.game, document.getElementById('torticrane'), `torticrane-spot-${torticranePosition}`);
         document.getElementById(`board`).dataset.torticranePosition = ''+torticranePosition;
     }
