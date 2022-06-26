@@ -1018,6 +1018,18 @@ html {
   top: 5px;
   width: 200px;
 }
+#common-projects #remaining-roofs::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin-left: -36px;
+  margin-top: -22px;
+  opacity: 0.5;
+  width: 75px;
+  height: 63px;
+  background: url("img/roof.png");
+}
 #common-projects #remaining-roofs::after {
   counter-reset: number var(--number);
   content: counter(number);
