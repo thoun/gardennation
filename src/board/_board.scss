@@ -219,7 +219,7 @@ $area-spacing: 106px;
                     border: 1px solid black;
                     display: flex;
                     align-items: center;
-                    z-index: 15;
+                    z-index: 29;
 
                     span {
                         padding: 2px;
@@ -252,7 +252,7 @@ $area-spacing: 106px;
             position: absolute;
             bottom: 87px;
             right: 8px;
-            z-index: 20;
+            z-index: 30;
         }
 
         .territory-number {
@@ -301,14 +301,14 @@ $area-spacing: 106px;
         position: absolute;
         bottom: 68px;
         right: 233px;
-        z-index: 20;
+        z-index: 30;
     }
 
     #torticrane {
         width: 71px;
         height: 76px;
         background: url('img/torticrane.png');
-        z-index: 20;
+        z-index: 30;
     }
 
     .building {
@@ -326,7 +326,7 @@ $area-spacing: 106px;
         }
         &.highlight {            
             animation: highlight-building-animation 1s;
-            z-index: 30;
+            z-index: 40;
         }
     }
     #remaining-bramble-tokens {

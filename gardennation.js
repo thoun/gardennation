@@ -10,7 +10,7 @@ function slideToObjectAndAttach(game, object, destinationId) {
         var deltaX = destinationBR.left - originBR.left;
         var deltaY = destinationBR.top - originBR.top;
         var previousZIndex_1 = object.style.zIndex;
-        object.style.zIndex = '10';
+        object.style.zIndex = '30';
         object.style.transform = "translate(".concat(-deltaX, "px, ").concat(-deltaY, "px)");
         setTimeout(function () {
             object.style.transition = "transform 0.5s linear";
@@ -29,7 +29,7 @@ function slideFromObject(game, object, fromId) {
         var destinationBR = object.getBoundingClientRect();
         var deltaX = destinationBR.left - originBR.left;
         var deltaY = destinationBR.top - originBR.top;
-        object.style.zIndex = '10';
+        object.style.zIndex = '30';
         object.style.transform = "translate(".concat(-deltaX, "px, ").concat(-deltaY, "px)");
         setTimeout(function () {
             object.style.transition = "transform 0.5s linear";
@@ -317,6 +317,20 @@ var SecretMissionCards = /** @class */ (function () {
     return SecretMissionCards;
 }());
 var POINT_CASE_SIZE = 47.24;
+/*
+[1, 2],
+[6, 0, 3],
+[4, 5],
+*/
+var Z_INDEXES = [
+    2,
+    1,
+    1,
+    2,
+    3,
+    3,
+    2,
+];
 var Board = /** @class */ (function () {
     function Board(game, players, gamedatas) {
         var _this = this;
@@ -354,7 +368,8 @@ var Board = /** @class */ (function () {
                 if (areaPosition > 0) {
                     rotation = (areaPosition + territoryRotation - 1) % 6 + 1;
                 }
-                var html = "<div id=\"area".concat(position, "\" class=\"area\" data-position=\"").concat(position, "\" data-type=\"").concat(type, "\" data-cost=\"").concat(cost, "\" data-position=\"").concat(areaPosition, "\" data-rotation=\"").concat(rotation, "\">");
+                var zIndex = (Z_INDEXES[territoryPosition] - 1) * 3 + Z_INDEXES[rotation];
+                var html = "<div id=\"area".concat(position, "\" class=\"area\" data-position=\"").concat(position, "\" data-type=\"").concat(type, "\" data-cost=\"").concat(cost, "\" data-position=\"").concat(areaPosition, "\" data-rotation=\"").concat(rotation, "\" style=\"z-index: ").concat(zIndex, ";\">");
                 html += bramble && type ? "<div class=\"bramble-type-token\" data-type=\"2\"><div class=\"land-number\">".concat(cost, "</div></div>") : "<div class=\"land-number\">".concat(cost, "</div>");
                 html += "</div>";
                 dojo.place(html, "territory".concat(territoryPosition));
@@ -435,12 +450,12 @@ var Board = /** @class */ (function () {
             building.buildingFloors.forEach(function (floor, index) {
                 var buildingFloorDiv = document.getElementById("building-floor-".concat(floor.id));
                 if (!buildingFloorDiv) {
-                    dojo.place("<div id=\"building-floor-".concat(floor.id, "\" class=\"building-floor\" data-player-id=\"").concat(floor.playerId, "\" data-color=\"").concat(floor.playerId ? _this.game.getPlayerColor(floor.playerId) : 0, "\" style=\"z-index: ").concat(index, "\"></div>"), "building".concat(areaPosition));
+                    dojo.place("<div id=\"building-floor-".concat(floor.id, "\" class=\"building-floor\" data-player-id=\"").concat(floor.playerId, "\" data-color=\"").concat(floor.playerId ? _this.game.getPlayerColor(floor.playerId) : 0, "\" style=\"z-index: ").concat(10 + index, "\"></div>"), "building".concat(areaPosition));
                 }
                 else {
                     var currentAreaDiv = buildingFloorDiv.closest('.area');
                     if (!currentAreaDiv || currentAreaDiv.id != "area".concat(areaPosition)) {
-                        buildingFloorDiv.style.zIndex = '' + index;
+                        buildingFloorDiv.style.zIndex = '' + (10 + index);
                         slideToObjectAndAttach(_this.game, buildingFloorDiv, "building".concat(areaPosition));
                     }
                 }

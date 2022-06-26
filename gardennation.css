@@ -205,7 +205,7 @@
   border: 1px solid black;
   display: flex;
   align-items: center;
-  z-index: 15;
+  z-index: 29;
 }
 #board .territory .area.selectable .cost-tag span {
   padding: 2px;
@@ -229,7 +229,7 @@
   position: absolute;
   bottom: 87px;
   right: 8px;
-  z-index: 20;
+  z-index: 30;
 }
 #board .territory .territory-number {
   position: absolute;
@@ -299,13 +299,13 @@
   position: absolute;
   bottom: 68px;
   right: 233px;
-  z-index: 20;
+  z-index: 30;
 }
 #board #torticrane {
   width: 71px;
   height: 76px;
   background: url("img/torticrane.png");
-  z-index: 20;
+  z-index: 30;
 }
 #board .building {
   position: absolute;
@@ -319,7 +319,7 @@
 }
 #board .building.highlight {
   animation: highlight-building-animation 1s;
-  z-index: 30;
+  z-index: 40;
 }
 #board #remaining-bramble-tokens {
   position: absolute;

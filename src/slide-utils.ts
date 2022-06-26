@@ -14,7 +14,7 @@ function slideToObjectAndAttach(game: Game, object: HTMLElement, destinationId: 
         const deltaY = destinationBR.top - originBR.top;
         const previousZIndex = object.style.zIndex;
         
-        object.style.zIndex = '10';
+        object.style.zIndex = '30';
         object.style.transform = `translate(${-deltaX}px, ${-deltaY}px)`;
 
         setTimeout(() => {
@@ -38,7 +38,7 @@ function slideFromObject(game: Game, object: HTMLElement, fromId: string) {
         const deltaX = destinationBR.left - originBR.left;
         const deltaY = destinationBR.top - originBR.top;
 
-        object.style.zIndex = '10';
+        object.style.zIndex = '30';
         object.style.transform = `translate(${-deltaX}px, ${-deltaY}px)`;
 
         setTimeout(() => {
