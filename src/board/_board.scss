@@ -345,7 +345,9 @@ $area-spacing: 106px;
             font-family: "garden-nation-title";
         }
 
-        .bramble-container { 
+        .bramble-container {
+            width: 120px; 
+            
             &:not(:first-child) {
                 margin-top: 10px;
             }          

@@ -412,7 +412,7 @@ class GardenNation implements GardenNationGame {
     private onPreferenceChange(prefId: number, prefValue: number) {
         switch (prefId) {
             case 201: 
-                document.getElementById('objectives-reminder').classList.toggle('hidden', prefValue == 2);
+                document.getElementById('objectives-reminder')?.classList.toggle('hidden', prefValue == 2);
                 break;
         }
     }

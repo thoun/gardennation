@@ -907,9 +907,10 @@ var GardenNation = /** @class */ (function () {
         dojo.forEach(dojo.query("#ingame_menu_content .preference_control"), function (el) { return onchange({ target: el }); });
     };
     GardenNation.prototype.onPreferenceChange = function (prefId, prefValue) {
+        var _a;
         switch (prefId) {
             case 201:
-                document.getElementById('objectives-reminder').classList.toggle('hidden', prefValue == 2);
+                (_a = document.getElementById('objectives-reminder')) === null || _a === void 0 ? void 0 : _a.classList.toggle('hidden', prefValue == 2);
                 break;
         }
     };

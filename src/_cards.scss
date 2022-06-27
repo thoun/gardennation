@@ -52,7 +52,7 @@
 
     &.selectable {
         cursor: pointer;
-        box-shadow: 0 0 8px 8px white;
+        box-shadow: 0 0 10px 10px white;
 
         .card-side {
             box-shadow: unset;
@@ -60,7 +60,7 @@
     }    
 
     &.selected {
-        box-shadow: 0 0 8px 8px white;
+        box-shadow: 0 0 10px 10px #48232b;
 
         .card-side {
             box-shadow: unset;

@@ -336,6 +336,9 @@
   margin-right: -8px;
   font-family: "garden-nation-title";
 }
+#board #remaining-bramble-tokens .bramble-container {
+  width: 120px;
+}
 #board #remaining-bramble-tokens .bramble-container:not(:first-child) {
   margin-top: 10px;
 }
@@ -556,13 +559,13 @@
 }
 .card.selectable {
   cursor: pointer;
-  box-shadow: 0 0 8px 8px white;
+  box-shadow: 0 0 10px 10px white;
 }
 .card.selectable .card-side {
   box-shadow: unset;
 }
 .card.selected {
-  box-shadow: 0 0 8px 8px white;
+  box-shadow: 0 0 10px 10px #48232b;
 }
 .card.selected .card-side {
   box-shadow: unset;
@@ -1239,4 +1242,8 @@ html {
 }
 #objectives-reminder .secret-mission-reminder[data-type="0"] {
   visibility: hidden;
+}
+
+.spectatorMode #secret-missions-selector {
+  display: none;
 }
