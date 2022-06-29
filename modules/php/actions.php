@@ -202,6 +202,13 @@ trait ActionTrait {
         $this->incStat(1, 'brambleAreasPlaced', $playerId);
 
         $this->moveTorticrane($areaPosition);
+                
+        if ($this->checkCompletedCommonProjects($playerId, $areaPosition)) {
+            // redirected to choose common project
+            $this->setGameStateValue(SELECTED_AREA_POSITION, $areaPosition);
+            $this->gamestate->nextState('chooseCompletedCommonProject');
+            return;
+        }
 
         $this->gamestate->nextState('endAction');
     }
