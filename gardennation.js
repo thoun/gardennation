@@ -370,7 +370,7 @@ var Board = /** @class */ (function () {
                 }
                 var zIndex = (Z_INDEXES[territoryPosition] - 1) * 3 + Z_INDEXES[rotation];
                 var html = "<div id=\"area".concat(position, "\" class=\"area\" data-position=\"").concat(position, "\" data-type=\"").concat(type, "\" data-cost=\"").concat(cost, "\" data-position=\"").concat(areaPosition, "\" data-rotation=\"").concat(rotation, "\" style=\"z-index: ").concat(zIndex, ";\">");
-                html += bramble && type ? "<div class=\"bramble-type-token\" data-type=\"2\"><div class=\"land-number\">".concat(cost, "</div></div>") : "<div class=\"land-number\">".concat(cost, "</div>");
+                html += bramble && type ? "<div class=\"bramble-type-token\" data-type=\"".concat(type, "\"><div class=\"land-number\">").concat(cost, "</div></div>") : "<div class=\"land-number\">".concat(cost, "</div>");
                 html += "</div>";
                 dojo.place(html, "territory".concat(territoryPosition));
                 document.getElementById("area".concat(position)).addEventListener('click', function () { return _this.game.onAreaClick(position); });

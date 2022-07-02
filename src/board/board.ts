@@ -75,7 +75,7 @@ class Board {
                 let zIndex = (Z_INDEXES[territoryPosition] - 1) * 3 + Z_INDEXES[rotation];
 
                 let html = `<div id="area${position}" class="area" data-position="${position}" data-type="${type}" data-cost="${cost}" data-position="${areaPosition}" data-rotation="${rotation}" style="z-index: ${zIndex};">`;
-                html += bramble && type ? `<div class="bramble-type-token" data-type="2"><div class="land-number">${cost}</div></div>` : `<div class="land-number">${cost}</div>`
+                html += bramble && type ? `<div class="bramble-type-token" data-type="${type}"><div class="land-number">${cost}</div></div>` : `<div class="land-number">${cost}</div>`
                 html += `</div>`;
                 dojo.place(html, `territory${territoryPosition}`);
 
