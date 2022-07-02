@@ -349,6 +349,10 @@ trait ActionTrait {
         if ($building == null || $building->playerId == $playerId) {
             throw new BgaUserException("No opponent building");
         }
+        $remainingBuildingFloors = count($this->getAvailableBuildingFloors($playerId));
+        if ($building->floors > $remainingBuildingFloors) {
+            throw new BgaUserException("Not enough floors available");
+        }
         
         $this->applyAbandonBuilding($building, true);
         for ($i = 0; $i < $building->floors; $i++) {

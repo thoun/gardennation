@@ -11,7 +11,7 @@ trait DebugUtilTrait {
             return;
         } 
 
-        //$this->placeRandomBuildings($playersIds, 5, 0);
+        $this->placeRandomBuildings($playersIds, 5, 0);
     }
 
     function placeRandomBuildings(array $playersIds, int $maxHeight = 5, int $remaining = 5) {

@@ -213,7 +213,7 @@ trait ArgsTrait {
 
         $buildings = $this->getBuildings($currentTerritoryNumber);
 
-        $remainingBuildingFloors = $this->getAvailableBuildingFloors($playerId);
+        $remainingBuildingFloors = count($this->getAvailableBuildingFloors($playerId));
         $possibleBuildings = array_values(array_filter($buildings, fn($building) => $building->playerId != $playerId && $this->getBuildingCost($building) < $player->inhabitants && $remainingBuildingFloors >= $building->floors));
         $possiblePositions = [];
 
