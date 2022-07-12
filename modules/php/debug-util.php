@@ -11,7 +11,14 @@ trait DebugUtilTrait {
             return;
         } 
 
-        $this->placeRandomBuildings($playersIds, 5, 0);
+        //$this->placeRandomBuildings($playersIds, 5, 0);
+        $this->debugSetSecretMissionInHand(4, 7, 2343492);
+    }
+
+    function debugSetSecretMissionInHand($cardType, $cardSubType, $playerId) {
+        $card = $this->getSecretMissionFromDb(array_values($this->secretMissions->getCardsOfType($cardType, $cardSubType))[0]);
+        $this->secretMissions->moveCard($card->id, 'hand', $playerId);
+        return $card;
     }
 
     function placeRandomBuildings(array $playersIds, int $maxHeight = 5, int $remaining = 5) {

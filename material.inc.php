@@ -139,7 +139,7 @@ $this->SECRET_MISSIONS = [
   new SecretMissionCard(2, 3, 2, clienttranslate("Observatory")),
 ];
 for ($i = 1; $i <= 7; $i++) {
-  $this->SECRET_MISSIONS[] = new SecretMissionCard(1, 4, $i, clienttranslate("Territory Control"), [$i, ($i + 1) % 6  + 1]);
+  $this->SECRET_MISSIONS[] = new SecretMissionCard(1, 4, $i, clienttranslate("Territory Control"), [$i, ($i + 1) % 7  + 1]);
 }
 
 $this->TERRITORY_AREA_INDEX_ADJACENT = [

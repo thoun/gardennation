@@ -533,7 +533,7 @@ trait UtilTrait {
         });
     }
 
-    function isCommonProjectCompleted(CommonProject $commonProject, int $playerId, array $territories, array $map, Building $building, array $playerBuildings) {
+    function isCommonProjectCompleted(CommonProject $commonProject, array $territories, array $map, Building $building, array $playerBuildings) {
         // no need to check roof on current building, as it was just constructed it can't have one
         switch ($commonProject->type) {
             case 1:
@@ -598,7 +598,7 @@ trait UtilTrait {
         $building = $this->array_find($playerBuildings, fn($building) => $building->areaPosition == $areaPosition);
 
         $commonProjects = $this->getCommonProjectsFromDb($this->commonProjects->getCardsInLocation('table', null, 'location_arg'));
-        $completedCommonProjects = array_values(array_filter($commonProjects, fn($commonProject) => $this->isCommonProjectCompleted($commonProject, $playerId, $territories, $map, $building, $playerBuildings)));
+        $completedCommonProjects = array_values(array_filter($commonProjects, fn($commonProject) => $this->isCommonProjectCompleted($commonProject, $territories, $map, $building, $playerBuildings)));
         return $completedCommonProjects;
     }
 
