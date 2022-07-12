@@ -11,8 +11,8 @@ trait DebugUtilTrait {
             return;
         } 
 
-        //$this->placeRandomBuildings($playersIds, 5, 0);
-        $this->debugSetSecretMissionInHand(4, 7, 2343492);
+        $this->placeRandomBuildings($playersIds, 5, 0);
+        //$this->debugSetSecretMissionInHand(4, 7, 2343492);
     }
 
     function debugSetSecretMissionInHand($cardType, $cardSubType, $playerId) {

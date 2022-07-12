@@ -324,8 +324,20 @@ trait ActionTrait {
         $playerId = intval($this->getActivePlayerId());
         $this->giveExtraTime($playerId);
         
-        $fromBuilding = $this->getBuildingByAreaPosition($this->getGameStateValue(SELECTED_AREA_POSITION));
+        $fromAreaPosition = intval($this->getGameStateValue(SELECTED_AREA_POSITION));
+
+        $map = $this->getMap();
+        if ($map[$fromAreaPosition][0] != $map[$areaPosition][0]) {
+            throw new BgaUserException("Invalid land color");
+        }
+        
+        $fromBuilding = $this->getBuildingByAreaPosition($fromAreaPosition);
         $toBuilding = $this->getBuildingByAreaPosition($areaPosition);
+
+        if ($fromBuilding->playerId != $toBuilding->playerId) {
+            throw new BgaUserException("Invalid building color");
+        }
+
         $this->moveRoof($playerId, $fromBuilding, $toBuilding);
 
         $this->setPloyTokenUsed($this->getActivePlayerId(), 3);
