@@ -156,7 +156,7 @@ html {
 
   @for $i from 1 through 3 {
       &[data-type="#{$i}"] { 
-          background-position: #{$i * 100% / 3};
+          background-position-x: #{$i * 100% / 3};
       }
   }
 }

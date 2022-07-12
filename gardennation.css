@@ -152,15 +152,17 @@
 }
 #board .territory .area {
   position: absolute;
-  width: 100px;
-  height: 100px;
-  left: 115px;
-  top: 148px;
+  width: 106px;
+  height: 106px;
+  left: 117px;
+  top: 150px;
   border-radius: 50%;
   border: 3px dashed transparent;
-  background: url("img/land-tokens.png");
+  background: url("img/land-tokens.png") no-repeat;
   background-size: auto 100%;
   pointer-events: all;
+  box-sizing: border-box;
+  background-clip: padding-box;
 }
 #board .territory .area[data-rotation="1"] {
   transform: rotate(-120deg) translateX(106px) rotate(120deg);
@@ -181,13 +183,13 @@
   transform: rotate(180deg) translateX(106px) rotate(-180deg);
 }
 #board .territory .area[data-type="1"] {
-  background-position: 33.3333333333%;
+  background-position-x: 33.3333333333%;
 }
 #board .territory .area[data-type="2"] {
-  background-position: 66.6666666667%;
+  background-position-x: 66.6666666667%;
 }
 #board .territory .area[data-type="3"] {
-  background-position: 100%;
+  background-position-x: 100%;
 }
 #board .territory .area.selectable {
   cursor: pointer;
@@ -227,8 +229,8 @@
 }
 #board .territory .torticrane-spot {
   position: absolute;
-  bottom: 87px;
-  right: 8px;
+  bottom: -10px;
+  right: 125px;
   z-index: 30;
 }
 #board .territory .territory-number {
@@ -923,13 +925,13 @@ html {
   box-shadow: 1px 1px 3px 2px black;
 }
 .bramble-type-token[data-type="1"] {
-  background-position: 33.3333333333%;
+  background-position-x: 33.3333333333%;
 }
 .bramble-type-token[data-type="2"] {
-  background-position: 66.6666666667%;
+  background-position-x: 66.6666666667%;
 }
 .bramble-type-token[data-type="3"] {
-  background-position: 100%;
+  background-position-x: 100%;
 }
 
 .log .bramble-type-token {

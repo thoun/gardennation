@@ -151,7 +151,9 @@ class Board {
             area.classList.toggle('selectable', selectable);
             if (selectable) {
                 const cost = possibleAreas[area.dataset.position];
-                dojo.place(`<div class="cost-tag"><span>${cost > 0 ? '+'+cost : cost }</span> <div class="icon inhabitant" data-color="${playerColor}"></div></div>`, area);
+                const costStr = cost > 0 ? '+'+cost : cost;
+                dojo.place(`<div id="cost-tag${area.dataset.position}" class="cost-tag"><span>${costStr}</span> <div class="icon inhabitant" data-color="${playerColor}"></div></div>`, area);
+                this.game.setTooltip(`cost-tag${area.dataset.position}`, costStr);
             }
         });
     }

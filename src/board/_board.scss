@@ -178,17 +178,19 @@ $area-spacing: 106px;
 
         .area {
             position: absolute;
-            width: $area-size;
-            height: $area-size;
-            left: 115px;
-            top: 148px;
+            width: $area-size + 6px;
+            height: $area-size + 6px;
+            left: 117px;
+            top: 150px;
             //left: $big-hex-width / 2 - $area-size / 2;
             //top: $big-hex-height / 2 - $area-size / 2;
             border-radius: 50%;
             border: 3px dashed transparent;
-            background: url('img/land-tokens.png');
+            background: url('img/land-tokens.png') no-repeat;
             background-size: auto 100%;
             pointer-events: all;
+            box-sizing: border-box;
+            background-clip: padding-box;
 
             @for $i from 1 through 6 {
                 &[data-rotation="#{$i}"] { 
@@ -198,7 +200,7 @@ $area-spacing: 106px;
             
             @for $i from 1 through 3 {
                 &[data-type="#{$i}"] {
-                    background-position: #{$i * 100% / 3};
+                    background-position-x: #{$i * 100% / 3};
                 }
             }
 
@@ -250,8 +252,8 @@ $area-spacing: 106px;
 
         .torticrane-spot {
             position: absolute;
-            bottom: 87px;
-            right: 8px;
+            bottom: -10px;
+            right: 125px;
             z-index: 30;
         }
 

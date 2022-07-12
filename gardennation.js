@@ -417,13 +417,16 @@ var Board = /** @class */ (function () {
         this.movePoints();
     };
     Board.prototype.activatePossibleAreasWithCost = function (possibleAreas) {
+        var _this = this;
         var playerColor = this.game.getPlayerColor(this.game.getPlayerId());
         Array.from(document.getElementsByClassName('area')).forEach(function (area) {
             var selectable = Object.keys(possibleAreas).includes(area.dataset.position);
             area.classList.toggle('selectable', selectable);
             if (selectable) {
                 var cost = possibleAreas[area.dataset.position];
-                dojo.place("<div class=\"cost-tag\"><span>".concat(cost > 0 ? '+' + cost : cost, "</span> <div class=\"icon inhabitant\" data-color=\"").concat(playerColor, "\"></div></div>"), area);
+                var costStr = cost > 0 ? '+' + cost : cost;
+                dojo.place("<div id=\"cost-tag".concat(area.dataset.position, "\" class=\"cost-tag\"><span>").concat(costStr, "</span> <div class=\"icon inhabitant\" data-color=\"").concat(playerColor, "\"></div></div>"), area);
+                _this.game.setTooltip("cost-tag".concat(area.dataset.position), costStr);
             }
         });
     };

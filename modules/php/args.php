@@ -43,7 +43,7 @@ trait ArgsTrait {
         if (!$canConstructBuilding) {
             $territories = $this->getTerritories();
             $currentTerritoryNumber = $territories[intval($this->getGameStateValue(TORTICRANE_POSITION))][0];
-            $canChangeTerritory = ($currentTerritoryNumber + 4) % 6 + 1;
+            $canChangeTerritory = ($currentTerritoryNumber + 5) % 7 + 1;
         }
     
         return [
