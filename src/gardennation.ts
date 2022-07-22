@@ -551,6 +551,16 @@ class GardenNation implements GardenNationGame {
     }
     
     private checkConfirmSecretMissionsButtonState() {
+        const selectorCardsDivs = Array.from(document.getElementById(`secret-missions-selector`).getElementsByClassName('secret-mission')) as HTMLDivElement[];
+        selectorCardsDivs.forEach(card => card.classList.remove('disabled'));
+        
+        this.selectedSecretMissionsIds.forEach(id => {
+            const selectedCard = selectorCardsDivs.find(card => Number(card.dataset.id) == id);
+            selectorCardsDivs.filter(
+                card => selectedCard.id != card.id && selectedCard.dataset.type == card.dataset.type && selectedCard.dataset.subType == card.dataset.subType
+            ).forEach(card => card.classList.add('disabled'));
+        });
+
         document.getElementById(`chooseSecretMissions-button`)?.classList.toggle('disabled', this.selectedSecretMissionsIds.length !== 2);
     }
 
@@ -588,6 +598,11 @@ class GardenNation implements GardenNationGame {
     public onSecretMissionClick(card: SecretMission): void {
         switch (this.gamedatas.gamestate.name) {
             case 'chooseSecretMissions':
+                const div = document.getElementById(`secret-mission-${card.id}`);
+                if (div.classList.contains('disabled')) {
+                    return;
+                }
+
                 const args = this.gamedatas.gamestate.args as EnteringChooseSecretMissionsArgs;
                 if (args._private?.secretMissions?.some(cp => cp.id === card.id)) {
                     const index = this.selectedSecretMissionsIds.findIndex(id => id == card.id);
@@ -596,7 +611,7 @@ class GardenNation implements GardenNationGame {
                     } else {
                         this.selectedSecretMissionsIds.push(card.id);
                     }
-                    document.getElementById(`secret-mission-${card.id}`).classList.toggle('selected', index === -1);
+                    div.classList.toggle('selected', index === -1);
                 }
 
                 if ((this as any).isCurrentPlayerActive()) {

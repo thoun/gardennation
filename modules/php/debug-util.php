@@ -13,10 +13,14 @@ trait DebugUtilTrait {
 
         $this->placeRandomBuildings($playersIds, 5, 0);
         //$this->debugSetSecretMissionInHand(4, 7, 2343492);
+        
+        
+        //$cards = $this->getSecretMissionsFromDb(array_values($this->secretMissions->getCardsOfType(2, 2)));
+        //foreach ($cards as $card) $this->secretMissions->moveCard($card->id, 'choose', 2343492);
     }
 
-    function debugSetSecretMissionInHand($cardType, $cardSubType, $playerId) {
-        $card = $this->getSecretMissionFromDb(array_values($this->secretMissions->getCardsOfType($cardType, $cardSubType))[0]);
+    function debugSetSecretMissionInHand($cardType, $cardSubType, $playerId, $index = 0) {
+        $card = $this->getSecretMissionFromDb(array_values($this->secretMissions->getCardsOfType($cardType, $cardSubType))[$index]);
         $this->secretMissions->moveCard($card->id, 'hand', $playerId);
         return $card;
     }

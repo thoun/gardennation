@@ -28,6 +28,12 @@ trait ActionTrait {
             throw new BgaUserException("You must choose secret missions from the list");
         }
 
+        $card1 = $this->getSecretMissionFromDb($this->secretMissions->getCard($ids[0]));
+        $card2 = $this->getSecretMissionFromDb($this->secretMissions->getCard($ids[1]));
+        if ($card1->type == $card2->type && $card1->subType == $card2->subType) {
+            throw new BgaUserException("You must choose 2 different secret missions");
+        }
+
         $this->secretMissions->moveCards($ids, 'chosen', $playerId);
 
         $this->gamestate->setPlayerNonMultiactive($playerId, 'end');

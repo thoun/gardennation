@@ -249,6 +249,7 @@ var SecretMissionCards = /** @class */ (function () {
             var div = document.createElement('div');
             div.id = "secret-mission-".concat(card.id);
             div.classList.add('card', 'secret-mission');
+            div.dataset.id = '' + card.id;
             div.dataset.side = '' + side;
             div.dataset.type = '' + card.type;
             div.dataset.subType = '' + card.subType;
@@ -1006,6 +1007,12 @@ var GardenNation = /** @class */ (function () {
     };
     GardenNation.prototype.checkConfirmSecretMissionsButtonState = function () {
         var _a;
+        var selectorCardsDivs = Array.from(document.getElementById("secret-missions-selector").getElementsByClassName('secret-mission'));
+        selectorCardsDivs.forEach(function (card) { return card.classList.remove('disabled'); });
+        this.selectedSecretMissionsIds.forEach(function (id) {
+            var selectedCard = selectorCardsDivs.find(function (card) { return Number(card.dataset.id) == id; });
+            selectorCardsDivs.filter(function (card) { return selectedCard.id != card.id && selectedCard.dataset.type == card.dataset.type && selectedCard.dataset.subType == card.dataset.subType; }).forEach(function (card) { return card.classList.add('disabled'); });
+        });
         (_a = document.getElementById("chooseSecretMissions-button")) === null || _a === void 0 ? void 0 : _a.classList.toggle('disabled', this.selectedSecretMissionsIds.length !== 2);
     };
     GardenNation.prototype.onAreaClick = function (areaPosition) {
@@ -1041,6 +1048,10 @@ var GardenNation = /** @class */ (function () {
         var _a, _b;
         switch (this.gamedatas.gamestate.name) {
             case 'chooseSecretMissions':
+                var div = document.getElementById("secret-mission-".concat(card.id));
+                if (div.classList.contains('disabled')) {
+                    return;
+                }
                 var args = this.gamedatas.gamestate.args;
                 if ((_b = (_a = args._private) === null || _a === void 0 ? void 0 : _a.secretMissions) === null || _b === void 0 ? void 0 : _b.some(function (cp) { return cp.id === card.id; })) {
                     var index = this.selectedSecretMissionsIds.findIndex(function (id) { return id == card.id; });
@@ -1050,7 +1061,7 @@ var GardenNation = /** @class */ (function () {
                     else {
                         this.selectedSecretMissionsIds.push(card.id);
                     }
-                    document.getElementById("secret-mission-".concat(card.id)).classList.toggle('selected', index === -1);
+                    div.classList.toggle('selected', index === -1);
                 }
                 if (this.isCurrentPlayerActive()) {
                     this.checkConfirmSecretMissionsButtonState();

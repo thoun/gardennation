@@ -65,6 +65,7 @@ class SecretMissionCards {
             const div = document.createElement('div');
             div.id = `secret-mission-${card.id}`;
             div.classList.add('card', 'secret-mission');
+            div.dataset.id = ''+card.id;
             div.dataset.side = ''+side;
             div.dataset.type = ''+card.type;
             div.dataset.subType = ''+card.subType;

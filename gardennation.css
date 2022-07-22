@@ -1095,6 +1095,10 @@ html {
 #secret-missions-selector .card {
   cursor: pointer;
 }
+#secret-missions-selector .card.disabled {
+  cursor: not-allowed;
+  filter: contrast(0.6);
+}
 
 #objectives-reminder {
   display: flex;
