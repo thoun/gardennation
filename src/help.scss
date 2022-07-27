@@ -26,6 +26,11 @@ $card-height: 240px;
     }
 }
 
+#popin_gardennationHelpDialog_contents {
+    max-width: 100vw;
+    overflow-x: auto;
+}
+
 #popin_gardennationHelpDialog {
     background: #f8f5e8;
     background-repeat: repeat;
