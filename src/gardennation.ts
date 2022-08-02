@@ -8,7 +8,6 @@ declare const _;
 declare const board: HTMLDivElement;
 
 const ANIMATION_MS = 500;
-const SCORE_MS = 1500;
 
 const TITLE_COLOR = ['#6b7123', '#ba782e', '#ab3b2b'];
 
@@ -1016,7 +1015,7 @@ class GardenNation implements GardenNationGame {
 
     notif_territoryControl(notif: Notif<NotifTerritoryControlArgs>) {
         document.getElementById('board').dataset.scoreTerritory = ''+notif.args.territoryPosition;
-        this.board.highlightBuilding(notif.args.buildingsToHighlight);
+        this.board.highlightBuilding(notif.args.buildingsToHighlight, notif.args.inc);
     }
 
     notif_ployTokenUsed(notif: Notif<NotifPloyTokenUsedArgs>) {

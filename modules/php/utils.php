@@ -237,6 +237,12 @@ trait UtilTrait {
     function scoreTerritoryControl() {
         $territories = $this->getTerritories();
 
+        $allPlayersIds = $this->getPlayersIds();
+        $roundTerritoryControlInhabitants = [];
+        foreach ($allPlayersIds as $playerId) {
+            $roundTerritoryControlInhabitants[$playerId] = 0;
+        }
+
         for ($i=1; $i<=7; $i++) {
             $playersIds = $this->getTerritoryControlPlayersIds($i);
             
@@ -245,6 +251,7 @@ trait UtilTrait {
                 $buildingsToHighlight = array_values(array_filter($buildingsToHighlight, fn($building) => in_array($building->playerId, $playersIds)));
 
                 $alone = count($playersIds) == 1;
+                $inc = $alone ? 2 : 1;
                 $message = $alone ? 
                     clienttranslate('${player_name} controls the territory ${territoryNumber} and gains ${inhabitants} inhabitants') :
                     clienttranslate('${playersNames} control the territory ${territoryNumber} gains ${inhabitants} inhabitant');
@@ -252,7 +259,8 @@ trait UtilTrait {
                     'buildingsToHighlight' => $buildingsToHighlight,
                     'territoryNumber' => $i,
                     'territoryPosition' => $this->array_find_index($territories, fn($territory) => $territory[0] == $i),
-                    'inhabitants' => $alone ? 2 : 1,
+                    'inhabitants' => $inc,
+                    'inc' => $inc,
                 ];
                 if ($alone) {
                     $args['player_name'] = $this->getPlayerName($playersIds[0]);
@@ -261,9 +269,10 @@ trait UtilTrait {
                 }
                 $this->notifyAllPlayers('territoryControl', $message, $args);
 
-                $inc = $alone ? 2 : 1;
+                
                 foreach($playersIds as $playerId) {
                     $this->incPlayerInhabitants($playerId, $inc);
+                    $roundTerritoryControlInhabitants[$playerId] += $inc;
 
                     $this->incStat($inc, 'inhabitantsGainedWithTerritoryControl');
                     $this->incStat($inc, 'inhabitantsGainedWithTerritoryControl', $playerId);
@@ -273,6 +282,13 @@ trait UtilTrait {
                     $this->incStat(1, $alone ? 'territoryControlWinAlone' : 'territoryControlWinShared', $playerId);
                 }
             }
+        }
+
+        foreach ($allPlayersIds as $playerId) {
+            $this->notifyAllPlayers('log', clienttranslate('${player_name} gained ${inhabitants} inhabitant(s) with territory control on this round'), [
+                'player_name' => $this->getPlayerName($playerId),
+                'inhabitants' => $roundTerritoryControlInhabitants[$playerId],
+            ]);
         }
     }
 

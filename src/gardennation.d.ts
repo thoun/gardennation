@@ -175,6 +175,7 @@ interface NotifTerritoryControlArgs {
     territoryNumber: number | string;
     territoryPosition: number;
     buildingsToHighlight: Building[];
+    inc: number;
 }
 
 interface NotifPloyTokenUsedArgs {

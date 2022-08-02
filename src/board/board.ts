@@ -1,5 +1,7 @@
 const POINT_CASE_SIZE = 47.24;
 
+const SCORE_MS = 1500;
+
 /*
 [1, 2],
 [6, 0, 3],
@@ -197,10 +199,20 @@ class Board {
         }
     }
 
-    public highlightBuilding(buildingsToHighlight: Building[]) {
-        buildingsToHighlight.forEach(building => 
-            document.getElementById(`building${building.areaPosition}`)?.classList.add('highlight')
-        );
+    public highlightBuilding(buildingsToHighlight: Building[], inc: number) {
+        const playersIds = [];
+        buildingsToHighlight.forEach(building => {
+            document.getElementById(`building${building.areaPosition}`)?.classList.add('highlight');
+            if (!playersIds.includes(building.playerId)) {
+                playersIds.push(building.playerId);
+            }
+        });
+
+        playersIds.forEach(playerId => {
+            const playerBuildings = buildingsToHighlight.filter(building => building.playerId == playerId);
+            let highestBuilding = playerBuildings.reduce((a, b) => b.floors > a.floors ? b : a);
+            (this.game as any).displayScoring(`building${highestBuilding.areaPosition}`, this.game.getPlayerColor(playerId), inc, SCORE_MS);
+        });
     }
 
     public moveTorticrane(torticranePosition: number) {

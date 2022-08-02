@@ -318,6 +318,7 @@ var SecretMissionCards = /** @class */ (function () {
     return SecretMissionCards;
 }());
 var POINT_CASE_SIZE = 47.24;
+var SCORE_MS = 1500;
 /*
 [1, 2],
 [6, 0, 3],
@@ -472,8 +473,21 @@ var Board = /** @class */ (function () {
             (_a = buildingDiv === null || buildingDiv === void 0 ? void 0 : buildingDiv.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(buildingDiv);
         }
     };
-    Board.prototype.highlightBuilding = function (buildingsToHighlight) {
-        buildingsToHighlight.forEach(function (building) { var _a; return (_a = document.getElementById("building".concat(building.areaPosition))) === null || _a === void 0 ? void 0 : _a.classList.add('highlight'); });
+    Board.prototype.highlightBuilding = function (buildingsToHighlight, inc) {
+        var _this = this;
+        var playersIds = [];
+        buildingsToHighlight.forEach(function (building) {
+            var _a;
+            (_a = document.getElementById("building".concat(building.areaPosition))) === null || _a === void 0 ? void 0 : _a.classList.add('highlight');
+            if (!playersIds.includes(building.playerId)) {
+                playersIds.push(building.playerId);
+            }
+        });
+        playersIds.forEach(function (playerId) {
+            var playerBuildings = buildingsToHighlight.filter(function (building) { return building.playerId == playerId; });
+            var highestBuilding = playerBuildings.reduce(function (a, b) { return b.floors > a.floors ? b : a; });
+            _this.game.displayScoring("building".concat(highestBuilding.areaPosition), _this.game.getPlayerColor(playerId), inc, SCORE_MS);
+        });
     };
     Board.prototype.moveTorticrane = function (torticranePosition) {
         slideToObjectAndAttach(this.game, document.getElementById('torticrane'), "torticrane-spot-".concat(torticranePosition));
@@ -601,7 +615,6 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 var ANIMATION_MS = 500;
-var SCORE_MS = 1500;
 var TITLE_COLOR = ['#6b7123', '#ba782e', '#ab3b2b'];
 var ZOOM_LEVELS = [0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1];
 var ZOOM_LEVELS_MARGIN = [-300, -166, -100, -60, -33, -14, 0];
@@ -1395,7 +1408,7 @@ var GardenNation = /** @class */ (function () {
     };
     GardenNation.prototype.notif_territoryControl = function (notif) {
         document.getElementById('board').dataset.scoreTerritory = '' + notif.args.territoryPosition;
-        this.board.highlightBuilding(notif.args.buildingsToHighlight);
+        this.board.highlightBuilding(notif.args.buildingsToHighlight, notif.args.inc);
     };
     GardenNation.prototype.notif_ployTokenUsed = function (notif) {
         var _a, _b;
