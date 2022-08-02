@@ -502,6 +502,13 @@
 #playerstables .player-table .player-score-board .meeple-marker.color-blind[data-player-no="4"]::after {
   content: "◆";
 }
+#playerstables .player-table .player-score-board .inhabitant-scores {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 105px;
+}
 #playerstables .player-table .remaining-building-floors {
   width: 112px;
   align-self: flex-start;

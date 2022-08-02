@@ -162,7 +162,7 @@ class GardenNation extends Table {
         $this->activeNextPlayer();
 
         // TODO TEMP card to test
-        $this->debugSetup(array_keys($players));
+        //$this->debugSetup(array_keys($players));
 
         /************ End of the game initialization *****/
     }

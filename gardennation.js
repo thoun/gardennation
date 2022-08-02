@@ -481,12 +481,30 @@ var Board = /** @class */ (function () {
     };
     return Board;
 }());
+var END_INHABITANTS_POINTS = [
+    [1, -30],
+    [2, -20],
+    [4, -10],
+    [6, -5],
+    [8, -3],
+    [10, 0],
+    [11, 1],
+    [15, 2],
+    [17, 3],
+    [20, 4],
+    [23, 5],
+    [26, 6],
+    [29, 7],
+    [32, 8],
+    [35, 9],
+    [38, 10],
+];
 var PlayerTable = /** @class */ (function () {
     function PlayerTable(game, player) {
         var _this = this;
         this.game = game;
         this.playerId = Number(player.id);
-        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n                <div id=\"player-table-").concat(this.playerId, "-meeple-marker\" class=\"meeple-marker\" data-color=\"").concat(player.color, "\"></div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-remaining-building-floors\" class=\"remaining-building-floors\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-secret-missions-wrapper\" class=\"player-secret-missions-wrapper\">\n                <div id=\"player-table-").concat(this.playerId, "-secret-missions-title\" class=\"title ").concat(player.secretMissions.length ? '' : 'hidden', "\"\">").concat(_('Secret missions'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-secret-missions\" class=\"player-secret-missions\">\n                </div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-common-projects-wrapper\" class=\"player-common-projects-wrapper\">\n                <div id=\"player-table-").concat(this.playerId, "-common-projects-title\" class=\"title ").concat(player.commonProjects.length ? '' : 'hidden', "\">").concat(_('Completed Common projects'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-common-projects\" class=\"player-common-projects\">\n                </div>\n            </div>\n        </div>");
+        var html = "\n        <div id=\"player-table-".concat(this.playerId, "\" class=\"player-table whiteblock\">\n            <div id=\"player-table-").concat(this.playerId, "-score-board\" class=\"player-score-board\" data-color=\"").concat(player.color, "\">\n                <div id=\"player-table-").concat(this.playerId, "-name\" class=\"player-name\" style=\"color: #").concat(player.color, ";\">").concat(player.name, "</div>\n                <div id=\"player-table-").concat(this.playerId, "-meeple-marker\" class=\"meeple-marker\" data-color=\"").concat(player.color, "\"></div>\n                <div id=\"player-table-").concat(this.playerId, "-inhabitant-scores\" class=\"inhabitant-scores\"></div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-remaining-building-floors\" class=\"remaining-building-floors\"></div>\n            <div id=\"player-table-").concat(this.playerId, "-secret-missions-wrapper\" class=\"player-secret-missions-wrapper\">\n                <div id=\"player-table-").concat(this.playerId, "-secret-missions-title\" class=\"title ").concat(player.secretMissions.length ? '' : 'hidden', "\"\">").concat(_('Secret missions'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-secret-missions\" class=\"player-secret-missions\">\n                </div>\n            </div>\n            <div id=\"player-table-").concat(this.playerId, "-common-projects-wrapper\" class=\"player-common-projects-wrapper\">\n                <div id=\"player-table-").concat(this.playerId, "-common-projects-title\" class=\"title ").concat(player.commonProjects.length ? '' : 'hidden', "\">").concat(_('Completed Common projects'), "</div>\n                <div id=\"player-table-").concat(this.playerId, "-common-projects\" class=\"player-common-projects\">\n                </div>\n            </div>\n        </div>");
         dojo.place(html, 'playerstables');
         [0, 1, 2, 3].forEach(function (type) {
             var html = "\n            <div id=\"player-table-".concat(_this.playerId, "-ploy-tokens-container-").concat(type, "\" class=\"ploy-tokens-container\" data-type=\"").concat(type, "\">");
@@ -514,12 +532,33 @@ var PlayerTable = /** @class */ (function () {
         var left = (points <= 20 ? cases : cases - 20) * 29.5;
         return [-17 + left, 203 + top];
     };
-    PlayerTable.prototype.setInhabitants = function (points) {
+    PlayerTable.prototype.setInhabitants = function (inhabitants) {
         var markerDiv = document.getElementById("player-table-".concat(this.playerId, "-meeple-marker"));
-        var coordinates = this.getPointsCoordinates(points);
+        var coordinates = this.getPointsCoordinates(inhabitants);
         var left = coordinates[0];
         var top = coordinates[1];
         markerDiv.style.transform = "translateX(".concat(left, "px) translateY(").concat(top, "px)");
+        var inhabitantScoresTooltip = "<h3>".concat(_('Victory points by final inhabitant count'), "</h3>");
+        END_INHABITANTS_POINTS.forEach(function (array, index) {
+            var nextArray = END_INHABITANTS_POINTS[index + 1];
+            var from = array[0];
+            var to = nextArray ? nextArray[0] - 1 : '40+';
+            var points = array[1];
+            var bold = (!nextArray && inhabitants >= from) || (nextArray && inhabitants >= from && inhabitants <= to);
+            var label = from == to ?
+                _('${inhabitants} inhabitants').replace('${inhabitants}', from) :
+                _('${from} to ${to} inhabitants').replace('${from}', from).replace('${to}', to);
+            inhabitantScoresTooltip += "<div>";
+            if (bold) {
+                inhabitantScoresTooltip += "<strong>";
+            }
+            inhabitantScoresTooltip += "".concat(label, " = ").concat(_('${points} Victory points').replace('${points}', points));
+            if (bold) {
+                inhabitantScoresTooltip += "</strong>";
+            }
+            inhabitantScoresTooltip += "</div>";
+        });
+        this.game.setTooltip("player-table-".concat(this.playerId, "-inhabitant-scores"), _(inhabitantScoresTooltip));
     };
     PlayerTable.prototype.setPloyTokenUsed = function (type) {
         var token = document.getElementById("player-table-".concat(this.playerId, "-ploy-tokens-container-0")).lastElementChild;
