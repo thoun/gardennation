@@ -114,6 +114,12 @@ trait ActionTrait {
 
     public function constructBuilding(int $areaPosition) {
         self::checkAction('constructBuilding');
+
+        $args = $this->argConstructBuilding();
+        if (!in_array($areaPosition, array_keys($args['possiblePositions']))) {
+            throw new BgaUserException("Invalid position");
+        }
+
         $playerId = intval($this->getActivePlayerId());
 
         if (!$this->applyConstructBuildingFloor($areaPosition, false)) { // not redirected to area choice
@@ -157,6 +163,11 @@ trait ActionTrait {
 
     public function abandonBuilding(int $areaPosition) {
         self::checkAction('abandonBuilding');
+
+        $args = $this->argAbandonBuilding();
+        if (!in_array($areaPosition, array_keys($args['possiblePositions']))) {
+            throw new BgaUserException("Invalid position");
+        }
         
         $playerId = intval($this->getActivePlayerId());
 
@@ -318,6 +329,11 @@ trait ActionTrait {
 
     public function chooseRoofToTransfer(int $areaPosition) {
         self::checkAction('chooseRoofToTransfer');
+
+        $args = $this->argChooseRoofToTransfer();
+        if (!in_array($areaPosition, $args['possiblePositions'])) {
+            throw new BgaUserException("Invalid position");
+        }
         
         $this->setGameStateValue(SELECTED_AREA_POSITION, $areaPosition);
 
@@ -326,6 +342,11 @@ trait ActionTrait {
 
     public function chooseRoofDestination(int $areaPosition) {
         self::checkAction('chooseRoofDestination');
+
+        $args = $this->argChooseRoofDestination();
+        if (!in_array($areaPosition, $args['possiblePositions'])) {
+            throw new BgaUserException("Invalid position");
+        }
         
         $playerId = intval($this->getActivePlayerId());
         $this->giveExtraTime($playerId);
@@ -359,6 +380,11 @@ trait ActionTrait {
 
     public function buildingInvasion(int $areaPosition) {
         self::checkAction('buildingInvasion');
+
+        $args = $this->argBuildingInvasion();
+        if (!in_array($areaPosition, array_keys($args['possiblePositions']))) {
+            throw new BgaUserException("Invalid position");
+        }
         
         $playerId = intval($this->getActivePlayerId());
 
