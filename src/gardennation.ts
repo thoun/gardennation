@@ -1043,7 +1043,7 @@ class GardenNation implements GardenNationGame {
     }
 
     notif_revealSecretMission(notif: Notif<NotifRevealSecretMissionArgs>) {
-        this.getPlayerTable(notif.args.playerId).setSecretMissions([notif.args.secretMission]);
+        this.getPlayerTable(notif.args.playerId).setSecretMissions([notif.args.secretMission], true);
     }
 
     notif_lastTurn() {

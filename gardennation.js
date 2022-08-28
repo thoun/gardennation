@@ -587,14 +587,15 @@ var PlayerTable = /** @class */ (function () {
             return _this.game.commonProjectCards.createMoveOrUpdateCard(commonProject, "player-table-".concat(_this.playerId, "-common-projects"));
         });
     };
-    PlayerTable.prototype.setSecretMissions = function (secretMissions) {
+    PlayerTable.prototype.setSecretMissions = function (secretMissions, ignoreReminder) {
         var _this = this;
+        if (ignoreReminder === void 0) { ignoreReminder = false; }
         if (secretMissions.length) {
             document.getElementById("player-table-".concat(this.playerId, "-secret-missions-title")).classList.remove('hidden');
         }
         secretMissions.forEach(function (secretMission, index) {
             _this.game.secretMissionCards.createMoveOrUpdateCard(secretMission, "player-table-".concat(_this.playerId, "-secret-missions"));
-            if (_this.playerId == _this.game.getPlayerId()) {
+            if (!ignoreReminder && _this.playerId == _this.game.getPlayerId()) {
                 var secretMissionReminderDiv = document.getElementById("secret-mission-reminder-".concat(index));
                 if (secretMissionReminderDiv) {
                     secretMissionReminderDiv.dataset.type = '' + secretMission.type;
@@ -1432,7 +1433,7 @@ var GardenNation = /** @class */ (function () {
         commonProjectReminderDiv.dataset.subType = '' + commonProject.subType;
     };
     GardenNation.prototype.notif_revealSecretMission = function (notif) {
-        this.getPlayerTable(notif.args.playerId).setSecretMissions([notif.args.secretMission]);
+        this.getPlayerTable(notif.args.playerId).setSecretMissions([notif.args.secretMission], true);
     };
     GardenNation.prototype.notif_lastTurn = function () {
         dojo.place("<div id=\"last-round\">\n            ".concat(_("This is the last round of the game!"), "\n        </div>"), 'page-title');

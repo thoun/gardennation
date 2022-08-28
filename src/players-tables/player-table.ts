@@ -131,15 +131,15 @@ class PlayerTable {
         );
     }
 
-    public setSecretMissions(secretMissions: SecretMission[]) {
+    public setSecretMissions(secretMissions: SecretMission[], ignoreReminder: boolean = false) {
         if (secretMissions.length) {
             document.getElementById(`player-table-${this.playerId}-secret-missions-title`).classList.remove('hidden');
         }
 
-        secretMissions.forEach((secretMission, index) => {
+        secretMissions.forEach((secretMission: SecretMission, index: number) => {
             this.game.secretMissionCards.createMoveOrUpdateCard(secretMission, `player-table-${this.playerId}-secret-missions`);
 
-            if (this.playerId == this.game.getPlayerId()) {
+            if (!ignoreReminder && this.playerId == this.game.getPlayerId()) {
                 const secretMissionReminderDiv = document.getElementById(`secret-mission-reminder-${index}`);
                 if (secretMissionReminderDiv) {
                     secretMissionReminderDiv.dataset.type = ''+secretMission.type;

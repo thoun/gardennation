@@ -19,6 +19,16 @@ trait DebugUtilTrait {
         //foreach ($cards as $card) $this->secretMissions->moveCard($card->id, 'choose', 2343492);
     }
 
+    function debugEndGame() {
+        $this->setGameStateValue(LAST_ROUND, 1);
+        /*$playerId = 2343492;
+
+        while (count($this->getAvailableBuildingFloors($playerId)) > 0) {
+            $buildingFloorId = $this->getAvailableBuildingFloors($playerId)[0]->id;
+            $this->DbQuery("UPDATE `building_floor` SET `territory_number` = 1, `area_position` = 1 WHERE `id` = $buildingFloorId");
+        }*/
+    }
+
     function debugSetSecretMissionInHand($cardType, $cardSubType, $playerId, $index = 0) {
         $card = $this->getSecretMissionFromDb(array_values($this->secretMissions->getCardsOfType($cardType, $cardSubType))[$index]);
         $this->secretMissions->moveCard($card->id, 'hand', $playerId);
