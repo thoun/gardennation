@@ -182,7 +182,10 @@ class GardenNation implements GardenNationGame {
         if ((this as any).isCurrentPlayerActive()) {
             this.board.activatePossibleAreas([], args.selectedPosition);
 
-            args.completedCommonProjects.forEach(commonProject => document.getElementById(`common-project-${commonProject.id}`).classList.add('selectable'));
+            args.completedCommonProjects.forEach(commonProject => {
+                document.getElementById(`common-project-${commonProject.id}`).classList.add('selectable');
+                document.querySelector(`.common-project-reminder[data-id="${commonProject.id}"]`).classList.add('selectable');
+            });
         }
     }
 
@@ -229,7 +232,7 @@ class GardenNation implements GardenNationGame {
         if ((this as any).isCurrentPlayerActive()) {
             this.board.activatePossibleAreas([], null);
 
-            document.querySelectorAll('.common-project.selectable').forEach(elem => elem.classList.remove('selectable'));
+            document.querySelectorAll('.common-project.selectable, .common-project-reminder.selectable').forEach(elem => elem.classList.remove('selectable'));
         }
     }
 
@@ -531,9 +534,16 @@ class GardenNation implements GardenNationGame {
         [1, 2, 3, 4].forEach(number => {
             const commonProject = this.gamedatas.commonProjects.find(commonProject => commonProject.locationArg == number);
             dojo.place(`
-            <div id="common-project-reminder-${number}" class="common-project-reminder card-reminder" data-type="${commonProject.type}" data-sub-type="${commonProject.subType}">
+            <div id="common-project-reminder-${number}" class="common-project-reminder card-reminder" data-id="${commonProject?.id}" data-type="${commonProject?.type ?? 0}" data-sub-type="${commonProject?.subType}">
             </div>
             `, 'common-projects-reminder');
+
+            const elem = document.getElementById(`common-project-reminder-${number}`);
+            elem.addEventListener('click', () => {
+                if (elem.classList.contains('selectable')) {
+                    this.onCommonProjectClick({ id: Number(elem.dataset.id) } as any);
+                }
+            });
         });
         [0, 1].forEach(number => {
             dojo.place(`
@@ -1024,7 +1034,16 @@ class GardenNation implements GardenNationGame {
     }
 
     notif_takeCommonProject(notif: Notif<NotifTakeCommonProjectArgs>) {
-        this.getPlayerTable(notif.args.playerId).setCommonProjects([notif.args.commonProject]);
+        const commonProject = notif.args.commonProject;
+
+        this.getPlayerTable(notif.args.playerId).setCommonProjects([commonProject]);
+        
+
+        const commonProjectReminderDiv = document.getElementById(`common-project-reminder-${commonProject.locationArg}`);
+        commonProjectReminderDiv.dataset.id = '';
+        commonProjectReminderDiv.dataset.type = '0';
+        commonProjectReminderDiv.dataset.subType = '0';
+
         this.tableHeightChange();
     }
 
@@ -1038,6 +1057,7 @@ class GardenNation implements GardenNationGame {
         this.commonProjectCards.createMoveOrUpdateCard(commonProject, `common-project-wrapper-${commonProject.locationArg}`);
 
         const commonProjectReminderDiv = document.getElementById(`common-project-reminder-${commonProject.locationArg}`);
+        commonProjectReminderDiv.dataset.id = ''+commonProject.id;
         commonProjectReminderDiv.dataset.type = ''+commonProject.type;
         commonProjectReminderDiv.dataset.subType = ''+commonProject.subType;
     }

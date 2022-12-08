@@ -11,7 +11,9 @@ trait DebugUtilTrait {
             return;
         } 
 
-        $this->placeRandomBuildings($playersIds, 5, 0);
+        //$this->placeRandomBuildings($playersIds, 5, 0);
+        $this->placeRandomBuildings($playersIds, 5, 10, false);
+        //$this->commonProjects->moveAllCardsInLocation('deck', 'void');
         //$this->debugSetSecretMissionInHand(4, 7, 2343492);
         
         
@@ -35,13 +37,13 @@ trait DebugUtilTrait {
         return $card;
     }
 
-    function placeRandomBuildings(array $playersIds, int $maxHeight = 5, int $remaining = 5) {
+    function placeRandomBuildings(array $playersIds, int $maxHeight = 5, int $remaining = 5, bool $setRandomRoofs = true) {
         foreach($playersIds as $playerId) {
-            $this->placeRandomBuildingsForPlayer($playerId, $maxHeight, $remaining);
+            $this->placeRandomBuildingsForPlayer($playerId, $maxHeight, $remaining, $setRandomRoofs);
         }
     }
 
-    function placeRandomBuildingsForPlayer(int $playerId, int $maxHeight = 5, int $remaining = 5) {
+    function placeRandomBuildingsForPlayer(int $playerId, int $maxHeight = 5, int $remaining = 5, bool $setRandomRoofs = true) {
         $playerBuildingFloors = $this->getAvailableBuildingFloors($playerId);
 
         while (count($playerBuildingFloors) > $remaining) {
@@ -58,7 +60,7 @@ trait DebugUtilTrait {
                 $this->placeBuildingFloor($playerId, $territory, $areaPosition);
             }
 
-            if (bga_rand(1, 2) == 2) {
+            if ($setRandomRoofs && bga_rand(1, 2) == 2) {
                 $this->placeBuildingFloor(0, $territory, $areaPosition);
             }
 

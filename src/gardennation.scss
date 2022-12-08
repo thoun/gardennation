@@ -375,11 +375,21 @@ html {
 
   .common-project-reminder {
     background-image: url('img/common-projects.jpg');
+
+    &.selectable {
+      cursor: pointer;
+      box-shadow: 0 0 5px 5px white;
+    }  
   }    
 
   .secret-mission-reminder {
     background-image: url('img/secret-missions.jpg');
   }  
+
+  .common-project-reminder[data-type="0"] {
+    background: #FFFFFF66;
+  }
+  
 
   @for $type from 1 through 1 {
     @for $subType from 1 through 6 {

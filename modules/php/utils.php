@@ -116,9 +116,9 @@ trait UtilTrait {
         return array_map(fn($dbCard) => $this->getBuildingFloorFromDb($dbCard), array_values($dbCards));
     }
 
-    function getCommonProjectFromDb(array $dbCard) {
-        if (!$dbCard || !array_key_exists('id', $dbCard)) {
-            throw new \Error('card doesn\'t exists '.json_encode($dbCard));
+    function getCommonProjectFromDb(/*array|null*/ $dbCard) {
+        if ($dbCard === null) {
+            return null;
         }
         $commonProjectCard = $this->array_find($this->COMMON_PROJECTS, fn($commonProject) => $commonProject->type == intval($dbCard['type']) && $commonProject->subType == intval($dbCard['type_arg']));
         return new CommonProject($dbCard, $commonProjectCard);
@@ -654,11 +654,13 @@ trait UtilTrait {
 
         $newCommonProject = $this->getCommonProjectFromDb($this->commonProjects->pickCardForLocation('deck', 'table', $commonProject->locationArg));
 
-        $this->notifyAllPlayers('newCommonProject', clienttranslate('A new common project is revealed: ${cardName}'), [
-            'cardName' => $newCommonProject->name,
-            'commonProject' => $newCommonProject,
-            'i18n' => [ 'cardName' ],
-        ]);
+        if ($newCommonProject !== null) {
+            $this->notifyAllPlayers('newCommonProject', clienttranslate('A new common project is revealed: ${cardName}'), [
+                'cardName' => $newCommonProject->name,
+                'commonProject' => $newCommonProject,
+                'i18n' => [ 'cardName' ],
+            ]);
+        }
 
         $this->incStat(1, 'completedCommonProjects');
         $this->incStat(1, 'completedCommonProjects', $playerId);

@@ -1147,8 +1147,15 @@ html {
 #objectives-reminder .common-project-reminder {
   background-image: url("img/common-projects.jpg");
 }
+#objectives-reminder .common-project-reminder.selectable {
+  cursor: pointer;
+  box-shadow: 0 0 5px 5px white;
+}
 #objectives-reminder .secret-mission-reminder {
   background-image: url("img/secret-missions.jpg");
+}
+#objectives-reminder .common-project-reminder[data-type="0"] {
+  background: rgba(255, 255, 255, 0.4);
 }
 #objectives-reminder .common-project-reminder[data-type="1"][data-sub-type="1"] {
   background-position-x: 4.7619047619%;

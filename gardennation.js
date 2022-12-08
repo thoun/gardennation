@@ -760,7 +760,10 @@ var GardenNation = /** @class */ (function () {
     GardenNation.prototype.onEnteringChooseCompletedCommonProject = function (args) {
         if (this.isCurrentPlayerActive()) {
             this.board.activatePossibleAreas([], args.selectedPosition);
-            args.completedCommonProjects.forEach(function (commonProject) { return document.getElementById("common-project-".concat(commonProject.id)).classList.add('selectable'); });
+            args.completedCommonProjects.forEach(function (commonProject) {
+                document.getElementById("common-project-".concat(commonProject.id)).classList.add('selectable');
+                document.querySelector(".common-project-reminder[data-id=\"".concat(commonProject.id, "\"]")).classList.add('selectable');
+            });
         }
     };
     GardenNation.prototype.onEnteringShowScore = function (fromReload) {
@@ -802,7 +805,7 @@ var GardenNation = /** @class */ (function () {
     GardenNation.prototype.onLeavingChooseCompletedCommonProject = function () {
         if (this.isCurrentPlayerActive()) {
             this.board.activatePossibleAreas([], null);
-            document.querySelectorAll('.common-project.selectable').forEach(function (elem) { return elem.classList.remove('selectable'); });
+            document.querySelectorAll('.common-project.selectable, .common-project-reminder.selectable').forEach(function (elem) { return elem.classList.remove('selectable'); });
         }
     };
     // onUpdateActionButtons: in this method you can manage "action buttons" that are displayed in the
@@ -1046,8 +1049,15 @@ var GardenNation = /** @class */ (function () {
         }
         dojo.place("<div id=\"objectives-reminder\" class=\"whiteblock\">\n            <div id=\"common-projects-reminder-title\" class=\"title\" title=\"".concat(_("Common projects"), "\">").concat(_("Common projects"), "</div>\n            <div id=\"common-projects-reminder\" class=\"cards\"></div>\n            <div id=\"secret-missions-reminder-title\" class=\"title\" title=\"").concat(_("Secret missions"), "\">").concat(_("Secret missions"), "</div>\n            <div id=\"secret-missions-reminder\" class=\"cards\"></div>\n        </div>"), 'zoom-wrapper', 'before');
         [1, 2, 3, 4].forEach(function (number) {
+            var _a;
             var commonProject = _this.gamedatas.commonProjects.find(function (commonProject) { return commonProject.locationArg == number; });
-            dojo.place("\n            <div id=\"common-project-reminder-".concat(number, "\" class=\"common-project-reminder card-reminder\" data-type=\"").concat(commonProject.type, "\" data-sub-type=\"").concat(commonProject.subType, "\">\n            </div>\n            "), 'common-projects-reminder');
+            dojo.place("\n            <div id=\"common-project-reminder-".concat(number, "\" class=\"common-project-reminder card-reminder\" data-id=\"").concat(commonProject === null || commonProject === void 0 ? void 0 : commonProject.id, "\" data-type=\"").concat((_a = commonProject === null || commonProject === void 0 ? void 0 : commonProject.type) !== null && _a !== void 0 ? _a : 0, "\" data-sub-type=\"").concat(commonProject === null || commonProject === void 0 ? void 0 : commonProject.subType, "\">\n            </div>\n            "), 'common-projects-reminder');
+            var elem = document.getElementById("common-project-reminder-".concat(number));
+            elem.addEventListener('click', function () {
+                if (elem.classList.contains('selectable')) {
+                    _this.onCommonProjectClick({ id: Number(elem.dataset.id) });
+                }
+            });
         });
         [0, 1].forEach(function (number) {
             dojo.place("\n            <div id=\"secret-mission-reminder-".concat(number, "\" class=\"secret-mission-reminder card-reminder\" data-type=\"0\">\n            </div>\n            "), 'secret-missions-reminder');
@@ -1417,7 +1427,12 @@ var GardenNation = /** @class */ (function () {
         (_b = this.getPlayerTable(notif.args.playerId)) === null || _b === void 0 ? void 0 : _b.setPloyTokenUsed(notif.args.type);
     };
     GardenNation.prototype.notif_takeCommonProject = function (notif) {
-        this.getPlayerTable(notif.args.playerId).setCommonProjects([notif.args.commonProject]);
+        var commonProject = notif.args.commonProject;
+        this.getPlayerTable(notif.args.playerId).setCommonProjects([commonProject]);
+        var commonProjectReminderDiv = document.getElementById("common-project-reminder-".concat(commonProject.locationArg));
+        commonProjectReminderDiv.dataset.id = '';
+        commonProjectReminderDiv.dataset.type = '0';
+        commonProjectReminderDiv.dataset.subType = '0';
         this.tableHeightChange();
     };
     GardenNation.prototype.notif_newCommonProject = function (notif) {
@@ -1429,6 +1444,7 @@ var GardenNation = /** @class */ (function () {
         // then we reveal it
         this.commonProjectCards.createMoveOrUpdateCard(commonProject, "common-project-wrapper-".concat(commonProject.locationArg));
         var commonProjectReminderDiv = document.getElementById("common-project-reminder-".concat(commonProject.locationArg));
+        commonProjectReminderDiv.dataset.id = '' + commonProject.id;
         commonProjectReminderDiv.dataset.type = '' + commonProject.type;
         commonProjectReminderDiv.dataset.subType = '' + commonProject.subType;
     };
