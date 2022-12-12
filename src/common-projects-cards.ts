@@ -135,7 +135,10 @@ class CommonProjectCards {
         if (!type) {
             return _('Common projects deck');
         }
-        return `<h3 class="title">${this.getTitle(type, subType)}</h3><div>${this.getTooltipDescription(type)}</div>`;
+        return `
+        <h3 class="title">${this.getTitle(type, subType)}</h3>
+        <div>${this.getTooltipDescription(type)}</div>
+        <div class="tooltip-important">${_('Important: A building with a roof can no longer be used for common projects.')}</div>`;
     }
 
     getTooltipDescription(type: number) {

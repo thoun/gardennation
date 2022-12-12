@@ -168,7 +168,7 @@ var CommonProjectCards = /** @class */ (function () {
         if (!type) {
             return _('Common projects deck');
         }
-        return "<h3 class=\"title\">".concat(this.getTitle(type, subType), "</h3><div>").concat(this.getTooltipDescription(type), "</div>");
+        return "\n        <h3 class=\"title\">".concat(this.getTitle(type, subType), "</h3>\n        <div>").concat(this.getTooltipDescription(type), "</div>\n        <div class=\"tooltip-important\">").concat(_('Important: A building with a roof can no longer be used for common projects.'), "</div>");
     };
     CommonProjectCards.prototype.getTooltipDescription = function (type) {
         switch (type) {
@@ -300,7 +300,7 @@ var SecretMissionCards = /** @class */ (function () {
         if (!type) {
             return _('Secret mission');
         }
-        return "<h3 class=\"title\">".concat(this.getTitle(type, subType), "</h3><div>").concat(this.getTooltipDescription(type, subType), "</div>");
+        return "\n            <h3 class=\"title\">".concat(this.getTitle(type, subType), "</h3>\n            <div>").concat(this.getTooltipDescription(type, subType), "</div>\n            <div class=\"tooltip-important\">").concat(_('Important: A building with a roof cannot be used for any secret mission except for the “Territory Control” mission.'), "</div>\n        ");
     };
     SecretMissionCards.prototype.getTooltipDescription = function (type, subType) {
         switch (type) {

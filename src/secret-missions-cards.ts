@@ -131,7 +131,11 @@ class SecretMissionCards {
         if (!type) {
             return _('Secret mission');
         }
-        return `<h3 class="title">${this.getTitle(type, subType)}</h3><div>${this.getTooltipDescription(type, subType)}</div>`;
+        return `
+            <h3 class="title">${this.getTitle(type, subType)}</h3>
+            <div>${this.getTooltipDescription(type, subType)}</div>
+            <div class="tooltip-important">${_('Important: A building with a roof cannot be used for any secret mission except for the “Territory Control” mission.')}</div>
+        `;
     }
 
     getTooltipDescription(type: number, subType: number) {        
