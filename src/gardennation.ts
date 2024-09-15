@@ -12,14 +12,13 @@ const ANIMATION_MS = 500;
 const TITLE_COLOR = ['#6b7123', '#ba782e', '#ab3b2b'];
 
 const ZOOM_LEVELS = [0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1];
-const ZOOM_LEVELS_MARGIN = [-300, -166, -100, -60, -33, -14, 0];
 const LOCAL_STORAGE_ZOOM_KEY = 'GardenNation-zoom';
 
 const isDebug = window.location.host == 'studio.boardgamearena.com';
 const log = isDebug ? console.log.bind(window.console) : function () { };
 
 class GardenNation implements GardenNationGame {
-    public zoom: number = 1;
+    private zoomManager: ZoomManager;
     public commonProjectCards: CommonProjectCards;
     public secretMissionCards: SecretMissionCards;
 
@@ -35,14 +34,7 @@ class GardenNation implements GardenNationGame {
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
-    constructor() {    
-        const zoomStr = localStorage.getItem(LOCAL_STORAGE_ZOOM_KEY);
-        if (zoomStr) {
-            this.zoom = Number(zoomStr);
-            document.getElementById('zoom-out').classList.toggle('disabled', this.zoom === ZOOM_LEVELS[0]);
-            document.getElementById('zoom-in').classList.toggle('disabled', this.zoom === ZOOM_LEVELS[ZOOM_LEVELS.length - 1]);
-        }
-    }
+    constructor() { }
     
     /*
         setup:
@@ -86,20 +78,32 @@ class GardenNation implements GardenNationGame {
             this.onEnteringShowScore(true);
         }
 
+        this.zoomManager = new ZoomManager({
+            element: document.getElementById('full-table'),
+            smooth: false,
+            zoomControls: {
+                color: 'black',
+            },
+            zoomLevels: ZOOM_LEVELS,
+            localStorageZoomKey: LOCAL_STORAGE_ZOOM_KEY,
+            onDimensionsChange: (zoom) => {
+                //this.setAutoZoom();
+                //this.tableHeightChange();
+
+                const fullBoardWrapperDiv = document.getElementById('full-board-wrapper');
+                const clientWidth = fullBoardWrapperDiv.clientWidth;
+                fullBoardWrapperDiv.style.display = clientWidth < 1181*zoom ? 'block' : 'flex';
+
+                // set second board placement
+                document.getElementById('full-board').classList.toggle('common-projects-side-board', clientWidth > 1464);
+
+            },
+        });
+
         this.addHelp();
         this.setupNotifications();
 
         this.setupPreferences();
-
-        document.getElementById('zoom-out').addEventListener('click', () => this.zoomOut());
-        document.getElementById('zoom-in').addEventListener('click', () => this.zoomIn());
-        if (this.zoom !== 1) {
-            this.setZoom(this.zoom);
-        }
-        (this as any).onScreenWidthChange = () => {
-            this.setAutoZoom();
-            this.tableHeightChange();
-        }
 
         log( "Ending game setup" );
     }
@@ -325,69 +329,7 @@ class GardenNation implements GardenNationGame {
 
     /**
      * Handle user preferences changes.
-     */ 
-
-    private setZoom(zoom: number = 1) {
-        this.zoom = zoom;
-        localStorage.setItem(LOCAL_STORAGE_ZOOM_KEY, ''+this.zoom);
-        const newIndex = ZOOM_LEVELS.indexOf(this.zoom);
-        dojo.toggleClass('zoom-in', 'disabled', newIndex === ZOOM_LEVELS.length - 1);
-        dojo.toggleClass('zoom-out', 'disabled', newIndex === 0);
-
-        const div = document.getElementById('full-table');
-        div.style.transform = zoom === 1 ? '' : `scale(${zoom})`;
-        div.style.marginRight = `${ZOOM_LEVELS_MARGIN[newIndex]}%`;
-        document.getElementById('board').classList.toggle('hd', this.zoom > 1);
-
-        const fullBoardWrapperDiv = document.getElementById('full-board-wrapper');
-        const clientWidth = fullBoardWrapperDiv.clientWidth;
-        fullBoardWrapperDiv.style.display = clientWidth < 1181*zoom ? 'block' : 'flex';
-
-        // set second board placement
-        document.getElementById('full-board').classList.toggle('common-projects-side-board', clientWidth > 1464);
-
-        this.tableHeightChange();
-    }
-
-    public tableHeightChange() {
-        setTimeout(() => {
-            const div = document.getElementById('full-table');
-            document.getElementById('zoom-wrapper').style.height = `${div.getBoundingClientRect().height}px`;
-        }, 500);
-    }
-
-    public zoomIn() {
-        if (this.zoom === ZOOM_LEVELS[ZOOM_LEVELS.length - 1]) {
-            return;
-        }
-        const newIndex = ZOOM_LEVELS.indexOf(this.zoom) + 1;
-        this.setZoom(ZOOM_LEVELS[newIndex]);
-    }
-
-    public zoomOut() {
-        if (this.zoom === ZOOM_LEVELS[0]) {
-            return;
-        }
-        const newIndex = ZOOM_LEVELS.indexOf(this.zoom) - 1;
-        this.setZoom(ZOOM_LEVELS[newIndex]);
-    }
-
-    public setAutoZoom() {
-        
-        const zoomWrapperWidth = document.getElementById('zoom-wrapper').clientWidth;
-
-        if (!zoomWrapperWidth) {
-            setTimeout(() => this.setAutoZoom(), 200);
-            return;
-        }
-
-        let newZoom = this.zoom;
-        while (newZoom > ZOOM_LEVELS[0] && zoomWrapperWidth/newZoom < 1181 /* board width */) {
-            newZoom = ZOOM_LEVELS[ZOOM_LEVELS.indexOf(newZoom) - 1];
-        }
-        this.setZoom(newZoom);
-    }
-
+     */
     private setupPreferences() {
         // Extract the ID and value from the UI control
         const onchange = (e) => {
@@ -530,7 +472,7 @@ class GardenNation implements GardenNationGame {
             <div id="common-projects-reminder" class="cards"></div>
             <div id="secret-missions-reminder-title" class="title" title="${_("Secret missions")}">${_("Secret missions")}</div>
             <div id="secret-missions-reminder" class="cards"></div>
-        </div>`, 'zoom-wrapper', 'before');
+        </div>`, 'secret-missions-selector', 'after');
         [1, 2, 3, 4].forEach(number => {
             const commonProject = this.gamedatas.commonProjects.find(commonProject => commonProject.locationArg == number);
             dojo.place(`
@@ -1044,7 +986,7 @@ class GardenNation implements GardenNationGame {
         commonProjectReminderDiv.dataset.type = '0';
         commonProjectReminderDiv.dataset.subType = '0';
 
-        this.tableHeightChange();
+        //this.tableHeightChange();
     }
 
     notif_newCommonProject(notif: Notif<NotifTakeCommonProjectArgs>) {

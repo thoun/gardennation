@@ -83,7 +83,7 @@ interface GardenNationGame extends Game {
     setTooltip(id: string, html: string): void;
     onCommonProjectClick(card: CommonProject): void;
     onSecretMissionClick(card: SecretMission): void;
-    tableHeightChange();
+    //tableHeightChange();
 }
 
 interface EnteringChooseSecretMissionsArgs {

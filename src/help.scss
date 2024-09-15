@@ -4,7 +4,7 @@ $card-height: 240px;
 
 #gardennation-help-button {
     position: fixed;
-    bottom: 12px;
+    bottom: 5px;
     left: 5px;
     width: 50px;
     height: 50px;
@@ -16,14 +16,6 @@ $card-height: 240px;
     cursor: pointer;
     z-index: 949;
     font-size: 28pt;
-}
-
-/* we show help button if user has no mouse ( = no tooltips) */
-@media (hover: hover) {
-    #gardennation-help-button {
-        //display: none;
-        bottom: 5px;
-    }
 }
 
 #popin_gardennationHelpDialog_contents {
