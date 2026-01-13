@@ -18,6 +18,7 @@ class SecretMissionCard {
 }
 
 class SecretMission extends SecretMissionCard {
+    public int $id;
     public string $location;
 
     public function __construct($dbObject, $SECRET_MISSION) {

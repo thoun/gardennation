@@ -20,6 +20,7 @@ class CommonProjectCard {
 }
 
 class CommonProject extends CommonProjectCard {
+    public int $id;
     public string $location;
     public int $locationArg;
 

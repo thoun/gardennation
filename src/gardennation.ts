@@ -1,10 +1,3 @@
-declare const define;
-declare const ebg;
-declare const $;
-declare const dojo: Dojo;
-declare const _;
-//declare const g_gamethemeurl;
-
 declare const board: HTMLDivElement;
 
 const ANIMATION_MS = 500;
@@ -31,6 +24,8 @@ class GardenNation implements GardenNationGame {
     private ployTokenCounters: Counter[] = [];
 
     private selectedSecretMissionsIds: number[] = [];
+
+    public bga: Bga;
     
     private TOOLTIP_DELAY = document.body.classList.contains('touch-device') ? 1500 : undefined;
 
@@ -103,7 +98,7 @@ class GardenNation implements GardenNationGame {
         this.addHelp();
         this.setupNotifications();
 
-        this.setupPreferences();
+        this.bga.userPreferences.onChange = (prefId: number, prefValue: number) => this.onPreferenceChange(prefId, prefValue);
 
         log( "Ending game setup" );
     }
@@ -260,7 +255,7 @@ class GardenNation implements GardenNationGame {
                     (this as any).addActionButton(`chooseConstructBuilding-button`, _("Construct building"), () => this.chooseConstructBuilding());
                     (this as any).addActionButton(`chooseAbandonBuilding-button`, _("Abandon building"), () => this.chooseAbandonBuilding());
                     if (chooseActionArgs.canChangeTerritory) {
-                        (this as any).addActionButton(`changeTerritory-button`, _("Move to territory ${number}").replace('${number}', chooseActionArgs.canChangeTerritory), () => this.changeTerritory(chooseActionArgs.canChangeTerritory), null, null, 'red');
+                        (this as any).addActionButton(`changeTerritory-button`, _("Move to territory ${number}").replace('${number}', `${chooseActionArgs.canChangeTerritory}`), () => this.changeTerritory(chooseActionArgs.canChangeTerritory), null, null, 'red');
                     }
                     (this as any).addActionButton(`chooseUsePloyToken-button`, _("Use ploy token"), () => this.chooseUsePloyToken(), null, null, 'red');
                     document.getElementById(`chooseConstructBuilding-button`).classList.toggle('disabled', !chooseActionArgs.canConstructBuilding);
@@ -310,8 +305,8 @@ class GardenNation implements GardenNationGame {
                     break;
                 case 'strategicMovement':
                     const strategicMovementArgs = args as EnteringStrategicMovementArgs;
-                    (this as any).addActionButton(`strategicMovementDown-button`, _("Move to territory ${number}").replace('${number}', strategicMovementArgs.down), () => this.strategicMovement(strategicMovementArgs.down));
-                    (this as any).addActionButton(`strategicMovementUp-button`, _("Move to territory ${number}").replace('${number}', strategicMovementArgs.up), () => this.strategicMovement(strategicMovementArgs.up));
+                    (this as any).addActionButton(`strategicMovementDown-button`, _("Move to territory ${number}").replace('${number}', `${strategicMovementArgs.down}`), () => this.strategicMovement(strategicMovementArgs.down));
+                    (this as any).addActionButton(`strategicMovementUp-button`, _("Move to territory ${number}").replace('${number}', `${strategicMovementArgs.up}`), () => this.strategicMovement(strategicMovementArgs.up));
                     (this as any).addActionButton(`cancelUsePloy-button`, _("Cancel"), () => this.cancelUsePloy(), null, null, 'gray');
                     break;
                 case 'chooseRoofToTransfer':
@@ -326,32 +321,6 @@ class GardenNation implements GardenNationGame {
     ///////////////////////////////////////////////////
     //// Utility methods
     ///////////////////////////////////////////////////
-
-    /**
-     * Handle user preferences changes.
-     */
-    private setupPreferences() {
-        // Extract the ID and value from the UI control
-        const onchange = (e) => {
-          var match = e.target.id.match(/^preference_control_(\d+)$/);
-          if (!match) {
-            return;
-          }
-          var prefId = +match[1];
-          var prefValue = +e.target.value;
-          (this as any).prefs[prefId].value = prefValue;
-          this.onPreferenceChange(prefId, prefValue);
-        }
-        
-        // Call onPreferenceChange() when any value changes
-        dojo.query(".preference_control").connect("onchange", onchange);
-        
-        // Call onPreferenceChange() now
-        dojo.forEach(
-          dojo.query("#ingame_menu_content .preference_control"),
-          el => onchange({ target: el })
-        );
-    }
       
     private onPreferenceChange(prefId: number, prefValue: number) {
         switch (prefId) {
@@ -780,8 +749,7 @@ class GardenNation implements GardenNationGame {
     
     public takeAction(action: string, data?: any) {
         data = data || {};
-        data.lock = true;
-        (this as any).ajaxcall(`/gardennation/gardennation/${action}.html`, data, this, () => {});
+        this.bga.actions.performAction(action, data, { checkAction: false });
     }
     
     private setPoints(playerId: number, points: number) {
@@ -796,7 +764,7 @@ class GardenNation implements GardenNationGame {
 
     private addHelp() {
         dojo.place(`<button id="gardennation-help-button">?</button>`, 'left-side');
-        dojo.connect( $('gardennation-help-button'), 'onclick', this, () => this.showHelp());
+        document.getElementById('gardennation-help-button').addEventListener('click', () => this.showHelp());
     }
 
     private getHelpTripleTitleHtml(titles: string[]) {

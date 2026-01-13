@@ -1,0 +1,201 @@
+{
+    "table": {
+        "actionsNumber": {
+            "id": 10,
+            "name": "Number of actions",
+            "type": "int"
+        },
+        "turnsNumber": {
+            "id": 11,
+            "name": "Number of turns",
+            "type": "int"
+        },
+        "constructedFloors": {
+            "id": 12,
+            "name": "Contructed building floors",
+            "type": "int"
+        },
+        "abandonedBuildings": {
+            "id": 13,
+            "name": "Abandoned buildings",
+            "type": "int"
+        },
+        "usedPloys": {
+            "id": 14,
+            "name": "Used ploys",
+            "type": "int"
+        },
+        "usedPloysBuildingInvasion": {
+            "id": 15,
+            "name": "Used ploys (Building invasion)",
+            "type": "int"
+        },
+        "usedPloysStrategicMovement": {
+            "id": 16,
+            "name": "Used ploys (Srategic movement)",
+            "type": "int"
+        },
+        "usedPloysRoofTransfer": {
+            "id": 17,
+            "name": "Used ploys (Roof transfer)",
+            "type": "int"
+        },
+        "territoryControlWin": {
+            "id": 18,
+            "name": "Majority on territory control",
+            "type": "int"
+        },
+        "inhabitantsGainedWithTerritoryControl": {
+            "id": 19,
+            "name": "Inhabitants gained with territory control",
+            "type": "int"
+        },
+        "territoryControlWinAlone": {
+            "id": 20,
+            "name": "Majority on territory control (alone)",
+            "type": "int"
+        },
+        "territoryControlWinShared": {
+            "id": 21,
+            "name": "Majority on territory control (shared)",
+            "type": "int"
+        },
+        "completedCommonProjects": {
+            "id": 22,
+            "name": "Completed Common projects",
+            "type": "int"
+        },
+        "pointsWithCommonProjects": {
+            "id": 23,
+            "name": "Points gained with Common projects",
+            "type": "int"
+        },
+        "completedSecretMissions": {
+            "id": 24,
+            "name": "Completed Secret missions",
+            "type": "int"
+        },
+        "pointsWithSecretMissions": {
+            "id": 25,
+            "name": "Points gained with Secret missions",
+            "type": "int"
+        },
+        "endGameBuildingCount": {
+            "id": 26,
+            "name": "End game buildings count",
+            "type": "int"
+        },
+        "endGameBuildingWithRoofCount": {
+            "id": 27,
+            "name": "End game buildings with roofs count",
+            "type": "int"
+        },
+        "brambleAreasPlaced": {
+            "id": 28,
+            "name": "Number of bramble areas placed",
+            "type": "int"
+        },
+        "roundNumber": {
+            "id": 50,
+            "name": "Round number",
+            "type": "int"
+        }
+    },
+    "player": {
+        "actionsNumber": {
+            "id": 10,
+            "name": "Number of actions",
+            "type": "int"
+        },
+        "turnsNumber": {
+            "id": 11,
+            "name": "Number of turns",
+            "type": "int"
+        },
+        "constructedFloors": {
+            "id": 12,
+            "name": "Contructed building floors",
+            "type": "int"
+        },
+        "abandonedBuildings": {
+            "id": 13,
+            "name": "Abandoned buildings",
+            "type": "int"
+        },
+        "usedPloys": {
+            "id": 14,
+            "name": "Used ploys",
+            "type": "int"
+        },
+        "usedPloysBuildingInvasion": {
+            "id": 15,
+            "name": "Used ploys (Building invasion)",
+            "type": "int"
+        },
+        "usedPloysStrategicMovement": {
+            "id": 16,
+            "name": "Used ploys (Srategic movement)",
+            "type": "int"
+        },
+        "usedPloysRoofTransfer": {
+            "id": 17,
+            "name": "Used ploys (Roof transfer)",
+            "type": "int"
+        },
+        "territoryControlWin": {
+            "id": 18,
+            "name": "Majority on territory control",
+            "type": "int"
+        },
+        "inhabitantsGainedWithTerritoryControl": {
+            "id": 19,
+            "name": "Inhabitants gained with territory control",
+            "type": "int"
+        },
+        "territoryControlWinAlone": {
+            "id": 20,
+            "name": "Majority on territory control (alone)",
+            "type": "int"
+        },
+        "territoryControlWinShared": {
+            "id": 21,
+            "name": "Majority on territory control (shared)",
+            "type": "int"
+        },
+        "completedCommonProjects": {
+            "id": 22,
+            "name": "Completed Common projects",
+            "type": "int"
+        },
+        "pointsWithCommonProjects": {
+            "id": 23,
+            "name": "Points gained with Common projects",
+            "type": "int"
+        },
+        "completedSecretMissions": {
+            "id": 24,
+            "name": "Completed Secret missions",
+            "type": "int"
+        },
+        "pointsWithSecretMissions": {
+            "id": 25,
+            "name": "Points gained with Secret missions",
+            "type": "int"
+        },
+        "endGameBuildingCount": {
+            "id": 26,
+            "name": "End game buildings count",
+            "type": "int"
+        },
+        "endGameBuildingWithRoofCount": {
+            "id": 27,
+            "name": "End game buildings with roofs count",
+            "type": "int"
+        },
+        "brambleAreasPlaced": {
+            "id": 28,
+            "name": "Number of bramble areas placed",
+            "type": "int"
+        }
+    }
+}

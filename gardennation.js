@@ -915,6 +915,7 @@ var GardenNation = /** @class */ (function () {
         "gamedatas" argument contains all datas retrieved by your "getAllDatas" PHP method.
     */
     GardenNation.prototype.setup = function (gamedatas) {
+        var _this = this;
         var _a;
         log("Starting game setup");
         this.gamedatas = gamedatas;
@@ -958,7 +959,7 @@ var GardenNation = /** @class */ (function () {
         });
         this.addHelp();
         this.setupNotifications();
-        this.setupPreferences();
+        this.bga.userPreferences.onChange = function (prefId, prefValue) { return _this.onPreferenceChange(prefId, prefValue); };
         log("Ending game setup");
     };
     ///////////////////////////////////////////////////
@@ -1101,7 +1102,7 @@ var GardenNation = /** @class */ (function () {
                     this.addActionButton("chooseConstructBuilding-button", _("Construct building"), function () { return _this.chooseConstructBuilding(); });
                     this.addActionButton("chooseAbandonBuilding-button", _("Abandon building"), function () { return _this.chooseAbandonBuilding(); });
                     if (chooseActionArgs_1.canChangeTerritory) {
-                        this.addActionButton("changeTerritory-button", _("Move to territory ${number}").replace('${number}', chooseActionArgs_1.canChangeTerritory), function () { return _this.changeTerritory(chooseActionArgs_1.canChangeTerritory); }, null, null, 'red');
+                        this.addActionButton("changeTerritory-button", _("Move to territory ${number}").replace('${number}', "".concat(chooseActionArgs_1.canChangeTerritory)), function () { return _this.changeTerritory(chooseActionArgs_1.canChangeTerritory); }, null, null, 'red');
                     }
                     this.addActionButton("chooseUsePloyToken-button", _("Use ploy token"), function () { return _this.chooseUsePloyToken(); }, null, null, 'red');
                     document.getElementById("chooseConstructBuilding-button").classList.toggle('disabled', !chooseActionArgs_1.canConstructBuilding);
@@ -1151,8 +1152,8 @@ var GardenNation = /** @class */ (function () {
                     break;
                 case 'strategicMovement':
                     var strategicMovementArgs_1 = args;
-                    this.addActionButton("strategicMovementDown-button", _("Move to territory ${number}").replace('${number}', strategicMovementArgs_1.down), function () { return _this.strategicMovement(strategicMovementArgs_1.down); });
-                    this.addActionButton("strategicMovementUp-button", _("Move to territory ${number}").replace('${number}', strategicMovementArgs_1.up), function () { return _this.strategicMovement(strategicMovementArgs_1.up); });
+                    this.addActionButton("strategicMovementDown-button", _("Move to territory ${number}").replace('${number}', "".concat(strategicMovementArgs_1.down)), function () { return _this.strategicMovement(strategicMovementArgs_1.down); });
+                    this.addActionButton("strategicMovementUp-button", _("Move to territory ${number}").replace('${number}', "".concat(strategicMovementArgs_1.up)), function () { return _this.strategicMovement(strategicMovementArgs_1.up); });
                     this.addActionButton("cancelUsePloy-button", _("Cancel"), function () { return _this.cancelUsePloy(); }, null, null, 'gray');
                     break;
                 case 'chooseRoofToTransfer':
@@ -1166,27 +1167,6 @@ var GardenNation = /** @class */ (function () {
     ///////////////////////////////////////////////////
     //// Utility methods
     ///////////////////////////////////////////////////
-    /**
-     * Handle user preferences changes.
-     */
-    GardenNation.prototype.setupPreferences = function () {
-        var _this = this;
-        // Extract the ID and value from the UI control
-        var onchange = function (e) {
-            var match = e.target.id.match(/^preference_control_(\d+)$/);
-            if (!match) {
-                return;
-            }
-            var prefId = +match[1];
-            var prefValue = +e.target.value;
-            _this.prefs[prefId].value = prefValue;
-            _this.onPreferenceChange(prefId, prefValue);
-        };
-        // Call onPreferenceChange() when any value changes
-        dojo.query(".preference_control").connect("onchange", onchange);
-        // Call onPreferenceChange() now
-        dojo.forEach(dojo.query("#ingame_menu_content .preference_control"), function (el) { return onchange({ target: el }); });
-    };
     GardenNation.prototype.onPreferenceChange = function (prefId, prefValue) {
         var _a;
         switch (prefId) {
@@ -1517,8 +1497,7 @@ var GardenNation = /** @class */ (function () {
     };
     GardenNation.prototype.takeAction = function (action, data) {
         data = data || {};
-        data.lock = true;
-        this.ajaxcall("/gardennation/gardennation/".concat(action, ".html"), data, this, function () { });
+        this.bga.actions.performAction(action, data, { checkAction: false });
     };
     GardenNation.prototype.setPoints = function (playerId, points) {
         var _a;
@@ -1533,7 +1512,7 @@ var GardenNation = /** @class */ (function () {
     GardenNation.prototype.addHelp = function () {
         var _this = this;
         dojo.place("<button id=\"gardennation-help-button\">?</button>", 'left-side');
-        dojo.connect($('gardennation-help-button'), 'onclick', this, function () { return _this.showHelp(); });
+        document.getElementById('gardennation-help-button').addEventListener('click', function () { return _this.showHelp(); });
     };
     GardenNation.prototype.getHelpTripleTitleHtml = function (titles) {
         return titles.map(function (title, index) { return "<span style=\"color: ".concat(TITLE_COLOR[index], ";\">").concat(title, "</span>"); }).join(' | ');

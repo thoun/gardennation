@@ -51,29 +51,6 @@
 
 require_once('modules/php/constants.inc.php');
 
-$basicGameStates = [
-
-    // The initial state. Please do not modify.
-    ST_BGA_GAME_SETUP => [
-        "name" => "gameSetup",
-        "description" => clienttranslate("Game setup"),
-        "type" => "manager",
-        "action" => "stGameSetup",
-        "transitions" => [ "" => ST_MULTIPLAYER_CHOOSE_SECRET_MISSIONS ]
-    ],
-   
-    // Final state.
-    // Please do not modify.
-    ST_END_GAME => [
-        "name" => "gameEnd",
-        "description" => clienttranslate("End of game"),
-        "type" => "manager",
-        "action" => "stGameEnd",
-        "args" => "argGameEnd",
-    ],
-];
-
-
 $playerActionsGameStates = [
 
     ST_MULTIPLAYER_CHOOSE_SECRET_MISSIONS => [
@@ -339,5 +316,5 @@ $gameGameStates = [
     ],
 ];
  
-$machinestates = $basicGameStates + $playerActionsGameStates + $gameGameStates;
+$machinestates = $playerActionsGameStates + $gameGameStates;
 

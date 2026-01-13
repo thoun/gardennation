@@ -16,8 +16,8 @@
   *
   */
 
-
-require_once(APP_GAMEMODULE_PATH.'module/table/table.game.php');
+use Bga\GameFramework\Components\Deck;
+use Bga\GameFramework\Table;
 
 require_once('modules/php/constants.inc.php');
 require_once('modules/php/utils.php');
@@ -33,6 +33,16 @@ class GardenNation extends Table {
     use ArgsTrait;
     use DebugUtilTrait;
 
+    public Deck $commonProjects;
+    public Deck $secretMissions;
+
+    public array $BUILDING_FLOORS;
+    public array $MAP;
+    public array $END_INHABITANTS_POINTS;
+    public array $COMMON_PROJECTS;
+    public array $SECRET_MISSIONS;
+    public array $TERRITORY_AREA_INDEX_ADJACENT;
+
 	function __construct() {
         // Your global variables labels:
         //  Here, you can assign labels to global variables you are using for this game.
@@ -42,7 +52,7 @@ class GardenNation extends Table {
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();
         
-        self::initGameStateLabels([
+        $this->initGameStateLabels([
             LAST_ROUND => 10,
             PLAYED_ACTIONS => 11,
             PLOY_USED => 12,
@@ -50,18 +60,11 @@ class GardenNation extends Table {
             SELECTED_AREA_POSITION => 14,
         ]);
 		
-        $this->commonProjects = $this->getNew("module.common.deck");
-        $this->commonProjects->init("common_project");
+        $this->commonProjects = $this->deckFactory->createDeck("common_project");
         $this->commonProjects->autoreshuffle = true;
 		
-        $this->secretMissions = $this->getNew("module.common.deck");
-        $this->secretMissions->init("secret_mission");
+        $this->secretMissions = $this->deckFactory->createDeck("secret_mission");
 	}
-	
-    protected function getGameName() {
-		// Used for translations and stuff. Please do not modify.
-        return "gardennation";
-    }	
 
     /*
         setupNewGame:
@@ -74,7 +77,7 @@ class GardenNation extends Table {
         // Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
-        $gameinfos = self::getGameinfos();
+        $gameinfos = $this->getGameinfos();
         $default_colors = $gameinfos['player_colors'];
  
         // Create players
@@ -91,17 +94,17 @@ class GardenNation extends Table {
             $firstPlayer = false;
         }
         $sql .= implode(',', $values);
-        self::DbQuery($sql);
-        self::reattributeColorsBasedOnPreferences($players, $gameinfos['player_colors']);
-        self::reloadPlayersBasicInfos();
+        $this->DbQuery($sql);
+        $this->reattributeColorsBasedOnPreferences($players, $gameinfos['player_colors']);
+        $this->reloadPlayersBasicInfos();
         
         /************ Start the game initialization *****/
 
         // Init global values with their initial values
-        self::setGameStateInitialValue(TORTICRANE_POSITION, -1);
-        self::setGameStateInitialValue(LAST_ROUND, 0);
-        self::setGameStateInitialValue(PLAYED_ACTIONS, 0);
-        self::setGameStateInitialValue(PLOY_USED, 0);
+        $this->setGameStateInitialValue(TORTICRANE_POSITION, -1);
+        $this->setGameStateInitialValue(LAST_ROUND, 0);
+        $this->setGameStateInitialValue(PLAYED_ACTIONS, 0);
+        $this->setGameStateInitialValue(PLOY_USED, 0);
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
@@ -161,10 +164,7 @@ class GardenNation extends Table {
         // Activate first player (which is in general a good idea :) )
         $this->activeNextPlayer();
 
-        // TODO TEMP card to test
-        //$this->debugSetup(array_keys($players));
-
-        /************ End of the game initialization *****/
+        return \ST_MULTIPLAYER_CHOOSE_SECRET_MISSIONS;
     }
 
     /*
@@ -176,7 +176,7 @@ class GardenNation extends Table {
         _ when the game starts
         _ when a player refreshes the game page (F5)
     */
-    protected function getAllDatas() {
+    protected function getAllDatas(): array {
         $result = [];
     
         $currentPlayerId = $this->getCurrentPlayerId();    // !! We must only return informations visible by this player !!
@@ -290,6 +290,7 @@ class GardenNation extends Table {
             switch ($statename) {
                 case 'chooseNextPlayer':
                     $players = $this->getPlayers();
+                    $playerId = $players[bga_rand(0, count($players) - 1)]->id;
                     $this->applyChooseNextPlayer($playerId);
                     break;
                 default:
@@ -307,7 +308,7 @@ class GardenNation extends Table {
                         $playerId = $playersAtOrderZero[bga_rand(0, count($playersAtOrderZero) - 1)];
                         $this->DbQuery("UPDATE player SET `player_turn_track` = $order WHERE `player_id` = $playerId");
 
-                        $this->notifyAllPlayers('setPlayerOrder', clienttranslate('${player_name} is the next player'), [
+                        $this->notify->all('setPlayerOrder', clienttranslate('${player_name} is the next player'), [
                             'playerId' => $playerId,
                             'player_name' => $this->getPlayerName($playerId),
                             'order' => $order,
@@ -360,14 +361,14 @@ class GardenNation extends Table {
 //            // ! important ! Use DBPREFIX_<table_name> for all tables
 //
 //            $sql = "ALTER TABLE DBPREFIX_xxxxxxx ....";
-//            self::applyDbUpgradeToAllDB( $sql );
+//            $this->applyDbUpgradeToAllDB( $sql );
 //        }
 //        if( $from_version <= 1405061421 )
 //        {
 //            // ! important ! Use DBPREFIX_<table_name> for all tables
 //
 //            $sql = "CREATE TABLE DBPREFIX_xxxxxxx ....";
-//            self::applyDbUpgradeToAllDB( $sql );
+//            $this->applyDbUpgradeToAllDB( $sql );
 //        }
 //        // Please add your future database scheme changes here
 //
