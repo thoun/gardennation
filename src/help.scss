@@ -35,6 +35,18 @@ $card-height: 240px;
     }
 }
 
+html[data-theme="dark"] {
+    #popin_gardennationHelpDialog {
+        background-color: var(--game-palette-bga-gray-244);
+    }
+
+    #help-popin {
+        h1 {
+            color: var(--game-palette-bga-gray-950);
+        }
+    }
+}
+
 #help-popin {
     width: 520px;
     max-width: 35rem;

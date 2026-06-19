@@ -412,3 +412,9 @@ html {
   margin-top: 10px;
   color: darkred;
 }
+
+html[data-theme="dark"] {
+  .tooltip-important {
+    color: #ff8888;
+  }
+}

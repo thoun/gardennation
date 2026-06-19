@@ -1,6 +1,8 @@
-.player-board {
-  background-color: #ffeab9;
+html[data-theme="light"] .player-board {
+    --game-bga-player-panel-background: #ffeab9;
+}
 
+.player-board {
   .counters {
     display: flex;
     align-items: center;
@@ -16,9 +18,4 @@
       margin-right: 5px;
     }
   }
-}
-
-// spectator mode box
-.roundedbox_topleft, .roundedbox_topmain, .roundedbox_topright, .roundedbox_main, .roundedbox_bottomleft, .roundedbox_bottommain, .roundedbox_bottomright {
-  background-color: #fed698;
 }

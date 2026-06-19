@@ -801,6 +801,13 @@
   font-family: "garden-nation-title";
 }
 
+html[data-theme=dark] #popin_gardennationHelpDialog {
+  background-color: var(--game-palette-bga-gray-244);
+}
+html[data-theme=dark] #help-popin h1 {
+  color: var(--game-palette-bga-gray-950);
+}
+
 #help-popin {
   width: 520px;
   max-width: 35rem;
@@ -827,9 +834,10 @@
   vertical-align: top;
 }
 
-.player-board {
-  background-color: #ffeab9;
+html[data-theme=light] .player-board {
+  --game-bga-player-panel-background: #ffeab9;
 }
+
 .player-board .counters {
   display: flex;
   align-items: center;
@@ -842,10 +850,6 @@
 }
 .player-board .counters .icon {
   margin-right: 5px;
-}
-
-.roundedbox_topleft, .roundedbox_topmain, .roundedbox_topright, .roundedbox_main, .roundedbox_bottomleft, .roundedbox_bottommain, .roundedbox_bottomright {
-  background-color: #fed698;
 }
 
 html {
@@ -1304,4 +1308,8 @@ html {
 .tooltip-important {
   margin-top: 10px;
   color: darkred;
+}
+
+html[data-theme=dark] .tooltip-important {
+  color: #ff8888;
 }
