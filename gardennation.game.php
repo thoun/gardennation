@@ -235,7 +235,7 @@ class GardenNation extends Table {
 
         $result['commonProjects'] = $this->getCommonProjectsFromDb($this->commonProjects->getCardsInLocation('table', null, 'location_arg'));
 
-        $isEndScore = intval($this->gamestate->state_id()) >= ST_END_SCORE;
+        $isEndScore = $this->gamestate->getCurrentMainStateId() >= ST_END_SCORE;
         if (!$isEndScore) {
             $result['endTurn'] = boolval($this->getGameStateValue(LAST_ROUND));
             
@@ -255,11 +255,6 @@ class GardenNation extends Table {
         (see states.inc.php)
     */
     function getGameProgression() {
-        $stateName = $this->gamestate->state()['name']; 
-        if ($stateName === 'gameEnd') {
-            return 100;
-        }
-
         $minPlayerBuildings = intval($this->getUniqueValueFromDB("SELECT min(`count`) FROM (SELECT player.player_id, count(*) as `count` FROM player left join `building_floor` ON player.player_id = building_floor.player_id WHERE `territory_number` is null group by player.player_id) tmp"));
         $maxPlayerBuildings = $this->BUILDING_FLOORS[count($this->getPlayersIds())];
 

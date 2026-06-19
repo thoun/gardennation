@@ -1185,8 +1185,7 @@ var GardenNation = /** @class */ (function () {
         return this.gamedatas.players[playerId].color;
     };
     GardenNation.prototype.getPlayerScore = function (playerId) {
-        var _a, _b;
-        return (_b = (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.getValue()) !== null && _b !== void 0 ? _b : Number(this.gamedatas.players[playerId].score);
+        return this.bga.playerPanels.getScoreCounter(playerId).getValue();
     };
     GardenNation.prototype.getPlayer = function (playerId) {
         return Object.values(this.gamedatas.players).find(function (player) { return Number(player.id) == playerId; });
@@ -1199,7 +1198,7 @@ var GardenNation = /** @class */ (function () {
         Object.values(gamedatas.players).forEach(function (player) {
             var playerId = Number(player.id);
             // counters
-            dojo.place("\n            <div class=\"counters\">\n                <div id=\"inhabitant-counter-wrapper-".concat(player.id, "\" class=\"counter\">\n                    <div class=\"icon inhabitant\" data-color=\"").concat(player.color, "\"></div> \n                    <span id=\"inhabitant-counter-").concat(player.id, "\"></span>\n                </div>\n                <div id=\"building-floor-counter-wrapper-").concat(player.id, "\" class=\"counter\">\n                    <div class=\"icon building-floor-counter\" data-color=\"").concat(player.color, "\"></div> \n                    <span id=\"building-floor-counter-").concat(player.id, "\"></span>\n                </div>\n                <div id=\"ploy-token-counter-wrapper-").concat(player.id, "\" class=\"counter\">\n                    <div class=\"icon ploy-token\" data-color=\"").concat(player.color, "\"></div> \n                    <span id=\"ploy-token-counter-").concat(player.id, "\"></span>\n                </div>\n            </div>\n            "), "player_board_".concat(player.id));
+            _this.bga.playerPanels.getElement(playerId).insertAdjacentHTML("beforeend", "\n            <div class=\"counters\">\n                <div id=\"inhabitant-counter-wrapper-".concat(player.id, "\" class=\"counter\">\n                    <div class=\"icon inhabitant\" data-color=\"").concat(player.color, "\"></div> \n                    <span id=\"inhabitant-counter-").concat(player.id, "\"></span>\n                </div>\n                <div id=\"building-floor-counter-wrapper-").concat(player.id, "\" class=\"counter\">\n                    <div class=\"icon building-floor-counter\" data-color=\"").concat(player.color, "\"></div> \n                    <span id=\"building-floor-counter-").concat(player.id, "\"></span>\n                </div>\n                <div id=\"ploy-token-counter-wrapper-").concat(player.id, "\" class=\"counter\">\n                    <div class=\"icon ploy-token\" data-color=\"").concat(player.color, "\"></div> \n                    <span id=\"ploy-token-counter-").concat(player.id, "\"></span>\n                </div>\n            </div>\n            "));
             var inhabitantCounter = new ebg.counter();
             inhabitantCounter.create("inhabitant-counter-".concat(playerId));
             inhabitantCounter.setValue(player.inhabitants);
@@ -1500,8 +1499,7 @@ var GardenNation = /** @class */ (function () {
         this.bga.actions.performAction(action, data, { checkAction: false });
     };
     GardenNation.prototype.setPoints = function (playerId, points) {
-        var _a;
-        (_a = this.scoreCtrl[playerId]) === null || _a === void 0 ? void 0 : _a.toValue(points);
+        this.bga.playerPanels.getScoreCounter(playerId).toValue(points);
         this.board.setPoints(playerId, points);
     };
     GardenNation.prototype.setInhabitants = function (playerId, inhabitants) {

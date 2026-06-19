@@ -88,7 +88,7 @@ trait UtilTrait {
     }
 
     function incPlayerScore(int $playerId, int $amount, $message = '', $args = []) {
-        $this->DbQuery("UPDATE player SET `player_score` = `player_score` + $amount WHERE player_id = $playerId");
+        $this->bga->playerScore->inc($playerId, $amount, null);
             
         $this->notifyAllPlayers('score', $message, [
             'playerId' => $playerId,

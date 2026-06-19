@@ -343,7 +343,7 @@ class GardenNation implements GardenNationGame {
     }
 
     public getPlayerScore(playerId: number): number {
-        return (this as any).scoreCtrl[playerId]?.getValue() ?? Number(this.gamedatas.players[playerId].score);
+        return this.bga.playerPanels.getScoreCounter(playerId).getValue();
     }
 
     private getPlayer(playerId: number): GardenNationPlayer {
@@ -360,7 +360,7 @@ class GardenNation implements GardenNationGame {
             const playerId = Number(player.id);     
 
             // counters
-            dojo.place(`
+            this.bga.playerPanels.getElement(playerId).insertAdjacentHTML("beforeend", `
             <div class="counters">
                 <div id="inhabitant-counter-wrapper-${player.id}" class="counter">
                     <div class="icon inhabitant" data-color="${player.color}"></div> 
@@ -375,7 +375,7 @@ class GardenNation implements GardenNationGame {
                     <span id="ploy-token-counter-${player.id}"></span>
                 </div>
             </div>
-            `, `player_board_${player.id}`);
+            `);
 
             const inhabitantCounter = new ebg.counter();
             inhabitantCounter.create(`inhabitant-counter-${playerId}`);
@@ -753,7 +753,7 @@ class GardenNation implements GardenNationGame {
     }
     
     private setPoints(playerId: number, points: number) {
-        (this as any).scoreCtrl[playerId]?.toValue(points);
+        this.bga.playerPanels.getScoreCounter(playerId).toValue(points);
         this.board.setPoints(playerId, points);
     }
     
